@@ -1,0 +1,9 @@
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+ARG SERVICE_NAME
+COPY services/${SERVICE_NAME}/target/*.jar app.jar
+ENTRYPOINT ["java", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-jar", "app.jar"]

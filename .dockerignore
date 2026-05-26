@@ -1,0 +1,27 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+*.iws
+
+# Build artifacts — exclude everything except the final JAR
+services/*/target/classes/
+services/*/target/generated-sources/
+services/*/target/generated-test-sources/
+services/*/target/maven-status/
+services/*/target/surefire-reports/
+services/*/target/test-classes/
+
+# Frontend (built by its own Dockerfile)
+frontend/
+
+# Docs / misc
+*.md
+*.png
+*.jpg
+
+# Env files (secrets injectés via docker-compose)
+.env

@@ -1,0 +1,74 @@
+package com.ztf.zma.payment.domain;
+
+import jakarta.persistence.*;
+import java.time.Instant;
+
+@Entity
+@Table(name = "payments")
+public class Payment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Column(nullable = false)
+    private String studentId;
+
+    @Column(nullable = false)
+    private String courseId;
+
+    private String courseTitle;
+
+    @Column(nullable = false)
+    private Double amount;
+
+    /** XAF, USD, EUR… */
+    @Column(nullable = false, columnDefinition = "varchar(10) default 'XAF'")
+    private String currency = "XAF";
+
+    /** PENDING | SUCCESS | FAILED | REFUNDED */
+    @Column(nullable = false)
+    private String status;
+
+    /** CinetPay transaction ID (or Stripe charge ID in future) */
+    private String transactionId;
+
+    /** Redirect URL returned by payment gateway */
+    @Column(columnDefinition = "TEXT")
+    private String checkoutUrl;
+
+    /** Optional promo code applied */
+    private String promoCode;
+
+    private Instant createdAt;
+    private Instant confirmedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = Instant.now();
+    }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getStudentId() { return studentId; }
+    public void setStudentId(String studentId) { this.studentId = studentId; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
+    public String getCourseTitle() { return courseTitle; }
+    public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
+    public String getCurrency() { return currency; }
+    public void setCurrency(String currency) { this.currency = currency; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
+    public String getCheckoutUrl() { return checkoutUrl; }
+    public void setCheckoutUrl(String checkoutUrl) { this.checkoutUrl = checkoutUrl; }
+    public String getPromoCode() { return promoCode; }
+    public void setPromoCode(String promoCode) { this.promoCode = promoCode; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getConfirmedAt() { return confirmedAt; }
+    public void setConfirmedAt(Instant confirmedAt) { this.confirmedAt = confirmedAt; }
+}

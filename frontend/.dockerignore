@@ -1,0 +1,14 @@
+# node_modules excluded; dist/ is included (built locally before docker build)
+node_modules/
+
+# Git / IDE
+.git
+.gitignore
+.idea
+
+# Tests
+coverage/
+
+# Env
+.env
+.env.*

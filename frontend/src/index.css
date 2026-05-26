@@ -1,0 +1,155 @@
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 35% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 35% 10%;
+    --primary: 213 76% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 86% 48%;
+    --secondary-foreground: 42 80% 12%;
+    --muted: 213 20% 96%;
+    --muted-foreground: 213 15% 48%;
+    --accent: 213 60% 94%;
+    --accent-foreground: 213 76% 32%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 213 20% 90%;
+    --input: 213 20% 90%;
+    --ring: 213 76% 42%;
+    --radius: 0.75rem;
+    --gold: 42 86% 48%;
+    --gold-light: 45 92% 62%;
+    --orange: 29 88% 53%;
+    --orange-light: 32 90% 62%;
+    --navy: 215 72% 22%;
+    --navy-deep: 215 72% 12%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3 {
+    font-family: 'Playfair Display', 'Inter', serif;
+  }
+}
+
+/* ── Custom utilities ──────────────────────────────────────────────────────── */
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(135deg, hsl(215,72%,12%) 0%, hsl(213,70%,20%) 50%, hsl(215,72%,10%) 100%);
+  }
+  .gradient-gold {
+    background: linear-gradient(135deg, hsl(42,86%,48%) 0%, hsl(45,92%,62%) 100%);
+  }
+  .gradient-orange {
+    background: linear-gradient(135deg, hsl(29,88%,53%) 0%, hsl(38,92%,58%) 100%);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(213,76%,48%), hsl(29,88%,53%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(42,86%,52%), hsl(45,92%,68%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  .glass-dark {
+    backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(10,20,40,0.75);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+  .img-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,20,40,0.85) 0%, rgba(10,20,40,0.3) 50%, transparent 100%);
+  }
+  .img-overlay-center::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(10,20,40,0.7) 0%, rgba(10,20,40,0.4) 100%);
+  }
+  .section-pad { @apply py-20 md:py-28; }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: hsl(220,14%,96%); }
+::-webkit-scrollbar-thumb { background: hsl(220,9%,76%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(213,76%,42%); }
+
+/* ── Accordion ─────────────────────────────────────────────────────────────── */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+.animate-accordion-down { animation: accordion-down 0.2s ease-out; }
+.animate-accordion-up { animation: accordion-up 0.2s ease-out; }
+
+/* ── Gradient shift (for AnimatedGradientText) ─────────────────────────────── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ── Image shimmer skeleton ────────────────────────────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+/* ── Floating music notes ──────────────────────────────────────────────────── */
+.music-note {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: note-float 6s ease-in infinite;
+  user-select: none;
+  pointer-events: none;
+}
+@keyframes note-float {
+  0%   { opacity: 0; transform: translateY(0) rotate(-10deg) scale(0.8); }
+  15%  { opacity: 0.7; }
+  85%  { opacity: 0.4; }
+  100% { opacity: 0; transform: translateY(-120px) rotate(15deg) scale(1.1); }
+}
+
+/* ── Lazy image fade-in ────────────────────────────────────────────────────── */
+img.lazy { opacity: 0; transition: opacity 0.5s ease; }
+img.lazy.loaded { opacity: 1; }

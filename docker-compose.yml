@@ -1,0 +1,318 @@
+version: "3.9"
+
+# ─── Réseaux ──────────────────────────────────────────────────────────────────
+networks:
+  zma-network:
+    driver: bridge
+
+# ─── Volumes persistants ──────────────────────────────────────────────────────
+volumes:
+  postgres-data:
+  redis-data:
+  nginx-img-cache:
+
+# ─── Variables communes ───────────────────────────────────────────────────────
+x-db-env: &db-env
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: ${DB_NAME:-zma_db}
+  DB_USER: ${DB_USER:-zma_admin}
+  DB_PASSWORD: ${DB_PASSWORD:-pwdAdmin}
+
+x-build-defaults: &build-defaults
+  context: .
+  dockerfile: Dockerfile.prebuilt
+  network: host
+
+services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: zma-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-zma_db}
+      POSTGRES_USER: ${DB_USER:-zma_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pwdAdmin}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - zma-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-zma_admin} -d ${DB_NAME:-zma_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    container_name: zma-redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    networks:
+      - zma-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ── Microservices ────────────────────────────────────────────────────────────
+
+  zma-auth:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-auth
+    image: zma-auth:latest
+    container_name: zma-auth
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8081"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-900000}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      FRONTEND_URL: http://localhost
+      CORS_ALLOWED_ORIGINS: http://localhost
+      USERS_SERVICE_URL: http://zma-users:8082
+      MAIL_ENABLED: "false"
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-users:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-users
+    image: zma-users:latest
+    container_name: zma-users
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8082"
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: http://localhost
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-catalog:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-catalog
+    image: zma-catalog:latest
+    container_name: zma-catalog
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8083"
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: http://localhost
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8083/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-media:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-media
+    image: zma-media:latest
+    container_name: zma-media
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8084"
+      JWT_SECRET: ${JWT_SECRET}
+      STORAGE_TYPE: local
+      CORS_ALLOWED_ORIGINS: "http://localhost,http://localhost:5173,http://localhost:8084"
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8084/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-enrollment:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-enrollment
+    image: zma-enrollment:latest
+    container_name: zma-enrollment
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8085"
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: http://localhost
+      COMMUNITY_SERVICE_URL: http://zma-community:8087
+      CATALOG_SERVICE_URL: http://zma-catalog:8083
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8085/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-payment:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-payment
+    image: zma-payment:latest
+    container_name: zma-payment
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8086"
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: http://localhost
+      ENROLLMENT_SERVICE_URL: http://zma-enrollment:8085
+      CATALOG_SERVICE_URL: http://zma-catalog:8083
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8086/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-community:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-community
+    image: zma-community:latest
+    container_name: zma-community
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+      SERVER_PORT: "8087"
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: http://localhost
+    networks:
+      - zma-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8087/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+
+  zma-gateway:
+    build:
+      <<: *build-defaults
+      args:
+        SERVICE_NAME: zma-gateway
+    image: zma-gateway:latest
+    container_name: zma-gateway
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: "8080"
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_URL: http://zma-auth:8081
+      USERS_SERVICE_URL: http://zma-users:8082
+      CATALOG_SERVICE_URL: http://zma-catalog:8083
+      MEDIA_SERVICE_URL: http://zma-media:8084
+      ENROLLMENT_SERVICE_URL: http://zma-enrollment:8085
+      PAYMENT_SERVICE_URL: http://zma-payment:8086
+      COMMUNITY_SERVICE_URL: http://zma-community:8087
+      CORS_ALLOWED_ORIGINS: http://localhost
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      GATEWAY_RATE_LIMIT: "100"
+      GATEWAY_RATE_WINDOW: "60"
+    networks:
+      - zma-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      zma-auth:
+        condition: service_healthy
+      zma-catalog:
+        condition: service_healthy
+      zma-enrollment:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health 2>/dev/null | grep -q UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Frontend ─────────────────────────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: zma-frontend:latest
+    container_name: zma-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - zma-network
+    depends_on:
+      zma-gateway:
+        condition: service_healthy
+    volumes:
+      - nginx-img-cache:/var/cache/nginx/pollinations
