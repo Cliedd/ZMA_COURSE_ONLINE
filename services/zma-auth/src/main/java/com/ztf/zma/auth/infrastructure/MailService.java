@@ -42,14 +42,14 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailFrom);
         message.setTo(to);
-        message.setSubject("Réinitialisation de votre mot de passe — ZMA");
+        message.setSubject("Reset your password — ZMA");
         message.setText(
-            "Bonjour,\n\n" +
-            "Vous avez demandé la réinitialisation de votre mot de passe.\n\n" +
-            "Cliquez sur le lien ci-dessous (valable 1 heure) :\n" +
+            "Hello,\n\n" +
+            "You requested a password reset.\n\n" +
+            "Click the link below (valid for 1 hour):\n" +
             resetLink + "\n\n" +
-            "Si vous n'avez pas fait cette demande, ignorez ce message.\n\n" +
-            "L'équipe ZMA"
+            "If you didn't request this, you can safely ignore this email.\n\n" +
+            "The ZMA Team"
         );
         mailSender.send(message);
         log.info("Password reset email sent to {}", to);
@@ -66,12 +66,12 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailFrom);
         message.setTo(to);
-        message.setSubject("Confirmez votre adresse email — ZMA");
+        message.setSubject("Confirm your email address — ZMA");
         message.setText(
-            "Bienvenue sur ZMA !\n\n" +
-            "Confirmez votre adresse email en cliquant sur ce lien (valable 24h) :\n" +
+            "Welcome to ZMA!\n\n" +
+            "Confirm your email address by clicking this link (valid for 24h):\n" +
             verifyLink + "\n\n" +
-            "L'équipe ZMA"
+            "The ZMA Team"
         );
         mailSender.send(message);
         log.info("Verification email sent to {}", to);

@@ -10,6 +10,15 @@ import { useTeacherCourses } from '../../hooks/useCourses'
 import { useEnrollmentsByCourse } from '../../hooks/useEnrollment'
 import { useCreateOrGetRoom } from '../../hooks/useChat'
 
+const STATUS_LABEL: Record<string, { label: string; variant: 'muted' | 'secondary' | 'destructive' | 'success' }> = {
+  DRAFT:            { label: 'Draft',           variant: 'muted' },
+  SUBMITTED:        { label: 'Submitted',       variant: 'secondary' },
+  IN_REVIEW:        { label: 'In Review',       variant: 'secondary' },
+  REVISION_NEEDED:  { label: 'Needs Revision',  variant: 'destructive' },
+  PUBLISHED:        { label: 'Published',       variant: 'success' },
+  ARCHIVED:         { label: 'Archived',        variant: 'muted' },
+}
+
 const GRADIENTS = [
   'from-blue-700 to-blue-900', 'from-amber-600 to-orange-800', 'from-emerald-600 to-teal-800',
   'from-purple-600 to-violet-900', 'from-rose-600 to-pink-800', 'from-cyan-600 to-sky-800',
@@ -62,15 +71,15 @@ const CourseRow = ({ course, idx, email }: { course: any; idx: number; email: st
         <span className="font-semibold text-sm">{course.price}€</span>
       </td>
       <td className="px-4 py-4">
-        <Badge variant={course.published ? 'success' : 'muted'}>
-          {course.published ? 'Publié' : 'Brouillon'}
+        <Badge variant={STATUS_LABEL[course.status]?.variant ?? 'muted'}>
+          {STATUS_LABEL[course.status]?.label ?? course.status}
         </Badge>
       </td>
       <td className="px-4 py-4 text-right">
         <div className="flex items-center gap-1 justify-end">
           <Link to={`/teacher/cours/${course.id}`}>
             <Button variant="outline" size="sm" className="gap-1.5 text-xs h-7 px-2.5">
-              <Pencil className="h-3.5 w-3.5" /> Éditer
+              <Pencil className="h-3.5 w-3.5" /> Edit
             </Button>
           </Link>
           <Button
@@ -121,13 +130,13 @@ export const TeacherDashboard = () => {
             <AvatarFallback className="text-sm font-semibold">{initials}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold">Dashboard Enseignant</h1>
+            <h1 className="text-2xl font-bold">Teacher Dashboard</h1>
             <p className="text-muted-foreground text-sm mt-0.5">{email}</p>
           </div>
         </div>
         <Link to="/enseigner/cours/creer">
           <Button className="gap-2 shadow-sm shadow-primary/20">
-            <Plus className="h-4 w-4" /> Nouveau cours
+            <Plus className="h-4 w-4" /> New course
           </Button>
         </Link>
       </div>
@@ -137,7 +146,7 @@ export const TeacherDashboard = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Mes cours</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">My Courses</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 bg-blue-50 dark:bg-blue-900/30">
                 <BookOpen className="h-4 w-4" />
               </div>
@@ -148,7 +157,7 @@ export const TeacherDashboard = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Note moyenne</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Average Rating</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-900/30">
                 <Star className="h-4 w-4" />
               </div>
@@ -159,13 +168,13 @@ export const TeacherDashboard = () => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Revenus</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Revenue</span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30">
                 <TrendingUp className="h-4 w-4" />
               </div>
             </div>
             <p className="text-2xl font-bold">—</p>
-            <p className="text-xs text-muted-foreground mt-1">Module analytics à venir</p>
+            <p className="text-xs text-muted-foreground mt-1">Analytics module coming soon</p>
           </CardContent>
         </Card>
       </div>
@@ -173,10 +182,10 @@ export const TeacherDashboard = () => {
       {/* My courses table */}
       <Card>
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-base">Mes cours publiés</CardTitle>
+          <CardTitle className="text-base">My Published Courses</CardTitle>
           <Link to="/catalogue">
             <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-              Voir tout <ArrowRight className="h-3.5 w-3.5" />
+              View all <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </Link>
         </CardHeader>
@@ -184,16 +193,16 @@ export const TeacherDashboard = () => {
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-8 flex items-center justify-center gap-2 text-muted-foreground text-sm">
-              <Loader2 className="h-4 w-4 animate-spin" /> Chargement...
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading...
             </div>
           ) : courses.length === 0 ? (
             <div className="flex flex-col items-center py-10 gap-3 text-center">
               <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">Vous n'avez pas encore créé de cours.</p>
+              <p className="text-sm text-muted-foreground">You haven't created any courses yet.</p>
               <Link to="/enseigner/cours/creer">
-                <Button size="sm">Créer mon premier cours</Button>
+                <Button size="sm">Create my first course</Button>
               </Link>
             </div>
           ) : (
@@ -201,12 +210,12 @@ export const TeacherDashboard = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/30">
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Cours</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Niveau</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Inscrits</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Note</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Prix</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Statut</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Course</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Level</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Enrolled</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Rating</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Price</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Status</th>
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
@@ -228,9 +237,9 @@ export const TeacherDashboard = () => {
             <MessageSquare className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-sm">Chat avec vos étudiants</p>
+            <p className="font-semibold text-sm">Chat with your students</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Cliquez sur le bouton "Chat" d'un cours pour ouvrir la salle de discussion avec tous les étudiants inscrits à ce cours.
+              Click the "Chat" button on a course to open the discussion room with all students enrolled in that course.
             </p>
           </div>
         </CardContent>

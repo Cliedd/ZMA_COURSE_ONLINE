@@ -25,11 +25,10 @@ const GRADIENTS = [
 ]
 
 const LEVEL_COLOR: Record<string, string> = {
-  Licence:   'bg-blue-500/20 text-blue-200 border-blue-400/30',
-  Master:    'bg-purple-500/20 text-purple-200 border-purple-400/30',
-  Doctorat:  'bg-rose-500/20 text-rose-200 border-rose-400/30',
-  Certificat:'bg-emerald-500/20 text-emerald-200 border-emerald-400/30',
-  Atelier:   'bg-amber-500/20 text-amber-200 border-amber-400/30',
+  'Bachelor\'s': 'bg-blue-500/20 text-blue-200 border-blue-400/30',
+  'Master\'s':   'bg-purple-500/20 text-purple-200 border-purple-400/30',
+  Doctorate:     'bg-rose-500/20 text-rose-200 border-rose-400/30',
+  Certificate:   'bg-emerald-500/20 text-emerald-200 border-emerald-400/30',
 }
 
 export const CourseDetailPage = () => {
@@ -52,9 +51,9 @@ export const CourseDetailPage = () => {
   if (isError || !course) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
-        <h2 className="text-2xl font-bold">Cours introuvable</h2>
-        <p className="text-muted-foreground">Ce cours n'existe pas ou a été supprimé.</p>
-        <Link to="/catalogue"><Button>Retour au catalogue</Button></Link>
+        <h2 className="text-2xl font-bold">Course not found</h2>
+        <p className="text-muted-foreground">This course doesn't exist or has been removed.</p>
+        <Link to="/catalogue"><Button>Back to catalog</Button></Link>
       </div>
     )
   }
@@ -86,7 +85,7 @@ export const CourseDetailPage = () => {
 
       {/* Back */}
       <Link to="/catalogue" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Retour au catalogue
+        <ArrowLeft className="h-4 w-4" /> Back to catalog
       </Link>
 
       {/* ── Hero banner ── */}
@@ -103,7 +102,7 @@ export const CourseDetailPage = () => {
               <Badge className="bg-amber-400 text-amber-900 border-0 text-xs font-bold">Bestseller</Badge>
             )}
             {isEnrolled && (
-              <Badge className="bg-emerald-500 text-white border-0 text-xs font-bold">Inscrit</Badge>
+              <Badge className="bg-emerald-500 text-white border-0 text-xs font-bold">Enrolled</Badge>
             )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold leading-tight">{course.title}</h1>
@@ -114,10 +113,10 @@ export const CourseDetailPage = () => {
             <span className="flex items-center gap-1.5">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
               <strong className="text-white">{(course.rating ?? 4.8).toFixed(1)}</strong>
-              <span className="text-white/50">({(course.studentsCount ?? 0).toLocaleString()} inscrits)</span>
+              <span className="text-white/50">({(course.studentsCount ?? 0).toLocaleString()} enrolled)</span>
             </span>
-            <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {course.durationHours}h de contenu</span>
-            <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4" /> {totalLessons} leçons</span>
+            <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {course.durationHours}h of content</span>
+            <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4" /> {totalLessons} lessons</span>
           </div>
           <div className="flex items-center gap-2 pt-1">
             <Avatar className="h-7 w-7">
@@ -139,7 +138,7 @@ export const CourseDetailPage = () => {
           {skills.length > 0 && (
             <Card>
               <CardContent className="p-6 space-y-4">
-                <h2 className="text-lg font-semibold">Ce que vous apprendrez</h2>
+                <h2 className="text-lg font-semibold">What you'll learn</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {skills.map((skill, i) => (
                     <div key={i} className="flex items-start gap-2.5">
@@ -156,8 +155,8 @@ export const CourseDetailPage = () => {
           {curriculum.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Programme du cours</h2>
-                <span className="text-xs text-muted-foreground">{curriculum.length} semestres · {totalLessons} modules</span>
+                <h2 className="text-lg font-semibold">Course curriculum</h2>
+                <span className="text-xs text-muted-foreground">{curriculum.length} semesters · {totalLessons} modules</span>
               </div>
               <Accordion type="single" collapsible defaultValue={curriculum[0]?.id}>
                 {curriculum.map((sem, idx) => (
@@ -189,13 +188,13 @@ export const CourseDetailPage = () => {
             </div>
           )}
 
-          {/* Débouchés */}
+          {/* Career outcomes */}
           {debouches.length > 0 && (
             <Card>
               <CardContent className="p-6 space-y-4">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
                   <GraduationCap className="h-5 w-5 text-primary" />
-                  Débouchés professionnels
+                  Career Outcomes
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {debouches.map((d, i) => (
@@ -214,26 +213,26 @@ export const CourseDetailPage = () => {
                   <MessageSquare className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-sm">Chat du cours</p>
-                  <p className="text-xs text-muted-foreground">Discutez avec votre enseignant et vos camarades</p>
+                  <p className="font-semibold text-sm">Course chat</p>
+                  <p className="text-xs text-muted-foreground">Chat with your teacher and classmates</p>
                 </div>
                 <Link to={`/chat/${course.id}`}>
                   <Button size="sm" variant="outline" className="gap-1.5">
-                    <MessageSquare className="h-3.5 w-3.5" /> Ouvrir le chat
+                    <MessageSquare className="h-3.5 w-3.5" /> Open chat
                   </Button>
                 </Link>
               </CardContent>
             </Card>
           )}
 
-          {/* Filière info */}
+          {/* Program info */}
           <Card className="bg-muted/30">
             <CardContent className="p-5 flex items-start gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 shrink-0">
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-0.5">Département · Filière</p>
+                <p className="text-xs text-muted-foreground mb-0.5">Department · Specialization</p>
                 <p className="font-semibold text-sm">{course.department}</p>
                 <p className="text-sm text-muted-foreground">{course.filiere}</p>
               </div>
@@ -248,18 +247,18 @@ export const CourseDetailPage = () => {
             <div className={`bg-gradient-to-br ${gradient} p-5`}>
               <div className="text-white">
                 {isEnrolled ? (
-                  <span className="text-2xl font-bold">Vous êtes inscrit</span>
+                  <span className="text-2xl font-bold">You're enrolled</span>
                 ) : (
                   <>
                     <span className="text-4xl font-bold">{course.price}€</span>
-                    {(course.level === 'Licence' || course.level === 'Master') ? (
+                    {(course.level === 'Bachelor\'s' || course.level === 'Master\'s') ? (
                       <span className="ml-2 text-white/60 text-sm line-through">{Math.round(course.price * 1.4)}€</span>
                     ) : null}
                   </>
                 )}
               </div>
               {course.ects && (
-                <p className="text-white/70 text-xs mt-1">{course.ects} ECTS · Accès à vie</p>
+                <p className="text-white/70 text-xs mt-1">{course.ects} ECTS · Lifetime access</p>
               )}
             </div>
 
@@ -270,20 +269,20 @@ export const CourseDetailPage = () => {
                 onClick={handleCTA}
               >
                 {isEnrolled ? (
-                  <><Play className="h-4 w-4 fill-current" /> Continuer l'apprentissage</>
+                  <><Play className="h-4 w-4 fill-current" /> Continue learning</>
                 ) : (
-                  <><ShoppingCart className="h-4 w-4" /> S'inscrire maintenant</>
+                  <><ShoppingCart className="h-4 w-4" /> Enroll now</>
                 )}
               </Button>
               {!isEnrolled && (
                 <Button size="lg" variant="outline" className="w-full gap-2">
-                  <Play className="h-4 w-4 fill-current" /> Voir la présentation
+                  <Play className="h-4 w-4 fill-current" /> Watch the trailer
                 </Button>
               )}
               {isEnrolled && (
                 <Link to={`/chat/${course.id}`} className="block">
                   <Button size="sm" variant="outline" className="w-full gap-2">
-                    <MessageSquare className="h-4 w-4" /> Accéder au chat
+                    <MessageSquare className="h-4 w-4" /> Go to chat
                   </Button>
                 </Link>
               )}
@@ -292,11 +291,11 @@ export const CourseDetailPage = () => {
 
               <ul className="space-y-2.5 text-sm text-muted-foreground">
                 {[
-                  ['Niveau', course.level],
-                  ['Durée', `${course.durationHours}h de contenu`],
+                  ['Level', course.level],
+                  ['Duration', `${course.durationHours}h of content`],
                   ['Modules', `${totalLessons} modules`],
-                  ['Accès', 'À vie · Toutes plateformes'],
-                  ['Certificat', 'Certificat officiel ZMA'],
+                  ['Access', 'Lifetime · All platforms'],
+                  ['Certificate', 'Official ZMA certificate'],
                 ].map(([k, v]) => (
                   <li key={k} className="flex justify-between gap-2">
                     <span className="font-medium text-foreground">{k}</span>
@@ -309,7 +308,7 @@ export const CourseDetailPage = () => {
                 <div className="flex items-center justify-center gap-1.5 pt-1">
                   <Award className="h-3.5 w-3.5 text-muted-foreground" />
                   <p className="text-center text-xs text-muted-foreground">
-                    Garantie satisfait ou remboursé 30 jours
+                    30-day money-back guarantee
                   </p>
                 </div>
               )}
@@ -324,7 +323,7 @@ export const CourseDetailPage = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-xs text-muted-foreground">Enseignant</p>
+                  <p className="text-xs text-muted-foreground">Teacher</p>
                   <p className="text-sm font-medium">{course.teacherName}</p>
                 </div>
               </div>
@@ -334,7 +333,7 @@ export const CourseDetailPage = () => {
                   <Star key={i} className={`h-3.5 w-3.5 ${i < Math.round(course.rating ?? 5) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'}`} />
                 ))}
                 <span className="text-xs text-muted-foreground ml-1">
-                  {(course.rating ?? 4.8).toFixed(1)} · {(course.studentsCount ?? 0).toLocaleString()} étudiants
+                  {(course.rating ?? 4.8).toFixed(1)} · {(course.studentsCount ?? 0).toLocaleString()} students
                 </span>
               </div>
             </CardContent>

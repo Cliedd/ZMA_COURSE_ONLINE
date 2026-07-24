@@ -15,7 +15,7 @@ export function useAuth() {
 
   const register = async (data: RegisterRequest): Promise<void> => {
     await authApi.register(data);
-    // Auto-login après inscription
+    // Auto-login after registration
     const jwt = await authApi.login({ email: data.email, password: data.password });
     setToken(jwt);
     navigate('/dashboard');

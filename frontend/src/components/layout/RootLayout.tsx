@@ -6,23 +6,16 @@ import { Music, Instagram, Youtube, Twitter, Mail, MapPin, Phone, ArrowRight } f
 import { IMG } from '../../lib/images'
 
 const FOOTER_LINKS = {
-  'Formations': [
-    { label: 'Licences',    to: '/catalogue?level=Licence' },
-    { label: 'Masters',     to: '/catalogue?level=Master' },
-    { label: 'Doctorats',   to: '/catalogue?level=Doctorat' },
-    { label: 'Certificats', to: '/catalogue?level=Certificat' },
+  'Learn': [
+    { label: 'About us',      to: '/#about' },
+    { label: 'Programmes',    to: '/#levels' },
+    { label: 'All courses',   to: '/catalogue' },
+    { label: 'Our team',      to: '/#teachers' },
   ],
-  'Académie': [
-    { label: 'À propos',       to: '/' },
-    { label: 'Nos enseignants', to: '/' },
-    { label: 'Partenariats',   to: '/' },
-    { label: 'Presse',         to: '/' },
-  ],
-  'Étudiant': [
-    { label: 'Mon espace',   to: '/dashboard' },
-    { label: 'Catalogue',    to: '/catalogue' },
-    { label: 'Certification', to: '/dashboard' },
-    { label: 'Support',       to: '/' },
+  'Support': [
+    { label: 'FAQ',      to: '/#faq' },
+    { label: 'Register', to: '/auth/inscription' },
+    { label: 'Sign in',  to: '/auth/connexion' },
   ],
 }
 
@@ -41,6 +34,7 @@ export const RootLayout = () => {
   }, [location.search])
 
   const isFullscreen = location.pathname.startsWith('/learning') || location.pathname.startsWith('/chat')
+    || location.pathname === '/'
 
   if (isFullscreen) {
     return (
@@ -70,7 +64,7 @@ export const RootLayout = () => {
           {/* Top band */}
           <div className="border-b border-white/10">
             <div className="container py-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
                 {/* Brand */}
                 <div className="lg:col-span-2 space-y-5">
@@ -80,13 +74,13 @@ export const RootLayout = () => {
                     </div>
                     <div>
                       <p className="text-lg font-black tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        ZTF Music Académie
+                        ZTF Music Academy
                       </p>
-                      <p className="text-[10px] text-white/40 uppercase tracking-[0.2em]">Excellence · Afrique</p>
+                      <p className="text-[10px] text-white/40 uppercase tracking-[0.2em]">Music & Worship Academy</p>
                     </div>
                   </div>
                   <p className="text-white/50 text-sm leading-relaxed max-w-sm">
-                    Former les musiciens africains aux standards internationaux, tout en préservant et valorisant l'identité musicale africaine.
+                    ZTF Music Academy (ZMA) is a music and worship school offering accelerated courses, usually lasting between one and two weeks.
                   </p>
                   {/* Social */}
                   <div className="flex items-center gap-3">
@@ -104,14 +98,14 @@ export const RootLayout = () => {
                   <div className="flex gap-2">
                     <input
                       type="email"
-                      placeholder="Votre email…"
+                      placeholder="Your email…"
                       className="flex-1 bg-white/10 border border-white/15 text-white placeholder-white/30 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400/50"
                     />
                     <button className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400 text-amber-900 hover:bg-amber-300 transition-colors">
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="text-[10px] text-white/30">Recevez nos actualités et nouvelles formations.</p>
+                  <p className="text-[10px] text-white/30">Get news and new programs in your inbox.</p>
                 </div>
 
                 {/* Links */}
@@ -137,7 +131,7 @@ export const RootLayout = () => {
           <div className="border-b border-white/10">
             <div className="container py-5">
               <div className="flex flex-wrap gap-6 items-center justify-center md:justify-start text-white/40 text-xs">
-                <span className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-amber-400/70" /> Afrique Centrale</span>
+                <span className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-amber-400/70" /> Central Africa</span>
                 <span className="flex items-center gap-2"><Mail className="h-3.5 w-3.5 text-amber-400/70" /> contact@ztfmusic.com</span>
                 <span className="flex items-center gap-2"><Phone className="h-3.5 w-3.5 text-amber-400/70" /> +237 XXX XXX XXX</span>
               </div>
@@ -147,12 +141,8 @@ export const RootLayout = () => {
           {/* Bottom */}
           <div className="container py-5">
             <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/30">
-              <p>© 2025 ZTF Music Académie — Tous droits réservés</p>
-              <div className="flex gap-5">
-                {['Mentions légales', 'Confidentialité', 'CGV', 'Cookies'].map(t => (
-                  <span key={t} className="hover:text-white/70 cursor-pointer transition-colors">{t}</span>
-                ))}
-              </div>
+              <p>© 2026 ZTF Music Academy. All rights reserved.</p>
+              <p>ZMA Course Online</p>
             </div>
           </div>
         </div>

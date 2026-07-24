@@ -1,6 +1,7 @@
 package com.ztf.zma.catalog;
 
 import com.ztf.zma.catalog.domain.Course;
+import com.ztf.zma.catalog.domain.CourseStatus;
 import com.ztf.zma.catalog.repository.CourseRepository;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,7 @@ import java.util.List;
 
 /**
  * Seeds the course catalog on first startup (when the table is empty).
- * Data sourced from: ZTF Music Académie — Contenu des Cours v2025.
+ * Data sourced from: ZTF Music Académie — Course Content v2025.
  */
 @Configuration
 public class DataLoader {
@@ -29,444 +30,444 @@ public class DataLoader {
         List<Course> list = new ArrayList<>();
         int gi = 0; // gradientIndex cycles 0-9
 
-        // ── D1 · F1 — Musique Classique et Contemporaine ─────────────────────
+        // ── D1 · F1 — Classical & Contemporary Music ─────────────────────
 
         list.add(course(gi++,
                 "licence-interpretation-instrumentale",
-                "Licence Interprétation Instrumentale",
-                "Interprétation et Pratique Instrumentale",
-                "Musique Classique et Contemporaine",
-                "Licence", 180, 450.0, 320, 4.9, 180,
+                "Bachelor's in Instrumental Performance",
+                "Performance & Instrumental Practice",
+                "Classical & Contemporary Music",
+                "Bachelor's", 180, 450.0, 320, 4.9, 180,
                 "Prof. Emmanuel Mbarga",
-                "Formez-vous aux standards des meilleures académies mondiales. Technique instrumentale selon les méthodes Czerny, Kreutzer, Arban et Taffanel-Gaubert. Répertoire baroque, classique, romantique jusqu'à la création contemporaine.",
-                "Maîtrise complète de la technique instrumentale|Répertoire de Bach à Bartók|Pratique d'orchestre et de musique de chambre|Solfège et harmonie tonale avancée|Préparation aux concours internationaux|Récital de Licence de 50 minutes",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Tronc Commun & Fondamentaux\",\"lessons\":[\"Solfège rythmique et mélodique intensif\",\"Harmonie tonale : triades, 7e de dominante\",\"Histoire de la musique occidentale (origines–XIXe)\",\"Histoire des musiques africaines (introduction)\",\"Anglais musical\",\"Cours individuel instrument : technique fondamentale\",\"Orchestre de chambre — tutti et pupitres\"]},{\"id\":\"s2\",\"title\":\"S3-S4 — Perfectionnement\",\"lessons\":[\"Répertoire soliste : sonates, concertos romantiques\",\"Travail stylistique approfondi\",\"Déchiffrage avancé\",\"Musique de chambre (2 à 5 musiciens)\",\"Harmonie avancée : 7e degrés, 9e, altérations\",\"Introduction au contrepoint\",\"Initiation au jazz et aux musiques africaines\"]},{\"id\":\"s3\",\"title\":\"S5-S6 — Niveau Récital & Professionnalisation\",\"lessons\":[\"Cours individuel 2h/semaine — niveau concours\",\"Préparation du récital de Licence (50 min)\",\"Stage en orchestre ou ensemble professionnel\",\"Masterclasse internationale\",\"Enregistrement studio\",\"Droit du spectacle et méthodologie\"]}]",
-                "Musicien d'orchestre|Musicien de chambre|Soliste|Accompagnateur|Enseignant en conservatoire"
+                "Train to the standards of the world's finest academies. Instrumental technique through the Czerny, Kreutzer, Arban, and Taffanel-Gaubert methods. Repertoire spanning Baroque, Classical, and Romantic works through contemporary creation.",
+                "Complete mastery of instrumental technique|Repertoire from Bach to Bartók|Orchestral and chamber music practice|Advanced ear training and tonal harmony|Preparation for international competitions|50-minute Bachelor's recital",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Core Curriculum & Fundamentals\",\"lessons\":[\"Intensive rhythmic and melodic ear training\",\"Tonal harmony: triads, dominant 7th chords\",\"History of Western music (origins–19th century)\",\"History of African music (introduction)\",\"Musical English\",\"Individual instrument lessons: foundational technique\",\"Chamber orchestra — tutti and sectionals\"]},{\"id\":\"s2\",\"title\":\"S3-S4 — Advanced Study\",\"lessons\":[\"Solo repertoire: Romantic sonatas and concertos\",\"In-depth stylistic study\",\"Advanced sight-reading\",\"Chamber music (2 to 5 musicians)\",\"Advanced harmony: 7th chords, 9ths, alterations\",\"Introduction to counterpoint\",\"Introduction to jazz and African music\"]},{\"id\":\"s3\",\"title\":\"S5-S6 — Recital Level & Professional Development\",\"lessons\":[\"Individual lessons, 2h/week — competition level\",\"Preparing the 50-minute Bachelor's recital\",\"Internship with a professional orchestra or ensemble\",\"International masterclass\",\"Studio recording\",\"Performing arts law and methodology\"]}]",
+                "Orchestral musician|Chamber musician|Soloist|Accompanist|Conservatory teacher"
         ));
 
         list.add(course(gi++,
                 "master-interpretation-recherche-artistique",
-                "Master Interprétation et Recherche Artistique",
-                "Interprétation et Pratique Instrumentale",
-                "Musique Classique et Contemporaine",
-                "Master", 120, 360.0, 95, 4.9, 120,
+                "Master's in Performance & Artistic Research",
+                "Performance & Instrumental Practice",
+                "Classical & Contemporary Music",
+                "Master's", 120, 360.0, 95, 4.9, 120,
                 "Prof. Pauline Essomba",
-                "Cours individuel 2h/semaine avec maître reconnu. Répertoire soliste mondial, analyse historique de l'interprétation, pratiques d'ensemble avancées du XXe–XXIe siècle. Mémoire de recherche artistique.",
-                "Répertoire soliste de niveau international|Analyse de l'interprétation historiquement informée|Pratiques d'ensemble contemporaines|Esthétique et recherche artistique|Mémoire de 40–60 pages|Récital de Master (65–75 min)",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Perfectionnement & Esthétique\",\"lessons\":[\"Cours individuel 2h/semaine avec maître reconnu\",\"Répertoire soliste : Beethoven, Brahms, Bartók, Ligeti\",\"Pratiques d'ensemble avancées (XXe–XXIe siècle)\",\"Esthétique : Bartók, Messiaen, Ligeti, Dutilleux, Nono\",\"Interprétation historiquement informée (HIP)\",\"Séminaire : l'artiste africain dans le dialogue mondial\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Projet Artistique & Insertion\",\"lessons\":[\"Récital de Master (65–75 minutes) devant jury international\",\"Enregistrement professionnel d'un programme complet\",\"Mémoire de recherche artistique (40–60 pages)\",\"Soutenance publique\",\"Droit du spectacle et contrats d'artiste\",\"Stratégie de carrière internationale\"]}]",
-                "Soliste de concert|Chef d'ensemble|Enseignant en académie supérieure|Artiste résident"
+                "Individual lessons, 2h/week, with a renowned master teacher. World solo repertoire, historical performance analysis, advanced 20th–21st century ensemble practice. Artistic research thesis.",
+                "International-level solo repertoire|Historically informed performance analysis|Contemporary ensemble practice|Aesthetics and artistic research|40–60 page thesis|Master's recital (65–75 min)",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Advanced Study & Aesthetics\",\"lessons\":[\"Individual lessons, 2h/week, with a renowned master teacher\",\"Solo repertoire: Beethoven, Brahms, Bartók, Ligeti\",\"Advanced 20th–21st century ensemble practice\",\"Aesthetics: Bartók, Messiaen, Ligeti, Dutilleux, Nono\",\"Historically informed performance (HIP)\",\"Seminar: the African artist in global dialogue\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Artistic Project & Career Entry\",\"lessons\":[\"Master's recital (65–75 minutes) before an international jury\",\"Professional recording of a full program\",\"Artistic research thesis (40–60 pages)\",\"Public defense\",\"Performing arts law and artist contracts\",\"International career strategy\"]}]",
+                "Concert soloist|Ensemble director|Higher academy teacher|Artist in residence"
         ));
 
-        // ── D1 · F2 — Jazz et Musiques Actuelles ─────────────────────────────
+        // ── D1 · F2 — Jazz & Contemporary Music ─────────────────────────────
 
         list.add(course(gi++,
                 "licence-jazz-musiques-improvisees",
-                "Licence Jazz et Musiques Improvisées",
-                "Interprétation et Pratique Instrumentale",
-                "Jazz et Musiques Actuelles",
-                "Licence", 180, 450.0, 410, 4.8, 180,
+                "Bachelor's in Jazz & Improvised Music",
+                "Performance & Instrumental Practice",
+                "Jazz & Contemporary Music",
+                "Bachelor's", 180, 450.0, 410, 4.8, 180,
                 "Prof. Richard Abanda",
-                "Méthodes jazz de référence mondiale : David Baker, Jerry Coker, Mark Levine. Harmonie jazz, modes, approche bebop, post-bop. Histoire du jazz des origines africaines au jazz contemporain. Big band et petits combos.",
-                "Harmonie jazz complète (accords 7e, extensions, voicings)|Modes et approche bebop|Improvisation sur tous types de grilles|Arrangement pour petites formations|Ear training jazz — transcription des grands solistes|Histoire du jazz : New Orleans → Swing → Bebop → Fusion",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Fondamentaux Jazz\",\"lessons\":[\"Harmonie jazz : accords Maj7, m7, 7, m7b5, dim7\",\"Extensions et voicings au piano\",\"Ear training : transcription des grands solistes\",\"Rythme et groove : Afro-cubain, bossa, swing, funk\",\"Big band : jeu en section\",\"Atelier improvisation guidée sur grilles ii-V-I\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Développement & Bebop\",\"lessons\":[\"Modes : dorien, mixolydien, lydien, altéré, diminué\",\"Approche bebop : échelles, ornements, articulation Charlie Parker\",\"Post-bop : Coltrane changes, free jazz encadré\",\"Arrangement pour trio, quartet, quintet\",\"Composition de standards originaux\",\"Histoire du jazz — des origines africaines au jazz contemporain\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Scène Internationale & Studio\",\"lessons\":[\"Instrument au niveau scène internationale\",\"Composition et programme original de 50 min\",\"Enregistrement studio EP jazz (4–6 titres)\",\"Miles Davis, Bill Evans, Coltrane, Abdullah Ibrahim, Richard Bona\",\"Concert de fin de cycle devant jury professionnel\",\"Stage en club, festival ou avec artiste professionnel\"]}]",
-                "Musicien de jazz (scène, studio, big band)|Arrangeur|Compositeur|Instrumentiste polyvalent"
+                "World-reference jazz methods: David Baker, Jerry Coker, Mark Levine. Jazz harmony, modes, bebop and post-bop approaches. History of jazz from its African origins to contemporary jazz. Big band and small combos.",
+                "Complete jazz harmony (7th chords, extensions, voicings)|Modes and bebop approach|Improvisation over all chord changes|Arranging for small ensembles|Jazz ear training — transcribing great soloists|History of jazz: New Orleans → Swing → Bebop → Fusion",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Jazz Fundamentals\",\"lessons\":[\"Jazz harmony: Maj7, m7, 7, m7b5, dim7 chords\",\"Extensions and voicings at the piano\",\"Ear training: transcribing great soloists\",\"Rhythm and groove: Afro-Cuban, bossa, swing, funk\",\"Big band: playing in section\",\"Guided improvisation workshop on ii-V-I changes\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Development & Bebop\",\"lessons\":[\"Modes: Dorian, Mixolydian, Lydian, altered, diminished\",\"Bebop approach: scales, ornaments, Charlie Parker articulation\",\"Post-bop: Coltrane changes, guided free jazz\",\"Arranging for trio, quartet, quintet\",\"Composing original standards\",\"History of jazz — from African origins to contemporary jazz\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — International Stage & Studio\",\"lessons\":[\"Instrument at international stage level\",\"Composing an original 50-minute program\",\"Studio recording of a jazz EP (4–6 tracks)\",\"Miles Davis, Bill Evans, Coltrane, Abdullah Ibrahim, Richard Bona\",\"End-of-cycle concert before a professional jury\",\"Internship at a club, festival, or with a professional artist\"]}]",
+                "Jazz musician (stage, studio, big band)|Arranger|Composer|Versatile instrumentalist"
         ));
 
         list.add(course(gi++,
                 "master-jazz-performance-direction-ensemble",
-                "Master Jazz Performance et Direction d'Ensemble",
-                "Interprétation et Pratique Instrumentale",
-                "Jazz et Musiques Actuelles",
-                "Master", 120, 360.0, 87, 4.9, 120,
+                "Master's in Jazz Performance & Ensemble Direction",
+                "Performance & Instrumental Practice",
+                "Jazz & Contemporary Music",
+                "Master's", 120, 360.0, 87, 4.9, 120,
                 "Prof. Richard Abanda",
-                "Cours instrumental très haut niveau. Composition et arrangement pour grands ensembles (10–20 musiciens). Orchestrations de référence : Ellington, Basie, Maria Schneider, Ibrahim. Production d'un album studio complet.",
-                "Composition pour big band (10–20 musiciens)|Écriture avancée : polyphonie jazz, contrepoint jazz|Orchestrations : Ellington, Basie, Maria Schneider|Production d'un album complet|Direction artistique|Stratégie de diffusion internationale",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Composition & Orchestration\",\"lessons\":[\"Cours instrumental 2h/semaine très haut niveau\",\"Composition pour grands ensembles (10–20 musiciens)\",\"Polyphonie jazz, contrepoint jazz\",\"Orchestrations : Ellington, Basie, Maria Schneider, Ibrahim\",\"Esthétique du jazz contemporain et racines africaines\",\"Analyse et transcription des grandes œuvres\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Album & Carrière\",\"lessons\":[\"Production d'un album studio complet (10–12 titres)\",\"Direction artistique complète\",\"Mémoire artistique sur la démarche créatrice\",\"Concert de Master devant jury international\",\"Labels indépendants et plateformes de streaming\",\"Stratégie de tournées internationales\"]}]",
-                "Soliste de jazz international|Directeur de big band|Compositeur-arrangeur|Producteur artistique jazz"
+                "Elite-level instrumental lessons. Composition and arranging for large ensembles (10–20 musicians). Reference orchestrations: Ellington, Basie, Maria Schneider, Ibrahim. Production of a full studio album.",
+                "Composing for big band (10–20 musicians)|Advanced writing: jazz polyphony, jazz counterpoint|Orchestrations: Ellington, Basie, Maria Schneider|Producing a complete album|Artistic direction|International distribution strategy",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Composition & Orchestration\",\"lessons\":[\"Elite-level instrumental lessons, 2h/week\",\"Composing for large ensembles (10–20 musicians)\",\"Jazz polyphony, jazz counterpoint\",\"Orchestrations: Ellington, Basie, Maria Schneider, Ibrahim\",\"Aesthetics of contemporary jazz and African roots\",\"Analysis and transcription of major works\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Album & Career\",\"lessons\":[\"Producing a complete studio album (10–12 tracks)\",\"Full artistic direction\",\"Artistic thesis on the creative process\",\"Master's concert before an international jury\",\"Independent labels and streaming platforms\",\"International touring strategy\"]}]",
+                "International jazz soloist|Big band director|Composer-arranger|Jazz artistic producer"
         ));
 
-        // ── D1 · F3 — Musiques Africaines ────────────────────────────────────
+        // ── D1 · F3 — African Music ────────────────────────────────────
 
         list.add(course(gi++,
                 "licence-musiques-africaines-percussions",
-                "Licence Musiques Africaines et Percussions",
-                "Interprétation et Pratique Instrumentale",
-                "Musiques Africaines, Tradition et Création Contemporaine",
-                "Licence", 180, 450.0, 520, 4.9, 180,
+                "Bachelor's in African Music & Percussion",
+                "Performance & Instrumental Practice",
+                "African Music, Tradition & Contemporary Creation",
+                "Bachelor's", 180, 450.0, 520, 4.9, 180,
                 "Prof. Thierry Ndombi",
-                "La filière centrale de l'identité ZMA. Djembé, balafon, kora, ngoni, sanza, tam-tam enseignés avec la même rigueur que le classique occidental. Polyrythmie, collectage de terrain, fusion afro-contemporaine. Suivez les traces de Richard Bona, Youssou N'Dour, Angélique Kidjo.",
-                "Maîtrise instrumentale d'un instrument africain au choix|Polyrythmie complexe (3 contre 4, 5 contre 4)|Collectage de terrain avec maître traditionnel|Organologie africaine|Fusion afro-contemporaine|Histoire des musiques africaines (des royaumes à nos jours)",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Instrument & Histoire\",\"lessons\":[\"Instrument principal : djembé, balafon, kora, ngoni ou sanza\",\"Rythmes fondamentaux : cellules rythmiques, ostinatos, polyrythmie 2 voix\",\"Chant traditionnel africain : polyphonie d'Afrique centrale\",\"Histoire des musiques africaines : Afrique centrale, occidentale, orientale\",\"Solfège et harmonie (tronc commun)\",\"Pratique chorale\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Perfectionnement & Terrain\",\"lessons\":[\"Polyrythmie complexe (3 contre 4, 5 contre 4, hoquets)\",\"Collectage de terrain : village ou maître traditionnel reconnu\",\"Organologie africaine : classification, facture instrumentale\",\"Transcription des musiques orales (ethnomusicologie appliquée)\",\"Atelier fusion afro-contemporaine\",\"Danse associée aux rythmes étudiés\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Concert & Création\",\"lessons\":[\"Instrument niveau concours international\",\"Récital de Licence (50 min) : traditionnel + création originale\",\"Composition d'une œuvre fusionnant tradition africaine et esthétiques mondiales\",\"Enregistrement studio\",\"Stage en festival international de world music\",\"Mémoire sur un répertoire africain spécifique\"]}]",
-                "Musicien de scène internationale (world music, fusion)|Artiste résident|Enseignant d'instruments africains|Chef d'ensemble|Musicien de studio"
+                "The program at the heart of ZMA's identity. Djembe, balafon, kora, ngoni, sanza, and talking drum taught with the same rigor as Western classical music. Polyrhythm, field collection, Afro-contemporary fusion. Follow in the footsteps of Richard Bona, Youssou N'Dour, and Angélique Kidjo.",
+                "Instrumental mastery of an African instrument of your choice|Complex polyrhythm (3 against 4, 5 against 4)|Field collection with a traditional master|African organology|Afro-contemporary fusion|History of African music (from ancient kingdoms to today)",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Instrument & History\",\"lessons\":[\"Primary instrument: djembe, balafon, kora, ngoni, or sanza\",\"Fundamental rhythms: rhythmic cells, ostinatos, 2-voice polyrhythm\",\"Traditional African singing: Central African polyphony\",\"History of African music: Central, West, and East Africa\",\"Ear training and harmony (core curriculum)\",\"Choral practice\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Advanced Study & Fieldwork\",\"lessons\":[\"Complex polyrhythm (3 against 4, 5 against 4, hocketing)\",\"Field collection: village or recognized traditional master\",\"African organology: classification, instrument making\",\"Transcribing oral music traditions (applied ethnomusicology)\",\"Afro-contemporary fusion workshop\",\"Dance associated with the rhythms studied\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Concert & Creation\",\"lessons\":[\"Instrument at international competition level\",\"Bachelor's recital (50 min): traditional repertoire + original creation\",\"Composing a work fusing African tradition with global aesthetics\",\"Studio recording\",\"Internship at an international world music festival\",\"Thesis on a specific African repertoire\"]}]",
+                "International stage musician (world music, fusion)|Artist in residence|Teacher of African instruments|Ensemble director|Studio musician"
         ));
 
         list.add(course(gi++,
                 "master-interpretation-afro-contemporaine",
-                "Master Interprétation Afro-Contemporaine et Création Originale",
-                "Interprétation et Pratique Instrumentale",
-                "Musiques Africaines, Tradition et Création Contemporaine",
-                "Master", 120, 360.0, 72, 4.9, 120,
+                "Master's in Afro-Contemporary Performance & Original Creation",
+                "Performance & Instrumental Practice",
+                "African Music, Tradition & Contemporary Creation",
+                "Master's", 120, 360.0, 72, 4.9, 120,
                 "Prof. Thierry Ndombi",
-                "Cours individuel de très haut niveau avec master teacher reconnu. Composition pour grands ensembles afro-contemporains. Analyse des artistes africains de rayonnement international : Richard Bona, Youssou N'Dour, Angélique Kidjo, Rokia Traoré.",
-                "Interprétation niveau scène internationale|Composition pour grands ensembles afro-contemporains|Analyse des trajectoires des grands artistes africains|Production discographique world music|Album ou EP enregistré en studio professionnel|Positionnement dans le marché musical mondial",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Très Haut Niveau & Composition\",\"lessons\":[\"Cours individuel avec master teacher reconnu\",\"Composition pour 10–20 musiciens (africains + occidentaux)\",\"Séminaire : l'artiste africain dans le paysage du XXIe siècle\",\"Richard Bona, Youssou N'Dour, Angélique Kidjo, Rokia Traoré\",\"Fatoumata Diawara : trajectoires et stratégies artistiques\",\"Atelier de production discographique world music\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Récital & Album\",\"lessons\":[\"Récital de Master (70 min) devant jury international\",\"Production d'un album ou EP en studio professionnel\",\"Mémoire artistique (40 pages) : démarche créatrice\",\"Concert national ou international en festival\",\"Distribution et stratégie de carrière\"]}]",
-                "Artiste de renommée internationale|Compositeur-arrangeur world music|Directeur artistique d'ensemble afro-contemporain|Producteur discographique"
+                "Elite individual lessons with a renowned master teacher. Composing for large Afro-contemporary ensembles. Analysis of internationally acclaimed African artists: Richard Bona, Youssou N'Dour, Angélique Kidjo, Rokia Traoré.",
+                "International stage-level performance|Composing for large Afro-contemporary ensembles|Analysis of great African artists' career paths|World music record production|Album or EP recorded in a professional studio|Positioning in the global music market",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Elite Level & Composition\",\"lessons\":[\"Individual lessons with a renowned master teacher\",\"Composing for 10–20 musicians (African + Western)\",\"Seminar: the African artist in the 21st-century landscape\",\"Richard Bona, Youssou N'Dour, Angélique Kidjo, Rokia Traoré\",\"Fatoumata Diawara: career paths and artistic strategy\",\"World music record production workshop\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Recital & Album\",\"lessons\":[\"Master's recital (70 min) before an international jury\",\"Producing an album or EP in a professional studio\",\"Artistic thesis (40 pages): the creative process\",\"National or international festival concert\",\"Distribution and career strategy\"]}]",
+                "Internationally renowned artist|World music composer-arranger|Artistic director of an Afro-contemporary ensemble|Record producer"
         ));
 
-        // ── D1 · F4 — Chant et Art Vocal ─────────────────────────────────────
+        // ── D1 · F4 — Voice & Vocal Arts ─────────────────────────────────────
 
         list.add(course(gi++,
                 "licence-chant-techniques-vocales",
-                "Licence Chant et Techniques Vocales",
-                "Interprétation et Pratique Instrumentale",
-                "Chant et Art Vocal",
-                "Licence", 180, 450.0, 280, 4.8, 180,
+                "Bachelor's in Voice & Vocal Technique",
+                "Performance & Instrumental Practice",
+                "Voice & Vocal Arts",
+                "Bachelor's", 180, 450.0, 280, 4.8, 180,
                 "Prof. Céline Biyong",
-                "Technique Bel Canto — standard ZMA pour l'enseignement vocal. Anatomie de la voix, appui diaphragmatique, placement vocal, diction (français, italien, anglais, langues africaines). Répertoire lyrique, mélodie française, lied, spiritual, chanson africaine élaborée.",
-                "Technique vocale Bel Canto complète|Gestion du souffle et placement vocal|Diction : français, italien, anglais, Ewondo, Duala, Lingala|Répertoire lyrique international|Micro-technique et chant amplifié|Coaching avec pianiste-accompagnateur professionnel",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Technique Vocale Fondamentale\",\"lessons\":[\"Anatomie et physiologie de la voix (larynx, cordes vocales)\",\"Gestion du souffle : appui diaphragmatique, colonne d'air\",\"Placement vocal : résonateurs du masque, vibrato\",\"Diction : français (AFI), italien (Bel Canto), anglais, langues africaines\",\"Piano complémentaire obligatoire\",\"Initiation : mélodie française, lied, spiritual, chanson africaine\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Perfectionnement & Scène\",\"lessons\":[\"Répertoire classique : Fauré, Duparc, Ravel, Schubert, Schumann\",\"Interprétation et expression scénique : gestuelle, présence\",\"Micro-technique : chant amplifié vs acoustique\",\"Introduction aux rôles d'opéra\",\"Coaching avec pianiste-accompagnateur professionnel\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Récital International\",\"lessons\":[\"Cours individuel 2h/semaine — niveau récital international\",\"Récital de Licence (50 min) : au moins 3 esthétiques\",\"Masterclasses avec chanteurs internationaux invités\",\"Stage en production : concert, studio, spectacle musical\",\"Auditions et préparation du dossier artistique\"]}]",
-                "Chanteur soliste (lyrique, jazz vocal, contemporain)|Choriste professionnel|Chanteur de studio|Enseignant de chant"
+                "Bel canto technique — ZMA's standard for vocal training. Voice anatomy, diaphragmatic support, vocal placement, diction (French, Italian, English, African languages). Opera repertoire, French art song, lied, spirituals, and elaborate African song.",
+                "Complete bel canto vocal technique|Breath management and vocal placement|Diction: French, Italian, English, Ewondo, Duala, Lingala|International opera repertoire|Microphone technique and amplified singing|Coaching with a professional accompanist pianist",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Fundamental Vocal Technique\",\"lessons\":[\"Anatomy and physiology of the voice (larynx, vocal cords)\",\"Breath management: diaphragmatic support, air column\",\"Vocal placement: mask resonators, vibrato\",\"Diction: French (IPA), Italian (bel canto), English, African languages\",\"Compulsory supplementary piano\",\"Introduction: French art song, lied, spiritual, African song\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Advanced Study & Stage\",\"lessons\":[\"Classical repertoire: Fauré, Duparc, Ravel, Schubert, Schumann\",\"Performance and stage expression: gesture, presence\",\"Microphone technique: amplified vs. acoustic singing\",\"Introduction to opera roles\",\"Coaching with a professional accompanist pianist\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — International Recital\",\"lessons\":[\"Individual lessons, 2h/week — international recital level\",\"Bachelor's recital (50 min): at least 3 styles\",\"Masterclasses with visiting international singers\",\"Production internship: concert, studio, musical theater\",\"Auditions and artistic portfolio preparation\"]}]",
+                "Solo singer (opera, jazz vocals, contemporary)|Professional choir singer|Studio singer|Voice teacher"
         ));
 
         list.add(course(gi++,
                 "master-chant-lyrique-opera",
-                "Master Chant Lyrique, Art Vocal et Opéra",
-                "Interprétation et Pratique Instrumentale",
-                "Chant et Art Vocal",
-                "Master", 120, 360.0, 45, 4.9, 120,
+                "Master's in Opera Singing & Vocal Arts",
+                "Performance & Instrumental Practice",
+                "Voice & Vocal Arts",
+                "Master's", 120, 360.0, 45, 4.9, 120,
                 "Prof. Céline Biyong",
-                "Coaching d'opéra avec metteur en scène. Répertoire : Mozart, Verdi, Puccini, Debussy, Britten. Grands chanteurs africains : Jessye Norman, Leontyne Price, Angélique Kidjo. Rôle complet dans une production devant public réel.",
-                "Rôles d'opéra : Mozart, Verdi, Puccini, Britten|Coaching musical + mise en scène|Grands chanteurs africains : Jessye Norman, Angélique Kidjo|Enregistrement studio discographique|Récital de Master (60 min) devant jury international|Stratégie de carrière lyrique internationale",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Opéra & Grands Maîtres\",\"lessons\":[\"Cours individuel 2h/semaine avec maître chanteur international\",\"Coaching opéra : coach musical + metteur en scène\",\"Mozart (Nozze di Figaro, Don Giovanni), Verdi, Puccini\",\"Debussy (Pelléas), Britten, Janáček\",\"Jessye Norman, Leontyne Price, Angélique Kidjo, Rokia Traoré\",\"Analyse vocale : écoute comparée des grands enregistrements\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Production & Carrière\",\"lessons\":[\"Rôle complet dans une production d'opéra devant public réel\",\"Récital de Master (60 min) devant jury international\",\"Enregistrement studio (récital discographique)\",\"Mémoire (40 pages) : rôle, compositeur ou art vocal contemporain\",\"Stratégie de carrière lyrique internationale\"]}]",
-                "Soliste lyrique international|Chanteur d'opéra|Récitaliste (mélodie, lied)|Directeur de chœur professionnel"
+                "Opera coaching with a stage director. Repertoire: Mozart, Verdi, Puccini, Debussy, Britten. Great African singers: Jessye Norman, Leontyne Price, Angélique Kidjo. A full role in a production before a live audience.",
+                "Opera roles: Mozart, Verdi, Puccini, Britten|Musical coaching + stage direction|Great African singers: Jessye Norman, Angélique Kidjo|Studio recording session|Master's recital (60 min) before an international jury|International opera career strategy",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Opera & Great Masters\",\"lessons\":[\"Individual lessons, 2h/week, with an international master singer\",\"Opera coaching: musical coach + stage director\",\"Mozart (Le Nozze di Figaro, Don Giovanni), Verdi, Puccini\",\"Debussy (Pelléas), Britten, Janáček\",\"Jessye Norman, Leontyne Price, Angélique Kidjo, Rokia Traoré\",\"Vocal analysis: comparative listening to great recordings\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Production & Career\",\"lessons\":[\"A full role in an opera production before a live audience\",\"Master's recital (60 min) before an international jury\",\"Studio recording (recital album)\",\"Thesis (40 pages): a role, composer, or contemporary vocal art\",\"International opera career strategy\"]}]",
+                "International opera soloist|Opera singer|Recitalist (art song, lied)|Professional choir director"
         ));
 
-        // ── D2 · F1 — Composition et Orchestration ───────────────────────────
+        // ── D2 · F1 — Composition & Orchestration ───────────────────────────
 
         list.add(course(gi++,
                 "licence-composition-ecriture-musicale",
-                "Licence Composition et Écriture Musicale",
-                "Composition, Écriture et Théorie Musicale",
-                "Composition et Orchestration",
-                "Licence", 180, 420.0, 180, 4.8, 160,
+                "Bachelor's in Composition & Music Writing",
+                "Composition, Writing & Music Theory",
+                "Composition & Orchestration",
+                "Bachelor's", 180, 420.0, 180, 4.8, 160,
                 "Prof. Marc Akono",
-                "Harmonie tonale complète, contrepoint, analyse des formes musicales. Orchestration des familles d'instruments. Écriture modale et pentatonique africaine. Informatique musicale (Sibelius, MuseScore). Composition de bande originale de court-métrage.",
-                "Harmonie tonale complète (triades, 7e, 9e, altérations, modulations)|Contrepoint : bicinium et cantus firmus|Orchestration : cordes, vents, percussions|Écriture modale et pentatonique africaine|Sibelius ou MuseScore — notation musicale professionnelle|Composition pour ensemble de chambre (12–18 min)",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Écriture Fondamentale\",\"lessons\":[\"Harmonie tonale complète : modulations, altérations\",\"Contrepoint : bicinium et cantus firmus strict puis libre\",\"Analyse : invention, fugue, sonate, rondo\",\"Formation auditive : solfège et dictée harmonique\",\"Initiation à la composition libre\",\"Histoire des formes musicales africaines et occidentales\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Orchestration & Informatique\",\"lessons\":[\"Composition pour piano, instrument+piano, trio\",\"Orchestration des cordes : harmoniques, sul ponticello, pizzicato\",\"Orchestration des vents et percussions\",\"Écriture modale et pentatonique africaine\",\"Sibelius ou MuseScore (obligatoire)\",\"Atelier de création hebdomadaire : pièces jouées en séance\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Concert & Professionnalisation\",\"lessons\":[\"Composition d'une œuvre de 12–18 min pour ensemble ou orchestre\",\"Présentation en concert\",\"Bande originale d'un court-métrage (partenariat réalisateur local)\",\"Stage auprès d'un compositeur professionnel\",\"Mémoire d'analyse : œuvre orchestrale ou africaine majeure\"]}]",
-                "Compositeur pour ensemble et orchestre|Arrangeur pour artistes et studios|Compositeur de musiques de films africains|Chef de production musicale"
+                "Complete tonal harmony, counterpoint, analysis of musical forms. Orchestration across instrument families. Modal and African pentatonic writing. Music notation software (Sibelius, MuseScore). Composing a short-film score.",
+                "Complete tonal harmony (triads, 7ths, 9ths, alterations, modulations)|Counterpoint: bicinium and cantus firmus|Orchestration: strings, winds, percussion|Modal and African pentatonic writing|Sibelius or MuseScore — professional music notation|Composing for chamber ensemble (12–18 min)",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Fundamental Writing\",\"lessons\":[\"Complete tonal harmony: modulations, alterations\",\"Counterpoint: strict then free bicinium and cantus firmus\",\"Analysis: invention, fugue, sonata, rondo\",\"Ear training: solfège and harmonic dictation\",\"Introduction to free composition\",\"History of African and Western musical forms\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Orchestration & Notation Software\",\"lessons\":[\"Composing for piano, instrument+piano, trio\",\"String orchestration: harmonics, sul ponticello, pizzicato\",\"Wind and percussion orchestration\",\"Modal and African pentatonic writing\",\"Sibelius or MuseScore (compulsory)\",\"Weekly composition workshop: pieces performed in class\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Concert & Professional Development\",\"lessons\":[\"Composing a 12–18 minute work for ensemble or orchestra\",\"Concert performance\",\"Short-film score (in partnership with a local filmmaker)\",\"Internship with a professional composer\",\"Analytical thesis: a major orchestral or African work\"]}]",
+                "Composer for ensemble and orchestra|Arranger for artists and studios|Composer for African films|Music production manager"
         ));
 
         list.add(course(gi++,
                 "master-composition-creation-musicale",
-                "Master Composition et Création Musicale",
-                "Composition, Écriture et Théorie Musicale",
-                "Composition et Orchestration",
-                "Master", 120, 360.0, 55, 4.8, 110,
+                "Master's in Composition & Musical Creation",
+                "Composition, Writing & Music Theory",
+                "Composition & Orchestration",
+                "Master's", 120, 360.0, 55, 4.8, 110,
                 "Prof. Marc Akono",
-                "Composition pour orchestre et grands ensembles. Techniques contemporaines : sons multiphoniques, micro-intervalles, clusters, spectralisme. Électroacoustique. Écriture pour le cinéma et les séries. Enregistrement avec orchestre ou ensemble professionnel.",
-                "Composition pour orchestre (150+ instruments)|Techniques étendues : multiphoniques, micro-intervalles, spectralisme|Électroacoustique : composition acousmatique et musique mixte|Écriture pour cinéma, TV et séries|Enregistrement avec orchestre professionnel|Mémoire de composition (50 pages)",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Orchestre & Électroacoustique\",\"lessons\":[\"Composition pour orchestre et grands ensembles\",\"Techniques étendues : sons multiphoniques, micro-intervalles, clusters\",\"Électroacoustique : composition acousmatique\",\"Musique mixte : instruments + live electronics\",\"Séminaire d'esthétique musicale\",\"Écriture pour cinéma, TV et séries africaines\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Production Audiovisuelle\",\"lessons\":[\"Composition bande originale d'une production réelle\",\"Enregistrement avec orchestre ou ensemble professionnel\",\"Mémoire de composition (50 pages)\",\"Présentation devant jury professionnel\",\"Compositeurs, directeurs artistiques, producteurs\"]}]",
-                "Compositeur de renommée internationale|Compositeur pour le cinéma et l'audiovisuel|Directeur musical de production"
+                "Composing for orchestra and large ensembles. Contemporary techniques: multiphonics, microtones, clusters, spectralism. Electroacoustic music. Writing for film and television. Recording with a professional orchestra or ensemble.",
+                "Composing for orchestra (150+ instruments)|Extended techniques: multiphonics, microtones, spectralism|Electroacoustic music: acousmatic composition and mixed music|Writing for film, TV, and series|Recording with a professional orchestra|Composition thesis (50 pages)",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Orchestra & Electroacoustic Music\",\"lessons\":[\"Composing for orchestra and large ensembles\",\"Extended techniques: multiphonics, microtones, clusters\",\"Electroacoustic music: acousmatic composition\",\"Mixed music: instruments + live electronics\",\"Musical aesthetics seminar\",\"Writing for African film, TV, and series\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Audiovisual Production\",\"lessons\":[\"Composing the score for a real production\",\"Recording with a professional orchestra or ensemble\",\"Composition thesis (50 pages)\",\"Presentation before a professional jury\",\"Composers, artistic directors, producers\"]}]",
+                "Internationally renowned composer|Composer for film and media|Music director for productions"
         ));
 
         list.add(course(gi++,
                 "master-composition-musique-image",
-                "Master Composition de Musique à l'Image",
-                "Composition, Écriture et Théorie Musicale",
-                "Composition pour l'Image et les Médias",
-                "Master", 120, 360.0, 68, 4.8, 110,
+                "Master's in Film & Media Composition",
+                "Composition, Writing & Music Theory",
+                "Composition for Picture & Media",
+                "Master's", 120, 360.0, 68, 4.8, 110,
                 "Prof. Hervé Billong",
-                "Analyse des grandes bandes originales : Herrmann, Williams, Zimmer, Morricone, et compositeurs africains pour le cinéma africain. Synchronisation musicale, sound design, Foley musical. Production d'une BO complète en partenariat avec une école de cinéma.",
-                "Analyse des grandes BO : Herrmann, Williams, Zimmer, Morricone|Synchronisation musicale : spotting, temp tracks, click track|Sound design : ambiances, effets, Foley musical|Ateliers avec réalisateurs africains et internationaux|Logiciels : Logic Pro, Cubase, Sibelius|Mémoire sur l'identité sonore du cinéma africain",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Cinéma & Sound Design\",\"lessons\":[\"Grandes BO : Herrmann, Williams, Zimmer, Morricone, Ola Onabule\",\"Synchronisation : spotting session, temp tracks, calage image-son\",\"Sound design : ambiances, effets, Foley musical\",\"Ateliers avec réalisateurs africains et internationaux\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Production d'une BO Réelle\",\"lessons\":[\"Composition complète d'une BO (court ou long-métrage)\",\"Partenariat avec une école de cinéma ou producteur africain\",\"Enregistrement avec orchestre en studio\",\"Mémoire sur l'identité sonore du cinéma africain contemporain\",\"Soutenance devant jury professionnel\"]}]",
-                "Compositeur de bandes originales|Sound designer|Directeur musical de productions audiovisuelles"
+                "Analysis of great film scores: Herrmann, Williams, Zimmer, Morricone, and African composers for African cinema. Music synchronization, sound design, musical Foley. Producing a complete score in partnership with a film school.",
+                "Analysis of great film scores: Herrmann, Williams, Zimmer, Morricone|Music synchronization: spotting, temp tracks, click track|Sound design: ambiances, effects, musical Foley|Workshops with African and international filmmakers|Software: Logic Pro, Cubase, Sibelius|Thesis on the sonic identity of African cinema",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Cinema & Sound Design\",\"lessons\":[\"Great film scores: Herrmann, Williams, Zimmer, Morricone, Ola Onabule\",\"Synchronization: spotting sessions, temp tracks, picture-sound sync\",\"Sound design: ambiances, effects, musical Foley\",\"Workshops with African and international filmmakers\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Producing a Real Film Score\",\"lessons\":[\"Composing a complete score (short or feature film)\",\"Partnership with a film school or African producer\",\"Studio recording with an orchestra\",\"Thesis on the sonic identity of contemporary African cinema\",\"Defense before a professional jury\"]}]",
+                "Film score composer|Sound designer|Music director for media productions"
         ));
 
-        // ── D3 · F1 — Ingénierie Sonore et Production ────────────────────────
+        // ── D3 · F1 — Sound Engineering & Production ────────────────────────
 
         list.add(course(gi++,
                 "licence-techniques-son-production",
-                "Licence Techniques du Son et Production Musicale",
-                "Technologies Musicales et Production Audiovisuelle",
-                "Ingénierie Sonore et Production Musicale",
-                "Licence", 180, 420.0, 310, 4.8, 170,
+                "Bachelor's in Sound Engineering & Music Production",
+                "Music Technology & Audiovisual Production",
+                "Sound Engineering & Music Production",
+                "Bachelor's", 180, 420.0, 310, 4.8, 170,
                 "Prof. Patrick Engolo",
-                "Standards Abbey Road, SAE Institute, Berklee. Pro Tools (référence industrie), Logic Pro, consoles SSL et Neve. Prise de son multipiste, percussions africaines (djembé, kora, balafon). Mixage, compression, réverbération. Production d'un EP de 4–6 titres.",
-                "Acoustique physique et psychoacoustique|Pro Tools et Logic Pro — niveau professionnel|Prise de son multipiste (voix, instruments, percussions africaines)|Mixage : EQ, compression, effets, stem mixing|Captation live d'un concert (façade et retours)|Production d'un EP de 4–6 titres incluant musiques africaines",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Acoustique & DAW\",\"lessons\":[\"Acoustique physique : propagation, réflexion, diffraction\",\"Psychoacoustique : masquage, localisation, Fletcher-Munson\",\"Électronique audio : composants, câbles, connecteurs XLR/TRS\",\"Consoles SSL, Neve, API, Yamaha\",\"Prise de son stéréo : XY, AB, ORTF, Mid-Side, Blumlein\",\"Introduction Pro Tools, Logic Pro, Reaper\",\"Solfège et formation auditive (obligatoire)\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Multipiste & Mixage\",\"lessons\":[\"Prise de son multipiste : voix, guitare, piano, cuivres, cordes, batterie\",\"Percussions africaines : djembé, kora, balafon (techniques spécifiques)\",\"Mixage : balance, panoramique, EQ paramétrique, Pultec\",\"Compression : FET, VCA, tube, optique\",\"Réverbération, délai, chorus, phaser\",\"Maintenance et dépannage du matériel audio\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Studio & Live\",\"lessons\":[\"Production EP de 4–6 titres (dont un titre musiques africaines)\",\"Enregistrement, mixage, livraison master\",\"Stage en studio professionnel (minimum 4 semaines)\",\"Captation live d'un concert (setup, façade, retours)\",\"Post-production son pour la vidéo (dialogue, ADR, Foley)\"]}]",
-                "Ingénieur du son (studio, live, broadcast)|Technicien sonorisation|Assistant réalisateur|Monteur son pour film et vidéo"
+                "Abbey Road, SAE Institute, and Berklee standards. Pro Tools (industry standard), Logic Pro, SSL and Neve consoles. Multitrack recording, African percussion (djembe, kora, balafon). Mixing, compression, reverb. Producing a 4–6 track EP.",
+                "Physical acoustics and psychoacoustics|Pro Tools and Logic Pro — professional level|Multitrack recording (voice, instruments, African percussion)|Mixing: EQ, compression, effects, stem mixing|Live concert capture (front-of-house and monitors)|Producing a 4–6 track EP featuring African music",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Acoustics & DAW\",\"lessons\":[\"Physical acoustics: propagation, reflection, diffraction\",\"Psychoacoustics: masking, localization, Fletcher-Munson\",\"Audio electronics: components, cables, XLR/TRS connectors\",\"SSL, Neve, API, Yamaha consoles\",\"Stereo miking: XY, AB, ORTF, Mid-Side, Blumlein\",\"Introduction to Pro Tools, Logic Pro, Reaper\",\"Ear training (compulsory)\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Multitrack Recording & Mixing\",\"lessons\":[\"Multitrack recording: voice, guitar, piano, brass, strings, drums\",\"African percussion: djembe, kora, balafon (specific techniques)\",\"Mixing: balance, panning, parametric EQ, Pultec\",\"Compression: FET, VCA, tube, optical\",\"Reverb, delay, chorus, phaser\",\"Audio equipment maintenance and troubleshooting\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Studio & Live\",\"lessons\":[\"Producing a 4–6 track EP (including one African music track)\",\"Recording, mixing, master delivery\",\"Internship at a professional studio (minimum 4 weeks)\",\"Live concert capture (setup, front-of-house, monitors)\",\"Sound post-production for video (dialogue, ADR, Foley)\"]}]",
+                "Sound engineer (studio, live, broadcast)|PA/sound technician|Assistant director|Sound editor for film and video"
         ));
 
         list.add(course(gi++,
                 "master-production-mixage-postproduction",
-                "Master Production Musicale Avancée, Mixage et Post-Production",
-                "Technologies Musicales et Production Audiovisuelle",
-                "Ingénierie Sonore et Production Musicale",
-                "Master", 120, 360.0, 88, 4.9, 120,
+                "Master's in Advanced Music Production, Mixing & Post-Production",
+                "Music Technology & Audiovisual Production",
+                "Sound Engineering & Music Production",
+                "Master's", 120, 360.0, 88, 4.9, 120,
                 "Prof. Patrick Engolo",
-                "Prise de son orchestrale et symphonique. Mixage professionnel avancé : stem mixing, référencing. Mastering numérique : loudness LUFS (Spotify -14, YouTube -13, Apple Music -16). Mixage immersif 5.1 et binaural. Production d'un album complet de A à Z.",
-                "Prise de son orchestrale (Decca Tree, multi-micros)|Mastering LUFS : Spotify -14, YouTube -13, Apple Music -16|Mixage immersif 5.1 et binaural|Sound design pour publicité, cinéma, jeux vidéo|Post-production film : dialogue editing, ADR, Foley|Production d'un album complet de A à Z",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Mixage Avancé & Mastering\",\"lessons\":[\"Prise de son orchestrale : placement micros, stéréophonie, ambiance\",\"Mixage professionnel : stem mixing, référencing AVANTONE/NS10\",\"Mastering LUFS : Spotify -14, YouTube -13, Apple Music -16, Tidal -14\",\"True Peak, codecs (MP3, AAC, FLAC, WAV) et leurs artefacts\",\"Mixage immersif 5.1 et binaural pour casque\",\"Sound design pour publicité, cinéma et jeux vidéo\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Album Complet & Post-Production Film\",\"lessons\":[\"Production d'un album de A à Z : enregistrement, direction artistique\",\"Mixage, mastering, livraison aux distributeurs\",\"Post-production film africain : dialogue editing, ADR, bruitage Foley\",\"Mixage final 5.1\",\"Mémoire (50 pages) : analyse technique d'une production africaine mondiale\"]}]",
-                "Ingénieur du son de référence|Producteur exécutif|Mixeur et masteriseur professionnel|Sound designer pour cinéma"
+                "Orchestral and symphonic recording. Advanced professional mixing: stem mixing, referencing. Digital mastering: LUFS loudness (Spotify -14, YouTube -13, Apple Music -16). Immersive 5.1 and binaural mixing. Producing a complete album from A to Z.",
+                "Orchestral recording (Decca Tree, multi-mic setups)|LUFS mastering: Spotify -14, YouTube -13, Apple Music -16|Immersive 5.1 and binaural mixing|Sound design for advertising, film, video games|Film post-production: dialogue editing, ADR, Foley|Producing a complete album from A to Z",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Advanced Mixing & Mastering\",\"lessons\":[\"Orchestral recording: mic placement, stereophony, ambience\",\"Professional mixing: stem mixing, AVANTONE/NS10 referencing\",\"LUFS mastering: Spotify -14, YouTube -13, Apple Music -16, Tidal -14\",\"True Peak, codecs (MP3, AAC, FLAC, WAV) and their artifacts\",\"Immersive 5.1 and binaural mixing for headphones\",\"Sound design for advertising, film, and video games\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Complete Album & Film Post-Production\",\"lessons\":[\"Producing an album from A to Z: recording, artistic direction\",\"Mixing, mastering, delivery to distributors\",\"African film post-production: dialogue editing, ADR, Foley\",\"Final 5.1 mix\",\"Thesis (50 pages): technical analysis of a globally released African production\"]}]",
+                "Leading sound engineer|Executive producer|Professional mixing and mastering engineer|Sound designer for film"
         ));
 
-        // ── D3 · F2 — Audiovisuel et Médias ──────────────────────────────────
+        // ── D3 · F2 — Audiovisual & Media ──────────────────────────────────
 
         list.add(course(gi++,
                 "licence-audiovisuel-broadcast",
-                "Licence Audiovisuel et Broadcast",
-                "Technologies Musicales et Production Audiovisuelle",
-                "Audiovisuel et Médias Numériques",
-                "Licence", 180, 390.0, 195, 4.7, 160,
+                "Bachelor's in Audiovisual & Broadcast",
+                "Music Technology & Audiovisual Production",
+                "Audiovisual & Digital Media",
+                "Bachelor's", 180, 390.0, 195, 4.7, 160,
                 "Prof. Jules Ekwalla",
-                "Production vidéo, éclairage, post-production (Premiere Pro, DaVinci Resolve). ProTools pour la post-production. Régie TV et radio. Diffusion en direct (OBS, Wirecast, YouTube Live). Captation de concerts multi-caméra.",
-                "Production vidéo : caméras, éclairage, cadrage|Post-production son et image : Premiere Pro, DaVinci Resolve|Régie TV et radio : workflow broadcast, HD, 4K, SDI|Captation de concerts multi-caméra|Diffusion en direct : YouTube Live, Facebook, RTMP|Production d'un magazine culturel musical complet",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Production Vidéo & Régie\",\"lessons\":[\"Production vidéo : caméras, éclairage, composition du cadre\",\"Post-production son et image : Premiere Pro, DaVinci Resolve\",\"ProTools pour la post-production\",\"Régie TV et radio : workflow broadcast, HD, 4K, SDI\",\"Introduction au streaming live (OBS, Wirecast)\",\"Acoustique appliquée à la production audiovisuelle\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Multi-Caméra & Diffusion\",\"lessons\":[\"Captation concerts et événements : setup multi-caméra\",\"Montage multicaméra : synchronisation, cut rythmique\",\"Diffusion en direct : YouTube Live, Facebook, RTMP\",\"Formats vidéo professionnels (H.264, H.265, ProRes, DNxHD)\",\"Étalonnage son et image\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Magazine Culturel & Stage\",\"lessons\":[\"Production d'un magazine culturel musical complet\",\"Présentation d'artistes, reportages, concerts\",\"Stage en télévision, web TV ou agence de production\",\"Mémoire : enjeux du broadcast musical en Afrique\"]}]",
-                "Technicien son pour TV, radio et web|Réalisateur audiovisuel musical|Technicien broadcast|Opérateur régie télévision"
+                "Video production, lighting, post-production (Premiere Pro, DaVinci Resolve). Pro Tools for post-production. TV and radio control rooms. Live streaming (OBS, Wirecast, YouTube Live). Multi-camera concert capture.",
+                "Video production: cameras, lighting, framing|Sound and picture post-production: Premiere Pro, DaVinci Resolve|TV and radio control rooms: broadcast workflow, HD, 4K, SDI|Multi-camera concert capture|Live streaming: YouTube Live, Facebook, RTMP|Producing a complete music culture magazine show",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Video Production & Control Room\",\"lessons\":[\"Video production: cameras, lighting, frame composition\",\"Sound and picture post-production: Premiere Pro, DaVinci Resolve\",\"Pro Tools for post-production\",\"TV and radio control rooms: broadcast workflow, HD, 4K, SDI\",\"Introduction to live streaming (OBS, Wirecast)\",\"Acoustics applied to audiovisual production\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Multi-Camera & Streaming\",\"lessons\":[\"Concert and event capture: multi-camera setup\",\"Multi-camera editing: syncing, rhythmic cutting\",\"Live streaming: YouTube Live, Facebook, RTMP\",\"Professional video formats (H.264, H.265, ProRes, DNxHD)\",\"Sound and color grading\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Culture Magazine & Internship\",\"lessons\":[\"Producing a complete music culture magazine show\",\"Artist profiles, reports, concerts\",\"Internship in television, web TV, or a production agency\",\"Thesis: challenges of music broadcasting in Africa\"]}]",
+                "Sound technician for TV, radio, and web|Music audiovisual director|Broadcast technician|Television control room operator"
         ));
 
         list.add(course(gi++,
                 "master-postproduction-sound-design",
-                "Master Post-Production et Sound Design",
-                "Technologies Musicales et Production Audiovisuelle",
-                "Audiovisuel et Médias Numériques",
-                "Master", 120, 360.0, 60, 4.8, 110,
+                "Master's in Post-Production & Sound Design",
+                "Music Technology & Audiovisual Production",
+                "Audiovisual & Digital Media",
+                "Master's", 120, 360.0, 60, 4.8, 110,
                 "Prof. Jules Ekwalla",
-                "Design sonore pour le cinéma africain et international. Édition dialogue avancée, ADR, Foley. Supervision musicale d'un projet audiovisuel. Mémoire sur l'identité sonore d'une œuvre cinématographique africaine majeure.",
-                "Design sonore pour le cinéma africain et international|Édition dialogue avancée : nettoyage, ADR|Bruitage Foley : technique, enregistrement, synchronisation|Supervision musicale : choix de la musique, droits, synchronisation|Mémoire sur l'identité sonore du cinéma africain|Projet de création sonore pour film ou documentaire réel",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Sound Design Cinéma\",\"lessons\":[\"Design sonore : analyse des identités sonores des grands films africains\",\"Édition dialogue avancée : nettoyage, ADR (Automated Dialogue Replacement)\",\"Bruitage Foley : technique, enregistrement, synchronisation\",\"Mixage final : structure, étapes, standards cinéma\",\"Ateliers avec sound designers professionnels\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Projet & Supervision\",\"lessons\":[\"Création sonore pour film ou documentaire réel\",\"Supervision musicale (choix de la musique, droits, synchronisation)\",\"Mémoire sur l'identité sonore d'une œuvre cinématographique africaine\"]}]",
-                "Sound designer pour le cinéma africain et international|Directeur technique de post-production|Superviseur musical de film"
+                "Sound design for African and international cinema. Advanced dialogue editing, ADR, Foley. Music supervision for a media project. Thesis on the sonic identity of a major African film.",
+                "Sound design for African and international cinema|Advanced dialogue editing: cleanup, ADR|Foley: technique, recording, synchronization|Music supervision: music selection, rights, synchronization|Thesis on the sonic identity of African cinema|Sound design project for a real film or documentary",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Cinema Sound Design\",\"lessons\":[\"Sound design: analyzing the sonic identities of great African films\",\"Advanced dialogue editing: cleanup, ADR (Automated Dialogue Replacement)\",\"Foley: technique, recording, synchronization\",\"Final mix: structure, stages, cinema standards\",\"Workshops with professional sound designers\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Project & Supervision\",\"lessons\":[\"Sound design for a real film or documentary\",\"Music supervision (music selection, rights, synchronization)\",\"Thesis on the sonic identity of a major African film\"]}]",
+                "Sound designer for African and international cinema|Technical director of post-production|Film music supervisor"
         ));
 
-        // ── D4 · F1 — Pédagogie Musicale ─────────────────────────────────────
+        // ── D4 · F1 — Music Education ─────────────────────────────────────
 
         list.add(course(gi++,
                 "licence-pedagogie-musicale",
-                "Licence Pédagogie Musicale",
-                "Pédagogie Musicale et Formation des Formateurs",
-                "Enseignement Musical — Tous niveaux et contextes",
-                "Licence", 180, 390.0, 240, 4.7, 160,
+                "Bachelor's in Music Education",
+                "Music Education & Teacher Training",
+                "Music Teaching — All Levels & Settings",
+                "Bachelor's", 180, 390.0, 240, 4.7, 160,
                 "Prof. Anne-Marie Fouda",
-                "Méthodes pédagogiques de référence mondiale : Kodály, Orff, Dalcroze et leurs adaptations au contexte africain. Psychologie du développement (Piaget, Vygotsky). Didactique instrumentale. Stage en école de musique. Création de matériel pédagogique adapté.",
-                "Méthodes Kodály, Orff, Dalcroze adaptées au contexte africain|Psychologie du développement : Piaget, Vygotsky|Didactique instrumentale : enseigner un geste technique|Éveil musical et répertoire pour enfants africains|Stage d'observation et prise en charge supervisée|Conception de matériel pédagogique avec peu de ressources",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Fondements Pédagogiques\",\"lessons\":[\"Méthodes : Kodály (syllabes rythmiques), Orff (percussions), Dalcroze (rythmique)\",\"Adaptations au contexte africain\",\"Psychologie du développement : Piaget, Vygotsky\",\"Psychologie de l'adulte apprenant\",\"Didactique instrumentale : décomposer un geste technique\",\"Pratique musicale personnelle (obligatoire)\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Méthodes Actives & Stage\",\"lessons\":[\"Éveil musical : répertoire pour 3–7 ans, jeux musicaux, comptines\",\"Formation auditive : enseigner progressivement\",\"Pédagogie de groupe : gestion de classe, différenciation\",\"Stage d'observation en école de musique (3 semaines)\",\"Création de matériel pédagogique adapté\",\"Numérique et pédagogie musicale\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Stage Long & Projet\",\"lessons\":[\"Stage long (8 semaines) : prise en charge complète sous supervision\",\"Projet pédagogique original : école de village, centre communautaire\",\"Mémoire professionnel : analyse réflexive du stage\"]}]",
-                "Professeur d'instrument ou de chant|Enseignant en conservatoire|Animateur musical|Chef de chœur scolaire|Responsable pédagogique"
+                "World-reference teaching methods: Kodály, Orff, Dalcroze, and their adaptation to the African context. Developmental psychology (Piaget, Vygotsky). Instrumental teaching methods. Internship at a music school. Creating adapted teaching materials.",
+                "Kodály, Orff, and Dalcroze methods adapted to the African context|Developmental psychology: Piaget, Vygotsky|Instrumental teaching methods: teaching technical movement|Musical awakening and repertoire for African children|Observation internship and supervised teaching practice|Designing teaching materials with limited resources",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Teaching Foundations\",\"lessons\":[\"Methods: Kodály (rhythmic syllables), Orff (percussion), Dalcroze (eurhythmics)\",\"Adaptations to the African context\",\"Developmental psychology: Piaget, Vygotsky\",\"Psychology of the adult learner\",\"Instrumental teaching methods: breaking down technical movement\",\"Personal musical practice (compulsory)\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Active Methods & Internship\",\"lessons\":[\"Musical awakening: repertoire for ages 3–7, musical games, nursery rhymes\",\"Ear training: teaching it progressively\",\"Group teaching: classroom management, differentiation\",\"Observation internship at a music school (3 weeks)\",\"Creating adapted teaching materials\",\"Digital tools in music education\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Extended Internship & Project\",\"lessons\":[\"Extended internship (8 weeks): full supervised teaching practice\",\"Original teaching project: village school, community center\",\"Professional thesis: reflective analysis of the internship\"]}]",
+                "Instrument or voice teacher|Conservatory teacher|Music facilitator|School choir director|Head of education"
         ));
 
         list.add(course(gi++,
                 "master-didactique-transmission-musicale",
-                "Master Didactique et Transmission Musicale",
-                "Pédagogie Musicale et Formation des Formateurs",
-                "Enseignement Musical — Tous niveaux et contextes",
-                "Master", 120, 320.0, 65, 4.8, 100,
+                "Master's in Music Didactics & Transmission",
+                "Music Education & Teacher Training",
+                "Music Teaching — All Levels & Settings",
+                "Master's", 120, 320.0, 65, 4.8, 100,
                 "Prof. Anne-Marie Fouda",
-                "Pédagogie de la création musicale. Enseignement spécialisé : jeunes enfants (0–6 ans), adultes débutants, personnes en situation de handicap. Ingénierie de formation : concevoir un cursus complet. Le master organise lui-même une session de formation de 2 jours.",
-                "Pédagogie de la création : improvisation et composition chez l'élève|Enseignement spécialisé : 0-6 ans, adultes, situation de handicap|Ingénierie de formation : concevoir un cursus complet|Mémoire de recherche pédagogique (50 pages)|Animation de séminaires pour enseignants en activité|Recherche en pédagogie musicale",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Pédagogie Avancée\",\"lessons\":[\"Pédagogie de la création : guider improvisation et composition\",\"Enseignement spécialisé : jeunes enfants 0–6 ans\",\"Adultes débutants et personnes en situation de handicap\",\"Ingénierie de formation : objectifs, progressions, évaluations\",\"Recherche en pédagogie musicale : méthodologie\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Recherche & Formation\",\"lessons\":[\"Mémoire de recherche pédagogique (50 pages)\",\"Stage de direction pédagogique en institution\",\"Animation d'un séminaire de 2 jours pour enseignants en activité\"]}]",
-                "Directeur pédagogique d'institution musicale|Formateur de formateurs|Chercheur en pédagogie musicale|Conseiller pédagogique pour ONG ou ministère"
+                "Pedagogy of musical creation. Specialized teaching: young children (0–6), beginner adults, people with disabilities. Training design: building a complete curriculum. Master's students run their own 2-day training session.",
+                "Pedagogy of creation: improvisation and composition for students|Specialized teaching: ages 0–6, adults, disabilities|Training design: building a complete curriculum|Educational research thesis (50 pages)|Running seminars for practicing teachers|Research in music education",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Advanced Pedagogy\",\"lessons\":[\"Pedagogy of creation: guiding improvisation and composition\",\"Specialized teaching: young children ages 0–6\",\"Beginner adults and people with disabilities\",\"Training design: objectives, progressions, assessments\",\"Research in music education: methodology\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Research & Training\",\"lessons\":[\"Educational research thesis (50 pages)\",\"Educational leadership internship at an institution\",\"Running a 2-day seminar for practicing teachers\"]}]",
+                "Head of education at a music institution|Trainer of trainers|Researcher in music education|Education advisor for NGOs or ministries"
         ));
 
-        // ── D5 · F1 — Musicologie ─────────────────────────────────────────────
+        // ── D5 · F1 — Musicology ─────────────────────────────────────────────
 
         list.add(course(gi++,
                 "licence-musicologie-patrimoine",
-                "Licence Musicologie et Patrimoine Musical Africain",
-                "Musicologie, Patrimoine et Management Culturel",
-                "Musicologie et Recherche sur les Patrimoines",
-                "Licence", 180, 390.0, 175, 4.7, 150,
+                "Bachelor's in Musicology & African Musical Heritage",
+                "Musicology, Heritage & Cultural Management",
+                "Musicology & Heritage Research",
+                "Bachelor's", 180, 390.0, 175, 4.7, 150,
                 "Prof. Didier Manga",
-                "Histoire des musiques africaines des royaumes précoloniaux à aujourd'hui. Ethnomusicologie : Charles Seeger, John Blacking, Simha Arom. Organologie africaine (Hornbostel-Sachs). Archives sonores numériques : Phonogrammarchiv, ILAM, UNESCO.",
-                "Histoire des musiques africaines (royaumes précoloniaux à aujourd'hui)|Ethnomusicologie : Seeger, Blacking, Simha Arom|Organologie africaine : classification Hornbostel-Sachs|Informatique musicale : Sonic Visualiser, bases de données audio|Archives nationales, Berlin Phonogramm-Archiv, collections UNESCO|Analyse musicale et écriture analytique",
-                "[{\"id\":\"s1\",\"title\":\"S1-S2 — Histoire & Ethnomusicologie\",\"lessons\":[\"Histoire des musiques africaines : empires du Mali et du Ghana\",\"Musiques de cours royales Beti et Bamiléké, musiques sacrées\",\"Impact de la colonisation, indépendances et modernisation\",\"Introduction à l'ethnomusicologie : définition, histoire, grands auteurs\",\"Analyse musicale : méthodes et écriture analytique\",\"Paléographie et sources historiques\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Organologie & Archives\",\"lessons\":[\"Ethnomusicologie : musique et culture, identité, langage\",\"Organologie africaine : Hornbostel-Sachs, géographie des instruments\",\"Esthétique musicale et philosophie de l'art en Afrique\",\"Sonic Visualiser, Ethnochord, bases de données audio\",\"Archives : Phonogrammarchiv Vienne, ILAM, UNESCO, MINAC\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Mémoire & Stage\",\"lessons\":[\"Mémoire de recherche (40 pages) sur un sujet de musicologie africaine\",\"Stage en médiathèque, musée ou centre de recherche\",\"Séminaire thématique sur un genre ou répertoire africain spécifique\"]}]",
-                "Archiviste musical|Médiateur culturel|Journaliste musical|Documentaliste|Assistant de recherche en institution culturelle"
+                "History of African music from precolonial kingdoms to today. Ethnomusicology: Charles Seeger, John Blacking, Simha Arom. African organology (Hornbostel-Sachs). Digital sound archives: Phonogrammarchiv, ILAM, UNESCO.",
+                "History of African music (precolonial kingdoms to today)|Ethnomusicology: Seeger, Blacking, Simha Arom|African organology: Hornbostel-Sachs classification|Music software: Sonic Visualiser, audio databases|National archives, Berlin Phonogramm-Archiv, UNESCO collections|Musical analysis and analytical writing",
+                "[{\"id\":\"s1\",\"title\":\"S1-S2 — History & Ethnomusicology\",\"lessons\":[\"History of African music: the Mali and Ghana empires\",\"Beti and Bamileke royal court music, sacred music\",\"The impact of colonization, independence, and modernization\",\"Introduction to ethnomusicology: definitions, history, key thinkers\",\"Musical analysis: methods and analytical writing\",\"Paleography and historical sources\"]},{\"id\":\"s3\",\"title\":\"S3-S4 — Organology & Archives\",\"lessons\":[\"Ethnomusicology: music and culture, identity, language\",\"African organology: Hornbostel-Sachs, geography of instruments\",\"Musical aesthetics and philosophy of art in Africa\",\"Sonic Visualiser, Ethnochord, audio databases\",\"Archives: Vienna Phonogrammarchiv, ILAM, UNESCO, MINAC\"]},{\"id\":\"s5\",\"title\":\"S5-S6 — Thesis & Internship\",\"lessons\":[\"Research thesis (40 pages) on a topic in African musicology\",\"Internship at a media library, museum, or research center\",\"Thematic seminar on a specific African genre or repertoire\"]}]",
+                "Music archivist|Cultural mediator|Music journalist|Archivist/librarian|Research assistant at a cultural institution"
         ));
 
         list.add(course(gi++,
                 "master-ethnomusicologie-patrimoine",
-                "Master Ethnomusicologie et Conservation du Patrimoine Immatériel",
-                "Musicologie, Patrimoine et Management Culturel",
-                "Musicologie et Recherche sur les Patrimoines",
-                "Master", 120, 320.0, 42, 4.8, 100,
+                "Master's in Ethnomusicology & Intangible Heritage Conservation",
+                "Musicology, Heritage & Cultural Management",
+                "Musicology & Heritage Research",
+                "Master's", 120, 320.0, 42, 4.8, 100,
                 "Prof. Didier Manga",
-                "Méthodes de terrain : enregistrement in situ, conventions avec les communautés, éthique. Conservation du patrimoine immatériel (convention UNESCO 2003). Propriété intellectuelle des musiques traditionnelles (OAPI). Concert de restitution + enregistrement discographique du répertoire collecté.",
-                "Méthodes de terrain : enquête, enregistrement in situ, éthique|Conservation du patrimoine immatériel (UNESCO 2003)|Transcription et analyse des musiques orales|Propriété intellectuelle : OAPI, droits des communautés|Mémoire ethnomusicologique (60 pages) + enregistrements de terrain|Concert de restitution scénique du répertoire collecté",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Terrain & Conservation\",\"lessons\":[\"Méthodes de terrain : protocoles, enregistrement, conventions\",\"Éthique de la recherche et retour aux communautés\",\"Transcription des musiques orales (Western notation adaptée)\",\"Conservation du patrimoine : convention UNESCO 2003\",\"Documentation numérique et constitution de corpus sonores\",\"Enjeux de la propriété intellectuelle : OAPI, droits des communautés\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Mémoire & Restitution\",\"lessons\":[\"Mémoire ethnomusicologique (60 pages) avec enregistrements\",\"Transcriptions, analyse et recommandations\",\"Concert de restitution présentant le répertoire collecté\",\"Enregistrement discographique du répertoire collecté\"]}]",
-                "Ethnomusicologue de terrain|Chercheur en institution culturelle|Conseiller UNESCO/OIF|Directeur de centre culturel"
+                "Fieldwork methods: on-site recording, community agreements, ethics. Intangible heritage conservation (2003 UNESCO Convention). Intellectual property for traditional music (OAPI). A restitution concert plus a recording of the collected repertoire.",
+                "Fieldwork methods: survey, on-site recording, ethics|Intangible heritage conservation (2003 UNESCO Convention)|Transcription and analysis of oral music traditions|Intellectual property: OAPI, community rights|Ethnomusicology thesis (60 pages) + field recordings|Stage restitution concert of the collected repertoire",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Fieldwork & Conservation\",\"lessons\":[\"Fieldwork methods: protocols, recording, agreements\",\"Research ethics and giving back to communities\",\"Transcribing oral music traditions (adapted Western notation)\",\"Heritage conservation: the 2003 UNESCO Convention\",\"Digital documentation and building sound corpora\",\"Intellectual property issues: OAPI, community rights\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Thesis & Restitution\",\"lessons\":[\"Ethnomusicology thesis (60 pages) with recordings\",\"Transcriptions, analysis, and recommendations\",\"Restitution concert presenting the collected repertoire\",\"Recording the collected repertoire\"]}]",
+                "Field ethnomusicologist|Researcher at a cultural institution|UNESCO/OIF advisor|Cultural center director"
         ));
 
-        // ── D5 · F2 — Management Culturel ────────────────────────────────────
+        // ── D5 · F2 — Cultural Management ────────────────────────────────────
 
         list.add(course(gi++,
                 "master-management-arts-industries-culturelles",
-                "Master Management des Arts et Industries Culturelles en Afrique",
-                "Musicologie, Patrimoine et Management Culturel",
-                "Management Culturel et Music Business Africain",
-                "Master", 120, 360.0, 145, 4.8, 100,
+                "Master's in Arts & Cultural Industries Management in Africa",
+                "Musicology, Heritage & Cultural Management",
+                "Cultural Management & African Music Business",
+                "Master's", 120, 360.0, 145, 4.8, 100,
                 "Prof. Sophie Nkengue",
-                "L'industrie musicale africaine a besoin de professionnels du music business. Droits d'auteur (SOCAM, OAPI, BSIC), distribution streaming africaine (Boomplay, Audiomack, Africori), booking de tournées, contrats discographiques. Stage obligatoire 3 mois en structure culturelle.",
-                "Droit d'auteur africain : SOCAM, OAPI, BSIC|Distribution numérique : Boomplay, Audiomack, Spotify Africa, Africori|Contrats discographiques et de management|Production de spectacles : budget, logistique, sécurité|Levée de fonds culturels : OIF, Union Africaine, fondations|Études de cas : Maison Mère, Storm360, Def Jam Africa",
-                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Droit & Production\",\"lessons\":[\"Économie de la culture en Afrique : marché musical CEMAC, Afrique de l'Ouest\",\"Droit d'auteur : SOCAM, OAPI, BSIC, droits voisins\",\"Contrats discographiques : avances, royalties, exclusivités\",\"Production de spectacles : budget, régie, logistique, sécurité\",\"Marketing culturel : positionnement, identité, relations presse, booking\"]},{\"id\":\"s8b\",\"title\":\"S8-S9 — Distribution Numérique & Financement\",\"lessons\":[\"Boomplay (leader Afrique), Audiomack, Spotify for Artists Africa\",\"Agrégateurs africains : Africori, Believe Music Africa, DistroKid\",\"Monétisation YouTube : Content ID, YouTube Partner Program\",\"TikTok, Instagram Reels, Facebook (Afrique) pour l'industrie musicale\",\"Gestion de projet culturel : festival ou tournée de A à Z\",\"Levée de fonds : OIF, Union Africaine, mécénat d'entreprise\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Études de Cas & Stage\",\"lessons\":[\"Succès et échecs : Maison Mère Cameroun, Storm360 Nigeria, Def Jam Africa\",\"Stage en structure culturelle (3 mois min.)\",\"Mémoire professionnel (50 pages) : stratégie de développement d'un artiste\",\"Présentation devant jury professionnel (artistes, managers, investisseurs)\"]}]",
-                "Manager d'artiste|Directeur de label indépendant|Bookeur de tournées africaines|Responsable droits d'auteur|Producteur de spectacles|Directeur de salle de concert"
+                "Africa's music industry needs music-business professionals. Copyright (SOCAM, OAPI, BSIC), African streaming distribution (Boomplay, Audiomack, Africori), tour booking, record contracts. Mandatory 3-month internship at a cultural organization.",
+                "African copyright law: SOCAM, OAPI, BSIC|Digital distribution: Boomplay, Audiomack, Spotify Africa, Africori|Record and management contracts|Live event production: budgeting, logistics, security|Cultural fundraising: OIF, African Union, foundations|Case studies: Maison Mère, Storm360, Def Jam Africa",
+                "[{\"id\":\"s7\",\"title\":\"S7-S8 — Law & Production\",\"lessons\":[\"The economics of culture in Africa: the CEMAC and West African music markets\",\"Copyright law: SOCAM, OAPI, BSIC, neighboring rights\",\"Record contracts: advances, royalties, exclusivity\",\"Live event production: budgeting, stage management, logistics, security\",\"Cultural marketing: positioning, identity, press relations, booking\"]},{\"id\":\"s8b\",\"title\":\"S8-S9 — Digital Distribution & Funding\",\"lessons\":[\"Boomplay (Africa's leader), Audiomack, Spotify for Artists Africa\",\"African aggregators: Africori, Believe Music Africa, DistroKid\",\"YouTube monetization: Content ID, YouTube Partner Program\",\"TikTok, Instagram Reels, Facebook (Africa) for the music industry\",\"Cultural project management: a festival or tour from A to Z\",\"Fundraising: OIF, African Union, corporate sponsorship\"]},{\"id\":\"s9\",\"title\":\"S9-S10 — Case Studies & Internship\",\"lessons\":[\"Successes and failures: Maison Mère Cameroon, Storm360 Nigeria, Def Jam Africa\",\"Internship at a cultural organization (3 months min.)\",\"Professional thesis (50 pages): an artist development strategy\",\"Presentation before a professional jury (artists, managers, investors)\"]}]",
+                "Artist manager|Independent label director|African tour booker|Copyright manager|Live event producer|Concert venue director"
         ));
 
-        // ── Doctorats ─────────────────────────────────────────────────────────
+        // ── Doctorates ─────────────────────────────────────────────────────────
 
         list.add(course(gi++,
                 "doctorat-pratique-artistique-dma",
-                "Doctorat en Pratique Artistique (DMA)",
-                "Interprétation et Pratique Instrumentale",
-                "Musique Classique et Contemporaine",
-                "Doctorat", 180, 600.0, 12, 5.0, 300,
+                "Doctorate in Artistic Practice (DMA)",
+                "Performance & Instrumental Practice",
+                "Classical & Contemporary Music",
+                "Doctorate", 180, 600.0, 12, 5.0, 300,
                 "Prof. Emmanuel Mbarga",
-                "3 ans. Cours individuels de niveau virtuose (2h/semaine min.). Séminaires de recherche-création. Au minimum 3 récitals/concerts publics par an. Thèse artistique + mémoire 80 pages. Enseignement supervisé en Licence 1 (3h/semaine). Participation à des colloques internationaux.",
-                "Niveau virtuose — cours 2h/semaine avec master teacher international|Séminaires de recherche-création|3 récitals publics par an minimum|Thèse artistique + mémoire 80 pages|Enseignement supervisé (3h/semaine)|Communication dans des colloques internationaux",
-                "[{\"id\":\"yr1\",\"title\":\"Année 1 — Recherche & Performance\",\"lessons\":[\"Cours individuels 2h/semaine niveau virtuose\",\"Séminaires de recherche-création\",\"1er récital public de recherche\",\"Enseignement supervisé Licence 1 (3h/semaine)\"]},{\"id\":\"yr2\",\"title\":\"Année 2 — Création & Diffusion\",\"lessons\":[\"Récitals 2 et 3 de l'année\",\"Communication en colloque international\",\"Avancement de la thèse artistique\",\"Enregistrements documentés\"]},{\"id\":\"yr3\",\"title\":\"Année 3 — Thèse & Soutenance\",\"lessons\":[\"Finalisation de la thèse artistique (80 pages min.)\",\"Récital de soutenance\",\"Soutenance devant jury international\"]}]",
-                "Chercheur-artiste de renommée internationale|Professeur en académie supérieure|Directeur artistique d'institution"
+                "3 years. Virtuoso-level individual lessons (2h/week min.). Research-creation seminars. At least 3 public recitals/concerts per year. Artistic thesis + 80-page dissertation. Supervised teaching in first-year Bachelor's (3h/week). Participation in international conferences.",
+                "Virtuoso level — 2h/week lessons with an international master teacher|Research-creation seminars|At least 3 public recitals per year|Artistic thesis + 80-page dissertation|Supervised teaching (3h/week)|Presenting at international conferences",
+                "[{\"id\":\"yr1\",\"title\":\"Year 1 — Research & Performance\",\"lessons\":[\"Individual lessons, 2h/week, virtuoso level\",\"Research-creation seminars\",\"First public research recital\",\"Supervised teaching, first-year Bachelor's (3h/week)\"]},{\"id\":\"yr2\",\"title\":\"Year 2 — Creation & Dissemination\",\"lessons\":[\"Recitals 2 and 3 of the year\",\"Presenting at an international conference\",\"Progress on the artistic thesis\",\"Documented recordings\"]},{\"id\":\"yr3\",\"title\":\"Year 3 — Thesis & Defense\",\"lessons\":[\"Finalizing the artistic thesis (80 pages min.)\",\"Defense recital\",\"Defense before an international jury\"]}]",
+                "Internationally renowned artist-researcher|Higher academy professor|Artistic director of an institution"
         ));
 
         list.add(course(gi++,
                 "doctorat-musicologie-phd",
-                "Doctorat Musicologie — Ph.D",
-                "Musicologie, Patrimoine et Management Culturel",
-                "Musicologie et Recherche sur les Patrimoines",
-                "Doctorat", 180, 600.0, 8, 5.0, 300,
+                "Doctorate in Musicology — Ph.D",
+                "Musicology, Heritage & Cultural Management",
+                "Musicology & Heritage Research",
+                "Doctorate", 180, 600.0, 8, 5.0, 300,
                 "Prof. Didier Manga",
-                "3 ans. Thèse de 250 pages minimum sur un sujet original de musicologie africaine. Au minimum 2 publications dans des revues à comité de lecture. 60h/an d'enseignement supervisé en Licence. Participation à 2 colloques internationaux. Soutenance devant jury international.",
-                "Thèse de 250 pages sur musicologie africaine originale|Publications dans des revues à comité de lecture|60h/an d'enseignement en Licence|Participation à 2 colloques internationaux minimum|Soutenance devant jury international (2 membres extérieurs à la ZMA)|Formation de niveau chercheur-expert",
-                "[{\"id\":\"yr1\",\"title\":\"Année 1 — Cadrage & Recherche\",\"lessons\":[\"Définition du sujet de thèse\",\"Revue de littérature exhaustive\",\"Séminaires de méthodologie de la recherche\",\"1er terrain de recherche\",\"Enseignement supervisé Licence (20h)\"]},{\"id\":\"yr2\",\"title\":\"Année 2 — Terrain & Publications\",\"lessons\":[\"2e terrain de recherche approfondi\",\"Rédaction et soumission d'un article\",\"Communication dans un colloque international\",\"Avancement de la thèse (100+ pages)\"]},{\"id\":\"yr3\",\"title\":\"Année 3 — Rédaction & Soutenance\",\"lessons\":[\"Finalisation de la thèse (250 pages min.)\",\"2e publication scientifique\",\"2e colloque international\",\"Soutenance publique devant jury international\"]}]",
-                "Enseignant-chercheur universitaire|Expert international du patrimoine musical africain|Directeur de recherche"
+                "3 years. A 250-page-minimum dissertation on an original topic in African musicology. At least 2 publications in peer-reviewed journals. 60h/year of supervised undergraduate teaching. Participation in 2 international conferences. Defense before an international jury.",
+                "250-page dissertation on original African musicology research|Publications in peer-reviewed journals|60h/year of undergraduate teaching|At least 2 international conferences|Defense before an international jury (2 members external to ZMA)|Expert-researcher level training",
+                "[{\"id\":\"yr1\",\"title\":\"Year 1 — Scoping & Research\",\"lessons\":[\"Defining the dissertation topic\",\"Comprehensive literature review\",\"Research methodology seminars\",\"First research fieldwork\",\"Supervised undergraduate teaching (20h)\"]},{\"id\":\"yr2\",\"title\":\"Year 2 — Fieldwork & Publications\",\"lessons\":[\"Second, in-depth research fieldwork\",\"Writing and submitting an article\",\"Presenting at an international conference\",\"Dissertation progress (100+ pages)\"]},{\"id\":\"yr3\",\"title\":\"Year 3 — Writing & Defense\",\"lessons\":[\"Finalizing the dissertation (250 pages min.)\",\"Second scientific publication\",\"Second international conference\",\"Public defense before an international jury\"]}]",
+                "University professor-researcher|International expert in African musical heritage|Research director"
         ));
 
-        // ── Certifications ────────────────────────────────────────────────────
+        // ── Certificates ────────────────────────────────────────────────────
 
         list.add(course(gi++,
                 "certificat-perfectionnement-instrumental",
-                "Certificat Perfectionnement Instrumental",
-                "Interprétation et Pratique Instrumentale",
-                "Musique Classique et Contemporaine",
-                "Certificat", 30, 150.0, 185, 4.8, 60,
+                "Certificate in Instrumental Advancement",
+                "Performance & Instrumental Practice",
+                "Classical & Contemporary Music",
+                "Certificate", 30, 150.0, 185, 4.8, 60,
                 "Prof. Emmanuel Mbarga",
-                "6 mois. Cours instrumental intensif 6h/semaine. Pratique d'orchestre et de chambre. Masterclasses avec artistes invités africains et internationaux. Jury de fin devant panel professionnel.",
-                "Cours instrumental intensif 6h/semaine|Pratique d'orchestre et de chambre|Masterclasses avec artistes africains et internationaux|Jury de fin devant panel professionnel",
-                "[{\"id\":\"c1\",\"title\":\"Programme Intensif 6 mois\",\"lessons\":[\"Cours instrumental 6h/semaine\",\"Orchestre et musique de chambre\",\"Masterclasses avec artistes invités\",\"Jury de fin de certificat\"]}]",
-                "Perfectionnement pour musiciens avancés|Préparation à l'entrée en Licence"
+                "6 months. Intensive instrumental lessons, 6h/week. Orchestral and chamber practice. Masterclasses with visiting African and international artists. Final jury before a professional panel.",
+                "Intensive instrumental lessons, 6h/week|Orchestral and chamber practice|Masterclasses with African and international artists|Final jury before a professional panel",
+                "[{\"id\":\"c1\",\"title\":\"6-Month Intensive Program\",\"lessons\":[\"Instrumental lessons, 6h/week\",\"Orchestra and chamber music\",\"Masterclasses with guest artists\",\"Final certificate jury\"]}]",
+                "Advancement for experienced musicians|Preparation for Bachelor's-level entry"
         ));
 
         list.add(course(gi++,
                 "certificat-jazz-arrangement",
-                "Certificat Jazz et Arrangement",
-                "Interprétation et Pratique Instrumentale",
-                "Jazz et Musiques Actuelles",
-                "Certificat", 30, 150.0, 210, 4.7, 60,
+                "Certificate in Jazz & Arranging",
+                "Performance & Instrumental Practice",
+                "Jazz & Contemporary Music",
+                "Certificate", 30, 150.0, 210, 4.7, 60,
                 "Prof. Richard Abanda",
-                "3 mois. Écriture pour petites formations jazz (trio à quintet). Techniques d'orchestration jazz. Transcription des grands maîtres. Atelier de composition original. Concert de restitution public.",
-                "Écriture pour trio, quartet, quintet jazz|Orchestration jazz : polyphonie, contrepoint|Transcription des grands maîtres (Ellington, Davis, Evans)|Composition originale|Concert de restitution public",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Écriture pour petites formations jazz\",\"Techniques d'orchestration jazz\",\"Transcription des grands maîtres\",\"Atelier de composition original\",\"Concert de restitution public\"]}]",
-                "Arrangeur jazz|Compositeur pour petits ensembles"
+                "3 months. Writing for small jazz ensembles (trio to quintet). Jazz orchestration techniques. Transcribing the great masters. Original composition workshop. Public showcase concert.",
+                "Writing for jazz trio, quartet, quintet|Jazz orchestration: polyphony, counterpoint|Transcribing the great masters (Ellington, Davis, Evans)|Original composition|Public showcase concert",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Writing for small jazz ensembles\",\"Jazz orchestration techniques\",\"Transcribing the great masters\",\"Original composition workshop\",\"Public showcase concert\"]}]",
+                "Jazz arranger|Composer for small ensembles"
         ));
 
         list.add(course(gi++,
                 "certificat-instruments-africains",
-                "Certificat Instruments Africains — Pratique et Répertoire",
-                "Interprétation et Pratique Instrumentale",
-                "Musiques Africaines, Tradition et Création Contemporaine",
-                "Certificat", 30, 150.0, 320, 4.8, 60,
+                "Certificate in African Instruments — Practice & Repertoire",
+                "Performance & Instrumental Practice",
+                "African Music, Tradition & Contemporary Creation",
+                "Certificate", 30, 150.0, 320, 4.8, 60,
                 "Prof. Thierry Ndombi",
-                "3 mois. Technique intensive sur l'instrument choisi (djembé, kora, balafon, ngoni ou sanza). Répertoire de concert niveau intermédiaire. Pratique d'ensemble polyrythmique. Jury final public.",
-                "Technique intensive : djembé, kora, balafon, ngoni ou sanza|Répertoire de concert niveau intermédiaire|Pratique d'ensemble polyrythmique|Jury final public",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Technique intensive sur instrument choisi\",\"Répertoire de concert niveau intermédiaire\",\"Pratique d'ensemble polyrythmique\",\"Jury final public\"]}]",
-                "Musicien de world music|Animateur culturel"
+                "3 months. Intensive technique on your chosen instrument (djembe, kora, balafon, ngoni, or sanza). Intermediate-level concert repertoire. Polyrhythmic ensemble practice. Public final jury.",
+                "Intensive technique: djembe, kora, balafon, ngoni, or sanza|Intermediate-level concert repertoire|Polyrhythmic ensemble practice|Public final jury",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Intensive technique on your chosen instrument\",\"Intermediate-level concert repertoire\",\"Polyrhythmic ensemble practice\",\"Public final jury\"]}]",
+                "World music musician|Cultural facilitator"
         ));
 
         list.add(course(gi++,
                 "certificat-technique-vocale",
-                "Certificat Technique Vocale",
-                "Interprétation et Pratique Instrumentale",
-                "Chant et Art Vocal",
-                "Certificat", 30, 150.0, 280, 4.8, 60,
+                "Certificate in Vocal Technique",
+                "Performance & Instrumental Practice",
+                "Voice & Vocal Arts",
+                "Certificate", 30, 150.0, 280, 4.8, 60,
                 "Prof. Céline Biyong",
-                "3 mois. Physiologie de la voix. Technique Bel Canto fondamentale. Gestion du souffle. Diction française et italienne. Répertoire pour chorales et ensembles vocaux. Cours individuels hebdomadaires + pratique collective.",
-                "Physiologie de la voix — Bel Canto fondamental|Gestion du souffle et diction|Diction française et italienne|Répertoire pour chorales et ensembles vocaux|Cours individuels hebdomadaires",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Physiologie de la voix\",\"Technique Bel Canto fondamentale\",\"Gestion du souffle\",\"Diction française et italienne\",\"Répertoire chorales et ensembles vocaux\"]}]",
-                "Chanteur de chorale professionnelle|Enseignant de chant débutant"
+                "3 months. Voice physiology. Fundamental bel canto technique. Breath management. French and Italian diction. Repertoire for choirs and vocal ensembles. Weekly individual lessons + group practice.",
+                "Voice physiology — fundamental bel canto|Breath management and diction|French and Italian diction|Repertoire for choirs and vocal ensembles|Weekly individual lessons",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Voice physiology\",\"Fundamental bel canto technique\",\"Breath management\",\"French and Italian diction\",\"Repertoire for choirs and vocal ensembles\"]}]",
+                "Professional choir singer|Beginner voice teacher"
         ));
 
         list.add(course(gi++,
                 "certificat-orchestration",
-                "Certificat Orchestration",
-                "Composition, Écriture et Théorie Musicale",
-                "Composition et Orchestration",
-                "Certificat", 30, 150.0, 155, 4.7, 55,
+                "Certificate in Orchestration",
+                "Composition, Writing & Music Theory",
+                "Composition & Orchestration",
+                "Certificate", 30, 150.0, 155, 4.7, 55,
                 "Prof. Marc Akono",
-                "3 mois. Techniques d'orchestration pour petits et grands effectifs. Transcription et arrangement. Les partitions orchestrées sont jouées par les étudiants instrumentistes. Rendu final : arrangement d'une œuvre africaine pour orchestre de chambre.",
-                "Orchestration pour petits et grands effectifs|Transcription et arrangement|Partitions jouées en séance par les instrumentistes|Rendu final : arrangement d'une œuvre africaine",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Techniques d'orchestration\",\"Transcription et arrangement\",\"Atelier : partitions jouées en séance\",\"Rendu final : arrangement œuvre africaine pour orchestre de chambre\"]}]",
-                "Arrangeur|Assistant compositeur"
+                "3 months. Orchestration techniques for small and large ensembles. Transcription and arranging. Orchestrated scores are performed by instrumentalist students. Final project: arranging an African work for chamber orchestra.",
+                "Orchestration for small and large ensembles|Transcription and arranging|Scores performed in class by instrumentalists|Final project: arranging an African work",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Orchestration techniques\",\"Transcription and arranging\",\"Workshop: scores performed in class\",\"Final project: arranging an African work for chamber orchestra\"]}]",
+                "Arranger|Assistant composer"
         ));
 
         list.add(course(gi++,
                 "certificat-musique-film-sound-design",
-                "Certificat Musique de Film et Sound Design",
-                "Composition, Écriture et Théorie Musicale",
-                "Composition pour l'Image et les Médias",
-                "Certificat", 60, 250.0, 98, 4.8, 100,
+                "Certificate in Film Music & Sound Design",
+                "Composition, Writing & Music Theory",
+                "Composition for Picture & Media",
+                "Certificate", 60, 250.0, 98, 4.8, 100,
                 "Prof. Hervé Billong",
-                "6 mois. Analyse approfondie de bandes originales africaines et internationales. Techniques de composition pour l'image. Sound design et bruitage. Logiciels : Logic Pro + Cubase + Sibelius. Projet final : BO complète d'une séquence filmique réelle.",
-                "Analyse de BO africaines et internationales|Composition pour l'image|Sound design et bruitage|Logic Pro + Cubase + Sibelius|Projet final : BO complète d'une séquence filmique réelle",
-                "[{\"id\":\"c1\",\"title\":\"Programme 6 mois\",\"lessons\":[\"Analyse approfondie de BO africaines et internationales\",\"Techniques de composition pour l'image\",\"Sound design et bruitage\",\"Logic Pro + Cubase + Sibelius\",\"Projet final : BO d'une séquence filmique réelle\"]}]",
-                "Compositeur de BO indépendant|Sound designer|Producteur audiovisuel"
+                "6 months. In-depth analysis of African and international film scores. Composition techniques for picture. Sound design and Foley. Software: Logic Pro + Cubase + Sibelius. Final project: a complete score for a real film sequence.",
+                "Analysis of African and international film scores|Composition for picture|Sound design and Foley|Logic Pro + Cubase + Sibelius|Final project: a complete score for a real film sequence",
+                "[{\"id\":\"c1\",\"title\":\"6-Month Program\",\"lessons\":[\"In-depth analysis of African and international film scores\",\"Composition techniques for picture\",\"Sound design and Foley\",\"Logic Pro + Cubase + Sibelius\",\"Final project: a score for a real film sequence\"]}]",
+                "Independent film composer|Sound designer|Media producer"
         ));
 
         list.add(course(gi++,
                 "certificat-home-studio-professionnel",
-                "Certificat Home Studio Professionnel",
-                "Technologies Musicales et Production Audiovisuelle",
-                "Ingénierie Sonore et Production Musicale",
-                "Certificat", 30, 120.0, 445, 4.7, 60,
+                "Certificate in Professional Home Studio",
+                "Music Technology & Audiovisual Production",
+                "Sound Engineering & Music Production",
+                "Certificate", 30, 120.0, 445, 4.7, 60,
                 "Prof. Patrick Engolo",
-                "3 mois. Configuration d'un studio home aux standards professionnels (budget réaliste). Traitement acoustique minimal efficace. Enregistrement et mixage en autonomie. Chaîne mastering pour livraison streaming. Techniques des grands producteurs indépendants.",
-                "Configuration studio home (budget réaliste)|Traitement acoustique minimal efficace|Enregistrement et mixage en autonomie complète|Mastering pour livraison streaming|Techniques des grands producteurs indépendants",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Configuration d'un home studio aux standards pro\",\"Traitement acoustique minimal efficace\",\"Enregistrement et mixage en autonomie\",\"Chaîne mastering pour livraison streaming\",\"Techniques des producteurs indépendants\"]}]",
-                "Producteur indépendant|Artiste autoproducteur"
+                "3 months. Setting up a home studio to professional standards (on a realistic budget). Minimal, effective acoustic treatment. Independent recording and mixing. A mastering chain for streaming delivery. Techniques of great independent producers.",
+                "Home studio setup (realistic budget)|Minimal, effective acoustic treatment|Fully independent recording and mixing|Mastering for streaming delivery|Techniques of great independent producers",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Setting up a home studio to professional standards\",\"Minimal, effective acoustic treatment\",\"Independent recording and mixing\",\"Mastering chain for streaming delivery\",\"Techniques of independent producers\"]}]",
+                "Independent producer|Self-producing artist"
         ));
 
         list.add(course(gi++,
                 "certificat-mastering-streaming",
-                "Certificat Mastering et Préparation pour le Streaming",
-                "Technologies Musicales et Production Audiovisuelle",
-                "Ingénierie Sonore et Production Musicale",
-                "Certificat", 20, 100.0, 280, 4.8, 40,
+                "Certificate in Mastering & Streaming Preparation",
+                "Music Technology & Audiovisual Production",
+                "Sound Engineering & Music Production",
+                "Certificate", 20, 100.0, 280, 4.8, 40,
                 "Prof. Patrick Engolo",
-                "2 mois. Mastering numérique professionnel. Standards LUFS par plateforme (Spotify, Apple Music, YouTube, Tidal). Formats de livraison maîtres. Écoute critique sur systèmes de référence. Livraison via agrégateurs numériques.",
-                "Mastering numérique professionnel|Standards LUFS : Spotify -14, YouTube -13, Apple Music -16, Tidal -14|Formats de livraison maîtres (WAV, FLAC, MP3, AAC)|Écoute critique sur systèmes de référence|Livraison via agrégateurs numériques",
-                "[{\"id\":\"c1\",\"title\":\"Programme 2 mois\",\"lessons\":[\"Mastering numérique professionnel\",\"Standards LUFS par plateforme\",\"Formats de livraison maîtres\",\"Retouche et finalisation\",\"Écoute critique — systèmes de référence\",\"Livraison via agrégateurs\"]}]",
-                "Masteriseur indépendant|Ingénieur du son autoproducteur"
+                "2 months. Professional digital mastering. Platform-specific LUFS standards (Spotify, Apple Music, YouTube, Tidal). Master delivery formats. Critical listening on reference systems. Delivery via digital aggregators.",
+                "Professional digital mastering|LUFS standards: Spotify -14, YouTube -13, Apple Music -16, Tidal -14|Master delivery formats (WAV, FLAC, MP3, AAC)|Critical listening on reference systems|Delivery via digital aggregators",
+                "[{\"id\":\"c1\",\"title\":\"2-Month Program\",\"lessons\":[\"Professional digital mastering\",\"Platform-specific LUFS standards\",\"Master delivery formats\",\"Touch-ups and finalizing\",\"Critical listening — reference systems\",\"Delivery via aggregators\"]}]",
+                "Independent mastering engineer|Self-producing sound engineer"
         ));
 
         list.add(course(gi++,
                 "certificat-gestion-carriere-artistique",
-                "Certificat Gestion de Carrière Artistique à l'Ère du Numérique",
-                "Musicologie, Patrimoine et Management Culturel",
-                "Management Culturel et Music Business Africain",
-                "Certificat", 30, 150.0, 390, 4.8, 60,
+                "Certificate in Artist Career Management in the Digital Age",
+                "Musicology, Heritage & Cultural Management",
+                "Cultural Management & African Music Business",
+                "Certificate", 30, 150.0, 390, 4.8, 60,
                 "Prof. Sophie Nkengue",
-                "3 mois. Stratégie d'artiste indépendant. Droits d'auteur SOCAM/OAPI (bases pratiques). Distribution streaming : Boomplay, Audiomack, Spotify. Communication digitale et réseaux sociaux. Booking de concerts locaux. Contrats types de management.",
-                "Stratégie d'artiste indépendant|Droits d'auteur SOCAM/OAPI (bases pratiques)|Distribution : Boomplay, Audiomack, Spotify Africa|Communication digitale et réseaux sociaux|Booking de concerts locaux|Contrats types de management et de cession",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Stratégie d'artiste indépendant\",\"Droits d'auteur SOCAM/OAPI\",\"Distribution streaming africaine\",\"Communication digitale et réseaux sociaux\",\"Booking de concerts locaux\",\"Contrats types de management\"]}]",
-                "Artiste indépendant|Auto-manager|Jeune manager d'artiste"
+                "3 months. Independent artist strategy. SOCAM/OAPI copyright basics. Streaming distribution: Boomplay, Audiomack, Spotify. Digital and social media communication. Booking local concerts. Standard management contracts.",
+                "Independent artist strategy|SOCAM/OAPI copyright basics|Distribution: Boomplay, Audiomack, Spotify Africa|Digital and social media communication|Booking local concerts|Standard management and licensing contracts",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Independent artist strategy\",\"SOCAM/OAPI copyright\",\"African streaming distribution\",\"Digital and social media communication\",\"Booking local concerts\",\"Standard management contracts\"]}]",
+                "Independent artist|Self-managed artist|Emerging artist manager"
         ));
 
         list.add(course(gi++,
                 "certificat-eveil-musical-enfants",
-                "Certificat Éveil Musical et Initiation (0–12 ans)",
-                "Pédagogie Musicale et Formation des Formateurs",
-                "Enseignement Musical — Tous niveaux et contextes",
-                "Certificat", 30, 120.0, 195, 4.7, 55,
+                "Certificate in Musical Awakening & Introduction (Ages 0–12)",
+                "Music Education & Teacher Training",
+                "Music Teaching — All Levels & Settings",
+                "Certificate", 30, 120.0, 195, 4.7, 55,
                 "Prof. Anne-Marie Fouda",
-                "3 mois. Répertoire pour jeunes enfants africains. Jeux musicaux corporels et instrumentaux. Comptines et chants traditionnels adaptés. Techniques de classe nombreuse. Création d'ateliers avec peu de matériel. Stage pratique en école maternelle.",
-                "Répertoire pour jeunes enfants africains (0–12 ans)|Jeux musicaux corporels et instrumentaux|Comptines et chants traditionnels adaptés|Techniques de classe nombreuse|Création d'ateliers avec peu de matériel|Stage pratique en école maternelle ou primaire",
-                "[{\"id\":\"c1\",\"title\":\"Programme 3 mois\",\"lessons\":[\"Répertoire pour jeunes enfants africains\",\"Jeux musicaux corporels et instrumentaux\",\"Comptines et chants traditionnels adaptés\",\"Techniques de classe nombreuse\",\"Création d'ateliers avec peu de matériel\",\"Stage pratique en école maternelle\"]}]",
-                "Animateur musical scolaire|Educateur de jeunes enfants|Responsable d'atelier musical"
+                "3 months. Repertoire for young African children. Body-percussion and instrumental musical games. Adapted nursery rhymes and traditional songs. Large-class techniques. Creating workshops with limited materials. Practical internship at a preschool.",
+                "Repertoire for young African children (ages 0–12)|Body-percussion and instrumental musical games|Adapted nursery rhymes and traditional songs|Large-class techniques|Creating workshops with limited materials|Practical internship at a preschool or elementary school",
+                "[{\"id\":\"c1\",\"title\":\"3-Month Program\",\"lessons\":[\"Repertoire for young African children\",\"Body-percussion and instrumental musical games\",\"Adapted nursery rhymes and traditional songs\",\"Large-class techniques\",\"Creating workshops with limited materials\",\"Practical internship at a preschool\"]}]",
+                "School music facilitator|Early childhood educator|Music workshop coordinator"
         ));
 
         return list;
@@ -477,6 +478,7 @@ public class DataLoader {
                           int duration, String teacher, String description, String skillsPipe,
                           String curriculumJson, String debouches) {
         Course c = new Course();
+        c.setStatus(CourseStatus.PUBLISHED);
         c.setSlug(slug);
         c.setTitle(title);
         c.setDepartment(department);

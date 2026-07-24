@@ -61,8 +61,16 @@ export const courseApi = {
     api.post<Course>('/courses', data).then(r => r.data),
   update: (id: string, data: CourseRequest) =>
     api.put<Course>(`/courses/${id}`, data).then(r => r.data),
-  publish: (id: string, published: boolean) =>
-    api.patch<Course>(`/courses/${id}/publish`, null, { params: { published } }).then(r => r.data),
+  submit: (id: string) =>
+    api.post<Course>(`/courses/${id}/submit`).then(r => r.data),
+  startReview: (id: string) =>
+    api.post<Course>(`/courses/${id}/review/start`).then(r => r.data),
+  approve: (id: string) =>
+    api.post<Course>(`/courses/${id}/review/approve`).then(r => r.data),
+  reject: (id: string, comment: string) =>
+    api.post<Course>(`/courses/${id}/review/reject`, { comment }).then(r => r.data),
+  archive: (id: string) =>
+    api.post<Course>(`/courses/${id}/archive`).then(r => r.data),
   delete: (id: string) =>
     api.delete(`/courses/${id}`),
 };

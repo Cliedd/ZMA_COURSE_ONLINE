@@ -5,6 +5,10 @@ export default {
   theme: {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
     extend: {
+      fontFamily: {
+        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        serif: ["Playfair Display", "Georgia", "serif"],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -18,6 +22,11 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         orange: { DEFAULT: "hsl(var(--orange))", light: "hsl(var(--orange-light))", foreground: "hsl(0,0%,100%)" },
+        zma: {
+          ink: "#0C0A11", coal: "#161320", slate: "#2A2437", ash: "#6A6478",
+          paper: "#FFFFFF", sand: "#F6F3ED", line: "#E6DFD2",
+          f1: "#2647E8", f2: "#E8371C", f3: "#C42E86", g1: "#E0A012", g2: "#0E9F6E",
+        },
       },
       borderRadius: {
         lg: "var(--radius)", md: "calc(var(--radius) - 2px)",
@@ -76,6 +85,17 @@ export default {
           "0%": { opacity: "0", transform: "translate(-72%, -62%) scale(0.5)" },
           "100%": { opacity: "1", transform: "translate(-50%,-40%) scale(1)" },
         },
+        heroFade: {
+          "0%":   { opacity: "0" },
+          "4%":   { opacity: "1" },
+          "33%":  { opacity: "1" },
+          "38%":  { opacity: "0" },
+          "100%": { opacity: "0" },
+        },
+        kenburns: {
+          "0%":   { transform: "scale(1.16)" },
+          "100%": { transform: "scale(1.27)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -92,6 +112,8 @@ export default {
         "image-reveal": "image-reveal 0.8s ease-out forwards",
         "pulse-glow": "pulse-glow 2.5s ease-in-out infinite",
         spotlight: "spotlight 2s ease .75s 1 forwards",
+        heroFade: "heroFade 21s infinite",
+        kenburns: "kenburns 26s ease-in-out infinite alternate",
       },
     },
   },

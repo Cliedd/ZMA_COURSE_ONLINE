@@ -18,9 +18,9 @@ type PaymentMethod = 'visa' | 'mastercard' | 'mobile_money' | 'orange_money'
 type Step = 1 | 2 | 3
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: string; desc: string }[] = [
-  { id: 'visa',         label: 'Visa / Mastercard', icon: '💳', desc: 'Carte bancaire internationale' },
-  { id: 'mobile_money', label: 'Mobile Money MTN',  icon: '📱', desc: 'Paiement via MTN Mobile Money' },
-  { id: 'orange_money', label: 'Orange Money',       icon: '🟠', desc: 'Paiement via Orange Money' },
+  { id: 'visa',         label: 'Visa / Mastercard', icon: '💳', desc: 'International bank card' },
+  { id: 'mobile_money', label: 'MTN Mobile Money',  icon: '📱', desc: 'Pay via MTN Mobile Money' },
+  { id: 'orange_money', label: 'Orange Money',       icon: '🟠', desc: 'Pay via Orange Money' },
 ]
 
 const GRADIENTS = [
@@ -62,26 +62,26 @@ export const CheckoutPage = () => {
     // Basic validation
     if (method === 'visa' || method === 'mastercard') {
       if (!cardNumber || !cardName || !expiry || !cvv) {
-        setError('Veuillez remplir tous les champs de la carte.')
+        setError('Please fill in all card fields.')
         return
       }
     } else {
       if (!phone) {
-        setError('Veuillez entrer votre numéro de téléphone.')
+        setError('Please enter your phone number.')
         return
       }
     }
 
     setLoading(true)
     try {
-      // 1. Créer le paiement (PENDING)
+      // 1. Create the payment (PENDING)
       const payment = await paymentApi.checkout(course!.id)
-      // 2. Confirmer immédiatement (simulation locale) → déclenche l'enrollment
+      // 2. Confirm immediately (local simulation) → triggers enrollment
       await paymentApi.confirm(payment.id)
       setOrderId(payment.id)
       setStep(3)
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? 'Une erreur est survenue. Veuillez réessayer.')
+      setError(e?.response?.data?.message ?? 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -111,24 +111,24 @@ export const CheckoutPage = () => {
           </div>
         </div>
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Inscription confirmée !</h1>
+          <h1 className="text-3xl font-bold">Enrollment confirmed!</h1>
           <p className="text-muted-foreground">
-            Votre paiement a bien été enregistré. Vous pouvez maintenant accéder à votre cours.
+            Your payment has been recorded. You can now access your course.
           </p>
         </div>
         <Card>
           <CardContent className="p-5 space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Cours</span>
+              <span className="text-muted-foreground">Course</span>
               <span className="font-medium text-right max-w-48 line-clamp-1">{course.title}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Montant</span>
+              <span className="text-muted-foreground">Amount</span>
               <span className="font-bold text-foreground">{course.price}€</span>
             </div>
             {orderId && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Référence</span>
+                <span className="text-muted-foreground">Reference</span>
                 <span className="font-mono text-xs text-muted-foreground">{orderId.slice(0, 8).toUpperCase()}</span>
               </div>
             )}
@@ -137,12 +137,12 @@ export const CheckoutPage = () => {
         <div className="flex gap-3 justify-center flex-wrap">
           <Link to="/dashboard">
             <Button className="gap-2">
-              <Award className="h-4 w-4" /> Mon espace étudiant
+              <Award className="h-4 w-4" /> My Student Space
             </Button>
           </Link>
           <Link to="/catalogue">
             <Button variant="outline" className="gap-2">
-              Continuer à explorer
+              Keep exploring
             </Button>
           </Link>
         </div>
@@ -159,14 +159,14 @@ export const CheckoutPage = () => {
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        {step === 1 ? 'Retour au cours' : 'Étape précédente'}
+        {step === 1 ? 'Back to course' : 'Previous step'}
       </button>
 
       {/* Steps indicator */}
       <div className="flex items-center gap-2">
         {[
-          { n: 1, label: 'Récapitulatif' },
-          { n: 2, label: 'Paiement' },
+          { n: 1, label: 'Summary' },
+          { n: 2, label: 'Payment' },
           { n: 3, label: 'Confirmation' },
         ].map(({ n, label }, i) => (
           <div key={n} className="flex items-center gap-2 flex-1">
@@ -194,7 +194,7 @@ export const CheckoutPage = () => {
 
           {step === 1 && (
             <>
-              <h2 className="text-xl font-bold">Récapitulatif de votre commande</h2>
+              <h2 className="text-xl font-bold">Order Summary</h2>
               <Card>
                 <CardContent className="p-0 overflow-hidden rounded-xl">
                   <div className={`bg-gradient-to-br ${gradient} h-28 flex items-center justify-center`}>
@@ -213,7 +213,7 @@ export const CheckoutPage = () => {
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {course.rating?.toFixed(1)}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Users className="h-3 w-3" /> {course.studentsCount?.toLocaleString()} inscrits
+                        <Users className="h-3 w-3" /> {course.studentsCount?.toLocaleString()} enrolled
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" /> {course.durationHours}h
@@ -225,14 +225,14 @@ export const CheckoutPage = () => {
 
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <h3 className="font-semibold">Ce qui est inclus</h3>
+                  <h3 className="font-semibold">What's included</h3>
                   {[
-                    `${course.durationHours}h de contenu vidéo HD`,
-                    'Accès à vie sur toutes les plateformes',
-                    `Certificat officiel ZMA (${course.ects ?? 0} ECTS)`,
-                    'Ressources pédagogiques téléchargeables',
-                    'Accès à la communauté d\'apprenants',
-                    'Garantie satisfait ou remboursé 30 jours',
+                    `${course.durationHours}h of HD video content`,
+                    'Lifetime access on all platforms',
+                    `Official ZMA certificate (${course.ects ?? 0} ECTS)`,
+                    'Downloadable learning resources',
+                    'Access to the learner community',
+                    '30-day money-back guarantee',
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-2.5 text-sm text-muted-foreground">
                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
@@ -243,14 +243,14 @@ export const CheckoutPage = () => {
               </Card>
 
               <Button size="lg" className="w-full gap-2" onClick={() => setStep(2)}>
-                Continuer vers le paiement <ArrowRight className="h-4 w-4" />
+                Continue to payment <ArrowRight className="h-4 w-4" />
               </Button>
             </>
           )}
 
           {step === 2 && (
             <>
-              <h2 className="text-xl font-bold">Choisissez votre mode de paiement</h2>
+              <h2 className="text-xl font-bold">Choose your payment method</h2>
 
               {/* Payment method selector */}
               <div className="grid grid-cols-1 gap-3">
@@ -287,21 +287,21 @@ export const CheckoutPage = () => {
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-center gap-2 mb-1">
                     <Lock className="h-4 w-4 text-emerald-500" />
-                    <span className="text-sm text-muted-foreground">Paiement sécurisé — SSL 256 bits</span>
+                    <span className="text-sm text-muted-foreground">Secure payment — 256-bit SSL</span>
                   </div>
 
                   {(method === 'visa' || method === 'mastercard') ? (
                     <>
                       <div className="space-y-1.5">
-                        <Label>Nom sur la carte</Label>
+                        <Label>Name on card</Label>
                         <Input
-                          placeholder="JEAN NKOSI"
+                          placeholder="JOHN DOE"
                           value={cardName}
                           onChange={e => setCardName(e.target.value.toUpperCase())}
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label>Numéro de carte</Label>
+                        <Label>Card number</Label>
                         <div className="relative">
                           <Input
                             placeholder="1234 5678 9012 3456"
@@ -315,9 +315,9 @@ export const CheckoutPage = () => {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                          <Label>Date d'expiration</Label>
+                          <Label>Expiry date</Label>
                           <Input
-                            placeholder="MM/AA"
+                            placeholder="MM/YY"
                             value={expiry}
                             onChange={e => setExpiry(formatExpiry(e.target.value))}
                             maxLength={5}
@@ -338,7 +338,7 @@ export const CheckoutPage = () => {
                   ) : (
                     <div className="space-y-1.5">
                       <Label>
-                        Numéro de téléphone{' '}
+                        Phone number{' '}
                         {method === 'mobile_money' ? '(MTN)' : '(Orange)'}
                       </Label>
                       <div className="relative">
@@ -354,7 +354,7 @@ export const CheckoutPage = () => {
                         <Smartphone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Vous recevrez une notification sur votre téléphone pour confirmer le paiement.
+                        You'll receive a notification on your phone to confirm the payment.
                       </p>
                     </div>
                   )}
@@ -374,8 +374,8 @@ export const CheckoutPage = () => {
                 disabled={loading}
               >
                 {loading
-                  ? <><Loader2 className="h-4 w-4 animate-spin" /> Traitement en cours...</>
-                  : <><ShieldCheck className="h-4 w-4" /> Confirmer le paiement — {course.price}€</>
+                  ? <><Loader2 className="h-4 w-4 animate-spin" /> Processing...</>
+                  : <><ShieldCheck className="h-4 w-4" /> Confirm payment — {course.price}€</>
                 }
               </Button>
             </>
@@ -386,15 +386,15 @@ export const CheckoutPage = () => {
         <div className="lg:col-span-1">
           <Card className="sticky top-24">
             <CardContent className="p-5 space-y-4">
-              <h3 className="font-semibold text-sm">Récapitulatif</h3>
+              <h3 className="font-semibold text-sm">Summary</h3>
               <Separator />
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Prix du cours</span>
+                  <span className="text-muted-foreground">Course price</span>
                   <span>{course.price}€</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Remise</span>
+                  <span className="text-muted-foreground">Discount</span>
                   <span className="text-emerald-600">—</span>
                 </div>
               </div>
@@ -405,11 +405,11 @@ export const CheckoutPage = () => {
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">
                 <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
-                <span>Garantie satisfait ou remboursé 30 jours — aucune question posée.</span>
+                <span>30-day money-back guarantee — no questions asked.</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">
                 <Lock className="h-4 w-4 text-primary shrink-0" />
-                <span>Paiement sécurisé — vos données sont protégées.</span>
+                <span>Secure payment — your data is protected.</span>
               </div>
             </CardContent>
           </Card>

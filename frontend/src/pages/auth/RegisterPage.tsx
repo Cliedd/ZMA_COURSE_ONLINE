@@ -12,14 +12,14 @@ import type { UserRole } from '../../types'
 const ROLES: { value: UserRole; label: string; desc: string; icon: React.ElementType }[] = [
   {
     value: 'STUDENT',
-    label: 'Étudiant',
-    desc: 'Je souhaite apprendre et suivre des cours.',
+    label: 'Student',
+    desc: 'I want to learn and take courses.',
     icon: GraduationCap,
   },
   {
     value: 'TEACHER',
-    label: 'Enseignant',
-    desc: 'Je souhaite créer et enseigner des cours.',
+    label: 'Teacher',
+    desc: 'I want to create and teach courses.',
     icon: BookOpen,
   },
 ]
@@ -41,15 +41,15 @@ export const RegisterPage = () => {
 
   const handleRegister = async () => {
     if (!email || !password || !confirm) {
-      setError('Veuillez remplir tous les champs.')
+      setError('Please fill in all fields.')
       return
     }
     if (password !== confirm) {
-      setError('Les mots de passe ne correspondent pas.')
+      setError('Passwords do not match.')
       return
     }
     if (password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères.')
+      setError('Password must be at least 8 characters.')
       return
     }
     setError(null)
@@ -58,7 +58,7 @@ export const RegisterPage = () => {
       await register({ email, password, role })
       navigate('/dashboard')
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? 'Une erreur est survenue. Veuillez réessayer.')
+      setError(e?.response?.data?.message ?? 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -74,9 +74,9 @@ export const RegisterPage = () => {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl gradient-hero mb-4">
               <Music className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold">Rejoindre la ZMA</h1>
+            <h1 className="text-2xl font-bold">Join ZMA</h1>
             <p className="text-sm text-muted-foreground">
-              Créez votre compte et commencez votre parcours musical
+              Create your account and start your musical journey
             </p>
           </div>
 
@@ -87,18 +87,18 @@ export const RegisterPage = () => {
             className="w-full gap-3 h-11 font-medium"
           >
             <Chrome className="h-4 w-4 text-red-500" />
-            Continuer avec Google
+            Continue with Google
           </Button>
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground font-medium">ou</span>
+            <span className="text-xs text-muted-foreground font-medium">or</span>
             <Separator className="flex-1" />
           </div>
 
           {/* Role selector */}
           <div className="space-y-2">
-            <Label>Vous êtes...</Label>
+            <Label>You are...</Label>
             <div className="grid grid-cols-2 gap-3">
               {ROLES.map(({ value, label, desc, icon: Icon }) => (
                 <button
@@ -128,23 +128,23 @@ export const RegisterPage = () => {
           {/* Form */}
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Adresse email</Label>
+              <Label htmlFor="email">Email address</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="vous@exemple.com"
+                placeholder="you@example.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="8 caractères minimum"
+                  placeholder="8 characters minimum"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   className="pr-10"
@@ -160,11 +160,11 @@ export const RegisterPage = () => {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="confirm">Confirmer le mot de passe</Label>
+              <Label htmlFor="confirm">Confirm password</Label>
               <Input
                 id="confirm"
                 type="password"
-                placeholder="Répétez votre mot de passe"
+                placeholder="Repeat your password"
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleRegister()}
@@ -183,23 +183,23 @@ export const RegisterPage = () => {
               disabled={loading}
             >
               {loading
-                ? <><Loader2 className="h-4 w-4 animate-spin" /> Création du compte...</>
-                : 'Créer mon compte gratuitement'
+                ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</>
+                : 'Create my free account'
               }
             </Button>
           </div>
 
           <p className="text-center text-xs text-muted-foreground">
-            En créant un compte, vous acceptez les{' '}
-            <span className="text-primary cursor-pointer hover:underline">conditions d'utilisation</span>
-            {' '}et la{' '}
-            <span className="text-primary cursor-pointer hover:underline">politique de confidentialité</span>.
+            By creating an account, you agree to the{' '}
+            <span className="text-primary cursor-pointer hover:underline">terms of service</span>
+            {' '}and{' '}
+            <span className="text-primary cursor-pointer hover:underline">privacy policy</span>.
           </p>
 
           <p className="text-center text-sm text-muted-foreground">
-            Déjà un compte ?{' '}
+            Already have an account?{' '}
             <Link to="/auth/connexion" className="text-primary font-semibold hover:underline">
-              Se connecter
+              Log in
             </Link>
           </p>
         </div>

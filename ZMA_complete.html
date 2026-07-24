@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZMA Course Online — ZTF Music Academy</title>
+<style>
+
+/* ============================================================
+   ZMA COURSE ONLINE · ZTF Music Academy
+   Fully self-contained. No web fonts, no external images,
+   no JavaScript required to render anything.
+   ============================================================ */
+:root{
+  --ink:#0C0A11; --coal:#161320; --slate:#2A2437; --ash:#6A6478;
+  --paper:#FFFFFF; --sand:#F6F3ED; --line:#E6DFD2;
+  --f1:#2647E8; --f2:#E8371C; --f3:#C42E86; --g1:#E0A012; --g2:#0E9F6E;
+  --dsp:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --srf:Georgia,"Times New Roman",serif;
+  --bdy:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mno:ui-monospace,Menlo,Consolas,"Courier New",monospace;
+  --maxw:1340px; --ez:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--bdy);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;text-align:left}
+:focus-visible{outline:3px solid var(--g1);outline-offset:3px}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 34px}
+
+/* image slots: baked SVG always visible; optional photo layers over */
+.ph{position:relative;overflow:hidden;background:var(--coal)}
+.ph>.art{position:absolute;inset:0;width:100%;height:100%}
+.ph>img.real{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+
+.mark{height:38px;width:auto;color:#fff}
+.ft .mark{color:#fff}
+
+.eb{font-family:var(--mno);font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin:0 0 18px;display:flex;align-items:center;gap:12px;color:var(--f2)}
+.eb::before{content:"";width:30px;height:2px;background:currentColor}
+.eb.ctr{justify-content:center}.eb.on-dk{color:#fff}
+.h-xl{font-family:var(--dsp);font-weight:800;font-size:clamp(2.7rem,7.4vw,6.2rem);line-height:.96;letter-spacing:-.04em;margin:0}
+.h-lg{font-family:var(--dsp);font-weight:800;font-size:clamp(2rem,4.4vw,3.7rem);line-height:1.03;letter-spacing:-.035em;margin:0 0 18px}
+.ital{font-family:var(--srf);font-style:italic;font-weight:400}
+.lede{font-size:1.08rem;line-height:1.62;color:var(--ash);margin:0}
+.on-dk .lede{color:rgba(255,255,255,.7)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 30px;font-family:var(--dsp);font-weight:700;font-size:.97rem;border-radius:2px;transition:background .2s,color .2s,transform .2s,border-color .2s}
+.btn:hover{transform:translateY(-2px)}
+.b-f2{background:var(--f2);color:#fff}.b-f2:hover{background:#CC2A11}
+.b-g1{background:var(--g1);color:#231802}.b-g1:hover{background:#F0B22A}
+.b-lt{border:2px solid rgba(255,255,255,.45);color:#fff}
+.b-lt:hover{border-color:#fff;background:#fff;color:var(--ink)}
+.b-out{border:2px solid var(--ink);color:var(--ink)}
+.b-out:hover{background:var(--ink);color:#fff}
+
+/* reveal: visible by default. only hidden once JS confirms it can animate */
+.rv{opacity:1;transform:none}
+html.js .rv{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ez),transform .8s var(--ez)}
+html.js .rv.in{opacity:1;transform:none}
+.x1{transition-delay:.08s}.x2{transition-delay:.16s}.x3{transition-delay:.24s}
+.x4{transition-delay:.32s}.x5{transition-delay:.4s}
+
+/* NAV */
+.nav{position:absolute;top:0;left:0;right:0;z-index:300;padding:18px 0}
+html.js .nav{position:fixed;transition:padding .3s,background .3s}
+html.js .nav.stuck{padding:10px 0;background:rgba(12,10,17,.96)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:26px}
+.nv-l{display:flex;gap:26px}
+.nv-l a{font-family:var(--dsp);font-weight:600;font-size:.93rem;color:rgba(255,255,255,.9);position:relative;padding:4px 0}
+.nv-l a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--g1);transition:width .28s}
+.nv-l a:hover::after{width:100%}
+.nv-r{display:flex;align-items:center;gap:14px}
+.nv-r .si{font-family:var(--dsp);font-weight:600;font-size:.93rem;color:rgba(255,255,255,.9)}
+.lang{font-family:var(--mno);font-size:.66rem;letter-spacing:.1em;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.26);padding:6px 10px}
+.lang b{color:#fff}
+
+/* HERO — CSS-only crossfade, no JS */
+.hr{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;background:var(--ink)}
+.hr-sl{position:absolute;inset:0}
+.hr-s{position:absolute;inset:0;opacity:0;animation:fade 21s infinite}
+.hr-s:nth-child(1){animation-delay:0s}
+.hr-s:nth-child(2){animation-delay:7s}
+.hr-s:nth-child(3){animation-delay:14s}
+.hr-s .ph{position:absolute;inset:0}
+@keyframes fade{
+  0%{opacity:0} 4%{opacity:1} 33%{opacity:1} 38%{opacity:0} 100%{opacity:0}
+}
+.hr-sc{position:absolute;inset:0;z-index:3;background:linear-gradient(to top,rgba(12,10,17,.96) 3%,rgba(12,10,17,.5) 44%,rgba(12,10,17,.2) 74%,rgba(12,10,17,.6) 100%)}
+.hr-tt{position:absolute;inset:0;z-index:4;background:
+  radial-gradient(58% 54% at 8% 92%, rgba(224,160,18,.3), transparent 62%),
+  radial-gradient(52% 46% at 92% 14%, rgba(38,71,232,.32), transparent 60%)}
+.hr-in{position:relative;z-index:5;width:100%;padding:150px 0 48px}
+.hr-cp{max-width:52rem;color:#fff}
+.hr-cp .h-xl{color:#fff}
+.hr-cp .h-xl .ital{color:var(--g1)}
+.hr-sub{margin-top:22px;max-width:35rem;font-size:1.09rem;color:rgba(255,255,255,.82)}
+.hr-bt{display:flex;gap:13px;margin-top:30px;flex-wrap:wrap}
+
+/* MARQUEE */
+.mq{background:var(--ink);overflow:hidden;white-space:nowrap;border-top:1px solid rgba(255,255,255,.12)}
+.mq-t{display:inline-flex}
+html.js .mq-t{animation:mv 42s linear infinite}
+.mq-t a{font-family:var(--dsp);font-weight:700;font-size:1rem;padding:15px 24px;color:#fff;display:inline-flex;align-items:center;gap:10px;transition:background .25s}
+.mq-t a i{width:8px;height:8px;border-radius:50%;flex:none}
+.mq-t a:hover{background:rgba(255,255,255,.09)}
+@keyframes mv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ABOUT */
+.ab{padding:92px 0;background:var(--paper)}
+.ab-g{display:grid;grid-template-columns:.95fr 1.05fr;gap:58px;align-items:center}
+.ab-im{position:relative;padding-bottom:56px;padding-right:50px}
+.ab-im .big{border-radius:4px;aspect-ratio:4/5}
+.ab-im .sml{position:absolute;right:0;bottom:0;width:56%;border-radius:4px;aspect-ratio:1/1;border:8px solid #fff}
+.ab-badge{position:absolute;left:-14px;top:26px;z-index:6;background:var(--g1);color:#231802;padding:15px 19px;border-radius:3px}
+.ab-badge b{font-family:var(--dsp);font-weight:800;font-size:1.7rem;display:block;line-height:1;letter-spacing:-.03em}
+.ab-badge span{font-family:var(--mno);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-top:5px}
+.ab-ul{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:26px 0 30px;padding:0;list-style:none}
+.ab-ul li{display:flex;gap:11px;align-items:flex-start;font-size:.96rem;font-weight:500}
+.ab-ul i{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;margin-top:2px;font-style:normal;font-size:.62rem;color:#fff}
+
+/* LEVELS */
+.lv{padding:92px 0;background:var(--sand)}
+.lv-g{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:38px}
+.lvc{background:#fff;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
+.lvc:hover{transform:translateY(-6px);box-shadow:0 26px 52px -26px rgba(12,10,17,.42)}
+.lvc-im{aspect-ratio:16/10}
+.lvc-bar{height:6px}
+.lvc-bd{padding:24px 24px 26px;flex:1;display:flex;flex-direction:column}
+.lvc-k{font-family:var(--mno);font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+.lvc-t{font-family:var(--dsp);font-weight:800;font-size:1.4rem;letter-spacing:-.028em;margin:0 0 10px}
+.lvc-d{font-size:.94rem;color:var(--ash);line-height:1.56;margin:0 0 18px}
+.lvc-m{margin-top:auto;padding-top:15px;border-top:1px solid var(--line);font-family:var(--mno);font-size:.7rem;color:var(--ash)}
+
+/* FACULTIES */
+.fa{padding:92px 0;background:var(--paper);position:relative;overflow:hidden}
+.fa-hd{margin-bottom:36px;max-width:46rem;position:relative;z-index:4}
+.fa-l{border-top:2px solid var(--ink);position:relative;z-index:4}
+.fa-r{display:grid;grid-template-columns:64px 1fr auto;gap:24px;align-items:center;padding:24px 14px;border-bottom:1px solid rgba(12,10,17,.14);transition:padding .35s,color .3s;position:relative}
+.fa-r:hover{padding-left:26px;color:#fff}
+.fa-r::before{content:"";position:absolute;inset:0;transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ez);z-index:-1}
+.fa-r:hover::before{transform:scaleX(1)}
+.fa-r[data-c="f1"]::before{background:var(--f1)}
+.fa-r[data-c="f2"]::before{background:var(--f2)}
+.fa-r[data-c="f3"]::before{background:var(--f3)}
+.fa-r[data-c="g1"]::before{background:var(--g1)}
+.fa-r[data-c="g2"]::before{background:var(--g2)}
+.fa-cd{font-family:var(--mno);font-size:.75rem;font-weight:700;transition:color .3s}
+.fa-r[data-c="f1"] .fa-cd{color:var(--f1)}.fa-r[data-c="f2"] .fa-cd{color:var(--f2)}
+.fa-r[data-c="f3"] .fa-cd{color:var(--f3)}.fa-r[data-c="g1"] .fa-cd{color:var(--g1)}
+.fa-r[data-c="g2"] .fa-cd{color:var(--g2)}
+.fa-r:hover .fa-cd{color:#fff}
+.fa-nm{font-family:var(--dsp);font-weight:800;font-size:clamp(1.25rem,2.3vw,1.9rem);letter-spacing:-.03em;line-height:1.05;display:block}
+.fa-sub{font-size:.89rem;color:var(--ash);margin-top:4px;transition:color .3s;display:block}
+.fa-r:hover .fa-sub{color:rgba(255,255,255,.88)}
+.fa-ct{font-family:var(--mno);font-size:.72rem;white-space:nowrap;display:flex;align-items:center;gap:14px;color:var(--ash);transition:color .3s}
+.fa-r:hover .fa-ct{color:rgba(255,255,255,.92)}
+.fa-ar{transition:transform .35s;display:inline-block}
+.fa-r:hover .fa-ar{transform:translateX(8px)}
+
+/* COURSES */
+.cr{padding:92px 0;background:var(--sand)}
+.cr-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:34px;margin-bottom:38px;flex-wrap:wrap}
+.cr-g{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.crd{display:flex;flex-direction:column;background:#fff;border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s}
+.crd:hover{transform:translateY(-5px);box-shadow:0 24px 48px -24px rgba(12,10,17,.4)}
+.crd-im{aspect-ratio:4/3}
+.crd-fl{position:absolute;top:0;left:0;z-index:5;color:#fff;font-family:var(--mno);font-size:.57rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:7px 11px}
+.crd-bd{padding:19px 19px 21px;display:flex;flex-direction:column;flex:1}
+.crd-ct{font-family:var(--mno);font-size:.61rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.crd-ct i{width:7px;height:7px;border-radius:50%;flex:none}
+.crd-tt{font-family:var(--dsp);font-weight:800;font-size:1.18rem;line-height:1.14;letter-spacing:-.026em;margin:0 0 6px}
+.crd-tc{font-size:.86rem;color:var(--ash);margin:0 0 14px}
+.crd-ft{margin-top:auto;padding-top:13px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:var(--mno);font-size:.69rem;color:var(--ash)}
+
+/* AUDIENCES */
+.au{display:grid;grid-template-columns:repeat(4,1fr)}
+.auc{padding:54px 32px;color:#fff;position:relative;overflow:hidden;min-height:250px;display:flex;flex-direction:column;justify-content:flex-end}
+.auc:nth-child(1){background:var(--f1)}.auc:nth-child(2){background:var(--f2)}
+.auc:nth-child(3){background:var(--g2)}.auc:nth-child(4){background:var(--f3)}
+.auc-t{position:relative;z-index:3;font-family:var(--dsp);font-weight:800;font-size:1.6rem;letter-spacing:-.03em;line-height:1}
+.auc-d{position:relative;z-index:3;font-size:.92rem;color:rgba(255,255,255,.88);margin-top:11px;line-height:1.5}
+.auc-ico{position:absolute;right:-16px;top:-16px;z-index:1;opacity:.17}
+
+/* INSTRUMENTS */
+.ins{padding:80px 0;background:var(--paper)}
+.ins-w{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.chip{font-family:var(--dsp);font-weight:600;font-size:.97rem;padding:10px 19px;border-radius:99px;border:1.6px solid var(--line);transition:all .25s;cursor:pointer}
+.chip:hover{transform:translateY(-3px);color:#fff;border-color:transparent}
+.chip.k1:hover{background:var(--f1)}.chip.k2:hover{background:var(--f2)}
+.chip.k3:hover{background:var(--f3)}.chip.k4:hover{background:var(--g1);color:#231802}
+.chip.k5:hover{background:var(--g2)}
+
+/* FACILITIES */
+.fx{position:relative;overflow:hidden;background:var(--ink);color:#fff;padding:92px 0}
+.fx-bg{position:absolute;inset:0;opacity:.36}
+.fx-sc{position:absolute;inset:0;z-index:2;background:linear-gradient(100deg,rgba(12,10,17,.94) 10%,rgba(12,10,17,.7))}
+.fx-in{position:relative;z-index:4}
+.fx-g{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.16);margin-top:38px}
+.fxc{background:var(--ink);padding:30px 26px}
+.fxc-i{width:38px;height:38px;border-radius:3px;display:grid;place-items:center;margin-bottom:16px}
+.fxc-t{font-family:var(--dsp);font-weight:800;font-size:1.08rem;letter-spacing:-.022em;margin:0 0 7px}
+.fxc-d{font-size:.89rem;color:rgba(255,255,255,.66);line-height:1.52;margin:0}
+
+/* TEACHERS */
+.tc{padding:92px 0;background:var(--sand)}
+.tc-hd{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:end;margin-bottom:36px}
+.tc-g{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.tcc{background:#fff;border-radius:4px;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.tcc:hover{transform:translateY(-5px);box-shadow:0 24px 46px -24px rgba(12,10,17,.36)}
+.tcc-im{aspect-ratio:1/1}
+.tcc-bar{height:5px}
+.tcc-bd{padding:19px 20px 22px}
+.tcc-nm{font-family:var(--dsp);font-weight:800;font-size:1.1rem;letter-spacing:-.024em;margin:0 0 5px}
+.tcc-rl{font-family:var(--mno);font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+
+/* QUOTE */
+.qt{position:relative;min-height:500px;display:flex;align-items:center;overflow:hidden;background:var(--ink)}
+.qt-bg{position:absolute;inset:0}
+.qt-sc{position:absolute;inset:0;z-index:2;background:linear-gradient(100deg,rgba(12,10,17,.95) 8%,rgba(12,10,17,.66) 52%,rgba(12,10,17,.3))}
+.qt-in{position:relative;z-index:5;color:#fff;max-width:48rem;padding:84px 0}
+.qt-mk{font-family:var(--srf);font-style:italic;font-size:5rem;color:var(--g1);line-height:.55;display:block;margin-bottom:14px}
+.qt-tx{font-family:var(--dsp);font-weight:700;font-size:clamp(1.45rem,3vw,2.4rem);line-height:1.22;letter-spacing:-.03em;margin:0 0 26px}
+.qt-by{font-family:var(--mno);font-size:.72rem;letter-spacing:.08em;color:rgba(255,255,255,.68)}
+
+/* GALLERY */
+.gl{background:var(--paper);overflow:hidden;padding:8px 0 0}
+.gl-t{display:flex;gap:12px;width:max-content;padding:8px 0}
+html.js .gl-a{animation:gv 58s linear infinite}
+html.js .gl-b{animation:gv2 66s linear infinite}
+.gl-t:hover{animation-play-state:paused}
+.gl-i{width:280px;height:190px;flex:none;border-radius:3px}
+@keyframes gv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes gv2{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+
+/* FAQ — details/summary, works with no JS */
+.fq{padding:92px 0;background:var(--sand)}
+.fq-g{display:grid;grid-template-columns:.85fr 1.15fr;gap:52px;align-items:start}
+.fq-l{border-top:2px solid var(--ink)}
+.fq-i{border-bottom:1px solid rgba(12,10,17,.14)}
+.fq-i summary{list-style:none;display:flex;align-items:flex-start;gap:18px;padding:21px 4px;font-family:var(--dsp);font-weight:800;font-size:1.08rem;letter-spacing:-.022em;line-height:1.3;cursor:pointer;transition:color .25s}
+.fq-i summary::-webkit-details-marker{display:none}
+.fq-i summary:hover{color:var(--f1)}
+.fq-ic{flex:none;width:21px;height:21px;position:relative;margin-top:3px}
+.fq-ic::before,.fq-ic::after{content:"";position:absolute;background:var(--f1);transition:transform .3s}
+.fq-ic::before{left:0;top:9.5px;width:21px;height:2px}
+.fq-ic::after{left:9.5px;top:0;width:2px;height:21px}
+.fq-i[open] .fq-ic::after{transform:rotate(90deg)}
+.fq-i p{margin:0 0 21px;padding-left:39px;color:var(--ash);font-size:.96rem;line-height:1.65}
+
+/* CTA */
+.ct{position:relative;min-height:520px;display:flex;align-items:center;text-align:center;overflow:hidden;background:var(--ink)}
+.ct-bg{position:absolute;inset:0}
+.ct-sc{position:absolute;inset:0;z-index:2;background:rgba(12,10,17,.8)}
+.ct-tt{position:absolute;inset:0;z-index:3;background:
+  radial-gradient(46% 52% at 16% 26%, rgba(224,160,18,.36), transparent 62%),
+  radial-gradient(46% 52% at 84% 74%, rgba(38,71,232,.36), transparent 62%)}
+.ct-in{position:relative;z-index:5;width:100%;color:#fff;padding:86px 0}
+.ct-bt{display:flex;gap:13px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.ct-py{margin-top:26px;font-family:var(--mno);font-size:.67rem;letter-spacing:.08em;color:rgba(255,255,255,.55)}
+
+/* FOOTER */
+.ft{background:var(--coal);color:rgba(255,255,255,.64);padding:68px 0 32px}
+.ft-g{display:grid;grid-template-columns:1.7fr 1fr 1fr 1.1fr;gap:42px;padding-bottom:38px;border-bottom:1px solid rgba(255,255,255,.13)}
+.ft h5{font-family:var(--mno);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;margin:0 0 16px;font-weight:700}
+.ft-c1 h5{color:var(--f2)}.ft-c2 h5{color:var(--f1)}.ft-c3 h5{color:var(--g1)}
+.ft ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ft a{font-size:.9rem;transition:color .2s}
+.ft a:hover{color:#fff}
+.ft-ab{font-size:.92rem;line-height:1.7;max-width:26rem;margin:16px 0 0}
+.ft-so{display:flex;gap:10px;margin-top:18px}
+.ft-so a{width:34px;height:34px;border-radius:3px;border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;transition:.22s}
+.ft-so a:hover{background:var(--f2);border-color:var(--f2);color:#fff}
+.ft-bt{display:flex;justify-content:space-between;gap:20px;padding-top:26px;flex-wrap:wrap}
+.ft-bt p{margin:0;font-family:var(--mno);font-size:.67rem;letter-spacing:.06em}
+
+@media (max-width:1120px){
+  .cr-g,.tc-g,.fx-g,.au{grid-template-columns:1fr 1fr}
+  .ft-g{grid-template-columns:1fr 1fr}
+  .ab-g,.lv-g,.tc-hd,.fq-g{grid-template-columns:1fr;gap:34px}
+  .ab-im{padding-right:0;padding-bottom:0;max-width:520px}
+  .ab-im .sml{display:none}
+}
+@media (max-width:880px){ .nv-l,.lang{display:none} .fa-r{grid-template-columns:48px 1fr auto;gap:14px} }
+@media (max-width:640px){
+  .wrap{padding:0 20px}
+  .cr-g,.tc-g,.fx-g,.au{grid-template-columns:1fr}
+  .ft-g,.ab-ul{grid-template-columns:1fr}
+  .gl-i{width:200px;height:140px}
+  .fq-i p{padding-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.001ms!important}
+  html.js .rv{opacity:1;transform:none}
+  .hr-s{opacity:0}.hr-s:nth-child(1){opacity:1}
+}
+
+/* sprite host: defines symbols, renders nothing */
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+/* marquee dot colours */
+.mq-t i.c1{background:var(--f1)}.mq-t i.c2{background:var(--f2)}
+.mq-t i.c3{background:var(--f3)}.mq-t i.c4{background:var(--g1)}
+.mq-t i.c5{background:var(--g2)}
+
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true"><defs>
+<linearGradient id="gr0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2647E8"/><stop offset=".55" stop-color="#5C1039"/><stop offset="1" stop-color="#C42E86"/></linearGradient>
+<linearGradient id="gr1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8371C"/><stop offset=".55" stop-color="#6B4A02"/><stop offset="1" stop-color="#E0A012"/></linearGradient>
+<linearGradient id="gr2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C42E86"/><stop offset=".55" stop-color="#053B29"/><stop offset="1" stop-color="#0E9F6E"/></linearGradient>
+<linearGradient id="gr3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E0A012"/><stop offset=".55" stop-color="#0C0A11"/><stop offset="1" stop-color="#3A3348"/></linearGradient>
+<linearGradient id="gr4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E9F6E"/><stop offset=".55" stop-color="#0B1B6E"/><stop offset="1" stop-color="#2647E8"/></linearGradient>
+<linearGradient id="gr5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A3348"/><stop offset=".55" stop-color="#6E1206"/><stop offset="1" stop-color="#E8371C"/></linearGradient>
+<filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3"/><feColorMatrix type="saturate" values="0"/></filter>
+<symbol id="m-keys" viewBox="0 0 800 1000"><rect x="3" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="53" y="0" width="44" height="620" fill="#fff" opacity="0.17" rx="4"/><rect x="103" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="153" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="203" y="0" width="44" height="620" fill="#fff" opacity="0.17" rx="4"/><rect x="253" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="303" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="353" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="403" y="0" width="44" height="620" fill="#fff" opacity="0.17" rx="4"/><rect x="453" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="503" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="553" y="0" width="44" height="620" fill="#fff" opacity="0.17" rx="4"/><rect x="603" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="653" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="703" y="0" width="44" height="1000" fill="#fff" opacity="0.07" rx="4"/><rect x="753" y="0" width="44" height="620" fill="#fff" opacity="0.17" rx="4"/></symbol>
+<symbol id="m-wave" viewBox="0 0 800 1000"><rect x="8" y="417" width="10" height="165" rx="5" fill="#fff" opacity="0.12"/><rect x="26" y="414" width="10" height="173" rx="5" fill="#fff" opacity="0.33"/><rect x="44" y="336" width="10" height="327" rx="5" fill="#fff" opacity="0.41"/><rect x="62" y="336" width="10" height="328" rx="5" fill="#fff" opacity="0.18"/><rect x="80" y="211" width="10" height="578" rx="5" fill="#fff" opacity="0.41"/><rect x="98" y="196" width="10" height="607" rx="5" fill="#fff" opacity="0.35"/><rect x="116" y="157" width="10" height="687" rx="5" fill="#fff" opacity="0.37"/><rect x="134" y="142" width="10" height="716" rx="5" fill="#fff" opacity="0.38"/><rect x="152" y="191" width="10" height="617" rx="5" fill="#fff" opacity="0.29"/><rect x="170" y="268" width="10" height="465" rx="5" fill="#fff" opacity="0.18"/><rect x="188" y="215" width="10" height="569" rx="5" fill="#fff" opacity="0.36"/><rect x="206" y="332" width="10" height="337" rx="5" fill="#fff" opacity="0.15"/><rect x="224" y="356" width="10" height="288" rx="5" fill="#fff" opacity="0.20"/><rect x="242" y="390" width="10" height="220" rx="5" fill="#fff" opacity="0.32"/><rect x="260" y="431" width="10" height="137" rx="5" fill="#fff" opacity="0.14"/><rect x="278" y="355" width="10" height="291" rx="5" fill="#fff" opacity="0.38"/><rect x="296" y="282" width="10" height="436" rx="5" fill="#fff" opacity="0.41"/><rect x="314" y="326" width="10" height="347" rx="5" fill="#fff" opacity="0.13"/><rect x="332" y="288" width="10" height="424" rx="5" fill="#fff" opacity="0.16"/><rect x="350" y="172" width="10" height="656" rx="5" fill="#fff" opacity="0.35"/><rect x="368" y="209" width="10" height="583" rx="5" fill="#fff" opacity="0.26"/><rect x="386" y="194" width="10" height="613" rx="5" fill="#fff" opacity="0.29"/><rect x="404" y="219" width="10" height="561" rx="5" fill="#fff" opacity="0.27"/><rect x="422" y="206" width="10" height="587" rx="5" fill="#fff" opacity="0.36"/><rect x="440" y="313" width="10" height="374" rx="5" fill="#fff" opacity="0.18"/><rect x="458" y="332" width="10" height="336" rx="5" fill="#fff" opacity="0.26"/><rect x="476" y="381" width="10" height="238" rx="5" fill="#fff" opacity="0.30"/><rect x="494" y="439" width="10" height="122" rx="5" fill="#fff" opacity="0.35"/><rect x="512" y="399" width="10" height="201" rx="5" fill="#fff" opacity="0.14"/><rect x="530" y="317" width="10" height="365" rx="5" fill="#fff" opacity="0.32"/><rect x="548" y="263" width="10" height="474" rx="5" fill="#fff" opacity="0.33"/><rect x="566" y="228" width="10" height="544" rx="5" fill="#fff" opacity="0.31"/><rect x="584" y="252" width="10" height="497" rx="5" fill="#fff" opacity="0.20"/><rect x="602" y="263" width="10" height="475" rx="5" fill="#fff" opacity="0.16"/><rect x="620" y="149" width="10" height="702" rx="5" fill="#fff" opacity="0.37"/><rect x="638" y="263" width="10" height="474" rx="5" fill="#fff" opacity="0.17"/><rect x="656" y="277" width="10" height="445" rx="5" fill="#fff" opacity="0.18"/><rect x="674" y="262" width="10" height="476" rx="5" fill="#fff" opacity="0.31"/><rect x="692" y="306" width="10" height="387" rx="5" fill="#fff" opacity="0.33"/><rect x="710" y="353" width="10" height="293" rx="5" fill="#fff" opacity="0.41"/><rect x="728" y="432" width="10" height="135" rx="5" fill="#fff" opacity="0.16"/><rect x="746" y="385" width="10" height="230" rx="5" fill="#fff" opacity="0.35"/><rect x="764" y="320" width="10" height="360" rx="5" fill="#fff" opacity="0.36"/><rect x="782" y="315" width="10" height="369" rx="5" fill="#fff" opacity="0.20"/></symbol>
+<symbol id="m-rhythm" viewBox="0 0 800 1000"><circle cx="400" cy="500" r="496" fill="none" stroke="#fff" stroke-width="3.3" opacity="0.31"/><circle cx="400" cy="500" r="434" fill="none" stroke="#fff" stroke-width="4.5" opacity="0.29"/><circle cx="400" cy="500" r="372" fill="none" stroke="#fff" stroke-width="4.4" opacity="0.26"/><circle cx="400" cy="500" r="310" fill="none" stroke="#fff" stroke-width="4.0" opacity="0.23"/><circle cx="400" cy="500" r="248" fill="none" stroke="#fff" stroke-width="4.9" opacity="0.20"/><circle cx="400" cy="500" r="186" fill="none" stroke="#fff" stroke-width="1.8" opacity="0.17"/><circle cx="400" cy="500" r="124" fill="none" stroke="#fff" stroke-width="4.9" opacity="0.15"/><circle cx="400" cy="500" r="62" fill="none" stroke="#fff" stroke-width="3.8" opacity="0.12"/><circle cx="400" cy="500" r="42" fill="#fff" opacity=".3"/></symbol>
+<symbol id="m-strings" viewBox="0 0 800 1000"><path d="M0 110 Q400 35 800 110" fill="none" stroke="#fff" stroke-width="1.0" opacity="0.14"/><path d="M0 205 Q400 236 800 205" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.17"/><path d="M0 300 Q400 371 800 300" fill="none" stroke="#fff" stroke-width="2.0" opacity="0.20"/><path d="M0 395 Q400 350 800 395" fill="none" stroke="#fff" stroke-width="2.5" opacity="0.23"/><path d="M0 490 Q400 561 800 490" fill="none" stroke="#fff" stroke-width="3.0" opacity="0.26"/><path d="M0 585 Q400 624 800 585" fill="none" stroke="#fff" stroke-width="3.5" opacity="0.29"/><path d="M0 680 Q400 732 800 680" fill="none" stroke="#fff" stroke-width="4.0" opacity="0.32"/><path d="M0 775 Q400 830 800 775" fill="none" stroke="#fff" stroke-width="4.5" opacity="0.35"/><path d="M0 870 Q400 882 800 870" fill="none" stroke="#fff" stroke-width="5.0" opacity="0.38"/></symbol>
+<symbol id="m-choir" viewBox="0 0 800 1000"><line x1="490" y1="500" x2="650" y2="500" stroke="#fff" stroke-width="1.0" opacity="0.10"/><line x1="487" y1="522" x2="932" y2="631" stroke="#fff" stroke-width="4.5" opacity="0.28"/><line x1="480" y1="542" x2="984" y2="806" stroke="#fff" stroke-width="5.9" opacity="0.35"/><line x1="467" y1="560" x2="650" y2="722" stroke="#fff" stroke-width="2.0" opacity="0.15"/><line x1="451" y1="574" x2="775" y2="1043" stroke="#fff" stroke-width="5.9" opacity="0.35"/><line x1="432" y1="584" x2="601" y2="1031" stroke="#fff" stroke-width="4.8" opacity="0.30"/><line x1="411" y1="589" x2="473" y2="1100" stroke="#fff" stroke-width="5.2" opacity="0.32"/><line x1="389" y1="589" x2="326" y2="1109" stroke="#fff" stroke-width="5.3" opacity="0.33"/><line x1="368" y1="584" x2="225" y2="962" stroke="#fff" stroke-width="3.9" opacity="0.25"/><line x1="349" y1="574" x2="214" y2="770" stroke="#fff" stroke-width="1.9" opacity="0.15"/><line x1="333" y1="560" x2="-35" y2="885" stroke="#fff" stroke-width="4.9" opacity="0.31"/><line x1="320" y1="542" x2="142" y2="635" stroke="#fff" stroke-width="1.5" opacity="0.13"/><line x1="313" y1="522" x2="47" y2="587" stroke="#fff" stroke-width="2.4" opacity="0.17"/><line x1="310" y1="500" x2="-132" y2="500" stroke="#fff" stroke-width="4.4" opacity="0.27"/><line x1="313" y1="478" x2="127" y2="433" stroke="#fff" stroke-width="1.4" opacity="0.12"/><line x1="320" y1="458" x2="-148" y2="212" stroke="#fff" stroke-width="5.4" opacity="0.33"/><line x1="333" y1="440" x2="-91" y2="65" stroke="#fff" stroke-width="5.8" opacity="0.35"/><line x1="349" y1="426" x2="252" y2="286" stroke="#fff" stroke-width="1.1" opacity="0.11"/><line x1="368" y1="416" x2="292" y2="216" stroke="#fff" stroke-width="1.6" opacity="0.13"/><line x1="389" y1="411" x2="331" y2="-70" stroke="#fff" stroke-width="4.9" opacity="0.30"/><line x1="411" y1="411" x2="453" y2="63" stroke="#fff" stroke-width="3.3" opacity="0.22"/><line x1="432" y1="416" x2="572" y2="48" stroke="#fff" stroke-width="3.8" opacity="0.24"/><line x1="451" y1="426" x2="658" y2="126" stroke="#fff" stroke-width="3.4" opacity="0.23"/><line x1="467" y1="440" x2="837" y2="113" stroke="#fff" stroke-width="5.0" opacity="0.31"/><line x1="480" y1="458" x2="702" y2="342" stroke="#fff" stroke-width="2.1" opacity="0.16"/><line x1="487" y1="478" x2="839" y2="392" stroke="#fff" stroke-width="3.4" opacity="0.23"/><circle cx="400" cy="500" r="70" fill="#fff" opacity=".26"/></symbol>
+<symbol id="m-stage" viewBox="0 0 800 1000"><polygon points="110,0 156,0 300,1000 -30,1000" fill="#fff" opacity="0.05"/><polygon points="210,0 256,0 400,1000 70,1000" fill="#fff" opacity="0.13"/><polygon points="310,0 356,0 500,1000 170,1000" fill="#fff" opacity="0.16"/><polygon points="410,0 456,0 600,1000 270,1000" fill="#fff" opacity="0.07"/><polygon points="510,0 556,0 700,1000 370,1000" fill="#fff" opacity="0.16"/><polygon points="610,0 656,0 800,1000 470,1000" fill="#fff" opacity="0.13"/><polygon points="710,0 756,0 900,1000 570,1000" fill="#fff" opacity="0.14"/></symbol>
+<symbol id="m-voice" viewBox="0 0 800 1000"><path d="M90 250 Q150 500 90 750" fill="none" stroke="#fff" stroke-width="2" opacity="0.30"/><path d="M710 250 Q650 500 710 750" fill="none" stroke="#fff" stroke-width="2" opacity="0.30"/><path d="M130 250 Q190 500 130 750" fill="none" stroke="#fff" stroke-width="3" opacity="0.27"/><path d="M670 250 Q610 500 670 750" fill="none" stroke="#fff" stroke-width="3" opacity="0.27"/><path d="M170 250 Q230 500 170 750" fill="none" stroke="#fff" stroke-width="4" opacity="0.24"/><path d="M630 250 Q570 500 630 750" fill="none" stroke="#fff" stroke-width="4" opacity="0.24"/><path d="M210 250 Q270 500 210 750" fill="none" stroke="#fff" stroke-width="5" opacity="0.21"/><path d="M590 250 Q530 500 590 750" fill="none" stroke="#fff" stroke-width="5" opacity="0.21"/><path d="M250 250 Q310 500 250 750" fill="none" stroke="#fff" stroke-width="6" opacity="0.18"/><path d="M550 250 Q490 500 550 750" fill="none" stroke="#fff" stroke-width="6" opacity="0.18"/><path d="M290 250 Q350 500 290 750" fill="none" stroke="#fff" stroke-width="7" opacity="0.15"/><path d="M510 250 Q450 500 510 750" fill="none" stroke="#fff" stroke-width="7" opacity="0.15"/><path d="M330 250 Q390 500 330 750" fill="none" stroke="#fff" stroke-width="8" opacity="0.12"/><path d="M470 250 Q410 500 470 750" fill="none" stroke="#fff" stroke-width="8" opacity="0.12"/><circle cx="400" cy="500" r="78" fill="#fff" opacity=".24"/></symbol>
+<symbol id="m-portrait" viewBox="0 0 800 1000"><circle cx="400" cy="410" r="158" fill="#fff" opacity=".22"/><path d="M120 1000C150 700 250 620 400 620s250 80 280 380Z" fill="#fff" opacity=".18"/><circle cx="400" cy="410" r="190" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.120"/><circle cx="400" cy="410" r="248" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.102"/><circle cx="400" cy="410" r="306" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.084"/><circle cx="400" cy="410" r="364" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.066"/><circle cx="400" cy="410" r="422" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.048"/></symbol>
+</defs></svg>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="#"><svg class="mark" viewBox="0 0 132 40" aria-label="ZMA Course Online"><text x="0" y="30" font-family="Georgia,serif" font-size="30" font-weight="700" letter-spacing="-1.4" fill="currentColor">ZMA</text><circle cx="80" cy="12" r="3" fill="#2647E8"/><circle cx="90" cy="12" r="3" fill="#E8371C"/><circle cx="100" cy="12" r="3" fill="#C42E86"/><circle cx="110" cy="12" r="3" fill="#E0A012"/><circle cx="120" cy="12" r="3" fill="#0E9F6E"/><text x="80" y="30" font-family="ui-monospace,monospace" font-size="7.5" letter-spacing="1.6" fill="currentColor" opacity=".72">COURSE ONLINE</text></svg></a>
+    <div class="nv-l">
+      <a href="#about">About</a><a href="#levels">Levels</a><a href="#faculties">Faculties</a>
+      <a href="#courses">Courses</a><a href="#teachers">Teachers</a><a href="#faq">FAQ</a>
+    </div>
+    <div class="nv-r">
+      <span class="lang"><b>EN</b> / FR</span>
+      <a class="si" href="#">Sign in</a>
+      <a class="btn b-f2" href="#courses">Register</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hr">
+  <div class="hr-sl">
+    <div class="hr-s"><div class="ph "><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div></div>
+    <div class="hr-s"><div class="ph "><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-choir"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div></div>
+    <div class="hr-s"><div class="ph "><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-rhythm"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div></div>
+  </div>
+  <div class="hr-sc"></div><div class="hr-tt"></div>
+  <div class="hr-in"><div class="wrap"><div class="hr-cp">
+    <p class="eb on-dk">ZTF Music Academy · Since 2018</p>
+    <h1 class="h-xl">This music is<br>our <em class="ital">language</em>.</h1>
+    <p class="hr-sub">A Christian music and worship academy, now online. Accelerated courses in keyboard, voice, percussion, strings and sound engineering, taught by working musicians who serve in the Church.</p>
+    <div class="hr-bt"><a class="btn b-g1" href="#courses">Browse courses</a><a class="btn b-lt" href="#about">Watch the video</a></div>
+  </div></div></div>
+</header>
+
+<div class="mq"><div class="mq-t"><a href="#"><i class="c1"></i>Piano, keyboard &amp; organ</a><a href="#"><i class="c2"></i>Voice &amp; vocal pedagogy</a><a href="#"><i class="c3"></i>Drums &amp; percussion</a><a href="#"><i class="c5"></i>Sound engineering</a><a href="#"><i class="c4"></i>Worship &amp; praise</a><a href="#"><i class="c1"></i>Strings</a><a href="#"><i class="c2"></i>Composition &amp; arrangement</a><a href="#"><i class="c1"></i>Piano, keyboard &amp; organ</a><a href="#"><i class="c2"></i>Voice &amp; vocal pedagogy</a><a href="#"><i class="c3"></i>Drums &amp; percussion</a><a href="#"><i class="c5"></i>Sound engineering</a><a href="#"><i class="c4"></i>Worship &amp; praise</a><a href="#"><i class="c1"></i>Strings</a><a href="#"><i class="c2"></i>Composition &amp; arrangement</a></div></div>
+
+<section class="ab" id="about"><div class="wrap"><div class="ab-g">
+  <div class="ab-im rv"><div class="ph big"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph sml"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-voice"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div>
+    <div class="ab-badge"><b>2018</b><span>Teaching since</span></div></div>
+  <div>
+    <p class="eb rv" style="color:var(--f1)">About us</p>
+    <h2 class="h-lg rv x1">Music as <span class="ital">ministry</span>,<br>taught properly.</h2>
+    <p class="lede rv x2">ZTF Music Academy is a Christian music training institution built on excellence, artistic passion and the service of God through music. Founded on solid biblical values, the academy exists to form competent, inspired and committed musicians able to serve effectively in the Church, in ministry and in the music industry.</p>
+    <ul class="ab-ul rv x3">
+      <li><i style="background:var(--f1)">&#10003;</i> Professional instructors</li>
+      <li><i style="background:var(--f2)">&#10003;</i> Develop your talent</li>
+      <li><i style="background:var(--g1)">&#10003;</i> Music as ministry</li>
+      <li><i style="background:var(--f3)">&#10003;</i> Opportunities &amp; performance</li>
+    </ul>
+    <a class="btn b-out rv x4" href="#">Read more about the academy</a>
+  </div>
+</div></div></section>
+
+<section class="lv" id="levels"><div class="wrap">
+  <div class="rv">
+    <p class="eb" style="color:var(--f2)">Our programme</p>
+    <h2 class="h-lg">Programmes <span class="ital">by level</span>.</h2>
+    <p class="lede" style="max-width:38rem">Tailored programmes that carry students through every stage of their musical development, building solid technique, creativity and confidence in performance.</p>
+  </div>
+  <div class="lv-g">
+    <article class="lvc rv"><div class="ph lvc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="lvc-bar" style="background:var(--f1)"></div>
+      <div class="lvc-bd"><div class="lvc-k" style="color:var(--f1)">Level 01 · Beginner</div>
+        <h3 class="lvc-t">Beginner</h3>
+        <p class="lvc-d">Introduction to the instrument, musical basics, reading, rhythm, posture and spiritual foundations.</p>
+        <div class="lvc-m">Early beginner &amp; beginner entry</div></div></article>
+    <article class="lvc rv x1"><div class="ph lvc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-strings"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="lvc-bar" style="background:var(--f2)"></div>
+      <div class="lvc-bd"><div class="lvc-k" style="color:var(--f2)">Level 02 · Intermediate</div>
+        <h3 class="lvc-t">Intermediate</h3>
+        <p class="lvc-d">Technical development, harmony, accompaniment, playing in a group, and a sense of ministry.</p>
+        <div class="lvc-m">Requires beginner completion</div></div></article>
+    <article class="lvc rv x2"><div class="ph lvc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="lvc-bar" style="background:var(--g1)"></div>
+      <div class="lvc-bd"><div class="lvc-k" style="color:var(--g1)">Level 03 · Advanced</div>
+        <h3 class="lvc-t">Advanced</h3>
+        <p class="lvc-d">Instrumental mastery, interpretation, improvisation, musical leadership, and service in the Church and on stage.</p>
+        <div class="lvc-m">Leads to performance &amp; ministry roles</div></div></article>
+  </div>
+</div></section>
+
+<section class="fa" id="faculties"><div class="wrap">
+  <div class="fa-hd rv">
+    <p class="eb" style="color:var(--f3)">Our courses</p>
+    <h2 class="h-lg">Three faculties.<br>Nine <span class="ital">departments</span>.</h2>
+    <p class="lede">ZTF Music Academy trains across several families of instruments and disciplines. Pick a department and the catalogue filters to it.</p>
+  </div>
+  <div class="fa-l">
+    <a class="fa-r rv" href="#" data-c="f1"><span class="fa-cd">01</span><span><span class="fa-nm">Piano, Keyboard &amp; Organ</span><span class="fa-sub">Piano · Organ · Keyboard</span></span><span class="fa-ct">Music faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x1" href="#" data-c="f2"><span class="fa-cd">02</span><span><span class="fa-nm">Voice &amp; Vocal Pedagogy</span><span class="fa-sub">Singing · Vocal technique · Choral</span></span><span class="fa-ct">Song &amp; AV faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x2" href="#" data-c="f3"><span class="fa-cd">03</span><span><span class="fa-nm">Drums &amp; Percussion</span><span class="fa-sub">Drums · Congas · Marimba · Xylophone</span></span><span class="fa-ct">Music faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x3" href="#" data-c="f1"><span class="fa-cd">04</span><span><span class="fa-nm">Strings</span><span class="fa-sub">Guitar · Bass guitar · Violin · Harp · Banjo</span></span><span class="fa-ct">Music faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x4" href="#" data-c="g2"><span class="fa-cd">05</span><span><span class="fa-nm">Sound Engineering</span><span class="fa-sub">Live sound · Studio sound · Recording</span></span><span class="fa-ct">Music faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x5" href="#" data-c="f2"><span class="fa-cd">06</span><span><span class="fa-nm">Brass &amp; Woodwind</span><span class="fa-sub">Trumpet · Tuba · Saxophone · Clarinet · Flute</span></span><span class="fa-ct">Music faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv" href="#" data-c="g1"><span class="fa-cd">07</span><span><span class="fa-nm">Composition &amp; Conducting</span><span class="fa-sub">Composition · Arrangement · Conducting</span></span><span class="fa-ct">Music faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x1" href="#" data-c="f3"><span class="fa-cd">08</span><span><span class="fa-nm">Video &amp; Broadcast</span><span class="fa-sub">Video recording · Editing &amp; broadcasting</span></span><span class="fa-ct">Song &amp; AV faculty <span class="fa-ar">&#8594;</span></span></a>
+    <a class="fa-r rv x2" href="#" data-c="f3"><span class="fa-cd">09</span><span><span class="fa-nm">Dance &amp; Theatre</span><span class="fa-sub">Dance · Theatre · Stagecraft</span></span><span class="fa-ct">Dance &amp; Theatre faculty <span class="fa-ar">&#8594;</span></span></a>
+  </div>
+</div></section>
+
+<section class="cr" id="courses"><div class="wrap">
+  <div class="cr-hd">
+    <div class="rv"><p class="eb" style="color:var(--g1)">Open for registration</p>
+      <h2 class="h-lg">Courses running now</h2></div>
+    <a class="btn b-out rv x1" href="#">See the full catalogue</a>
+  </div>
+  <div class="cr-g">
+    <article class="crd rv"><div class="ph crd-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-rhythm"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg><span class="crd-fl" style="background:var(--f3)">Beginner</span></div>
+      <div class="crd-bd"><div class="crd-ct" style="color:var(--f3)"><i style="background:var(--f3)"></i>Drums &amp; Percussion</div>
+        <h3 class="crd-tt">Drums for Beginners</h3><p class="crd-tc">Joel Mbida</p>
+        <div class="crd-ft"><span>Coming soon</span><span>Beginner</span></div></div></article>
+    <article class="crd rv x1"><div class="ph crd-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-strings"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg><span class="crd-fl" style="background:var(--f1)">Beginner</span></div>
+      <div class="crd-bd"><div class="crd-ct" style="color:var(--f1)"><i style="background:var(--f1)"></i>Strings</div>
+        <h3 class="crd-tt">Acoustic Guitar</h3><p class="crd-tc">Njimafo Guerin</p>
+        <div class="crd-ft"><span>Coming soon</span><span>Beginner</span></div></div></article>
+    <article class="crd rv x2"><div class="ph crd-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-wave"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg><span class="crd-fl" style="background:var(--f1)">Beginner</span></div>
+      <div class="crd-bd"><div class="crd-ct" style="color:var(--f1)"><i style="background:var(--f1)"></i>Strings</div>
+        <h3 class="crd-tt">Bass Guitar</h3><p class="crd-tc">Njimafo Guerin</p>
+        <div class="crd-ft"><span>Coming soon</span><span>Beginner</span></div></div></article>
+    <article class="crd rv x3"><div class="ph crd-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg><span class="crd-fl" style="background:var(--g1)">5 videos live</span></div>
+      <div class="crd-bd"><div class="crd-ct" style="color:var(--g1)"><i style="background:var(--g1)"></i>Piano, Keyboard &amp; Organ</div>
+        <h3 class="crd-tt">Piano for Beginners</h3><p class="crd-tc">Joel Ebounlo</p>
+        <div class="crd-ft"><span>5 videos</span><span>Beginner</span></div></div></article>
+  </div>
+</div></section>
+
+<section class="au">
+  <div class="auc rv"><svg class="auc-ico" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    <div class="auc-t">Children</div>
+    <div class="auc-d">Playful, foundational lessons that wake up an interest in music very early.</div></div>
+  <div class="auc rv x1"><svg class="auc-ico" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <div class="auc-t">Teenagers</div>
+    <div class="auc-d">Build skill and confidence through creative exploration and group playing.</div></div>
+  <div class="auc rv x2"><svg class="auc-ico" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1"><path d="M3 12h3l2-7 4 14 3-9 2 2h4"/></svg>
+    <div class="auc-t">Adults</div>
+    <div class="auc-d">Refine your technique, express your passion, and keep progressing musically.</div></div>
+  <div class="auc rv x3"><svg class="auc-ico" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+    <div class="auc-t">Private lessons</div>
+    <div class="auc-d">Tailored teaching for personalised, targeted progress at your own pace.</div></div>
+</section>
+
+<section class="ins"><div class="wrap">
+  <div class="rv"><p class="eb" style="color:var(--f1)">What you can study</p>
+    <h2 class="h-lg">Twenty-three instruments<br>and <span class="ital">disciplines</span>.</h2></div>
+  <div class="ins-w rv x1"><span class="chip k1">Piano</span><span class="chip k2">Organ</span><span class="chip k3">Guitar</span><span class="chip k4">Bass guitar</span><span class="chip k5">Drums</span><span class="chip k1">Congas</span><span class="chip k2">Marimba</span><span class="chip k3">Xylophone</span><span class="chip k4">Violin</span><span class="chip k5">Harp</span><span class="chip k1">Banjo</span><span class="chip k2">Saxophone</span><span class="chip k3">Trumpet</span><span class="chip k4">Tuba</span><span class="chip k5">Clarinet</span><span class="chip k1">Flutes</span><span class="chip k2">Vocal pedagogy</span><span class="chip k3">Composition</span><span class="chip k4">Conducting</span><span class="chip k5">Live sound setting</span><span class="chip k1">Studio sound setting</span><span class="chip k2">Video recording</span><span class="chip k3">Video editing &amp; broadcasting</span></div>
+</div></section>
+
+<section class="fx"><div class="ph fx-bg"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-wave"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="fx-sc"></div>
+  <div class="wrap fx-in">
+    <p class="eb on-dk rv">Why choose us</p>
+    <h2 class="h-lg rv x1" style="color:#fff;max-width:24rem">The best facilities<br>for <span class="ital">learning</span>.</h2>
+    <div class="fx-g">
+      <div class="fxc rv"><div class="fxc-i" style="background:rgba(38,71,232,.22);color:var(--f1)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M17 3l3 4-3 4M7 13l-3 4 3 4"/></svg></div>
+        <h3 class="fxc-t">Free equipment</h3><p class="fxc-d">Start with high quality gear, available to you at no extra cost.</p></div>
+      <div class="fxc rv x1"><div class="fxc-i" style="background:rgba(232,55,28,.22);color:var(--f2)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3 class="fxc-t">High technology</h3><p class="fxc-d">Advanced tools and digital platforms suited to modern music teaching.</p></div>
+      <div class="fxc rv x2"><div class="fxc-i" style="background:rgba(14,159,110,.22);color:var(--g2)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v14M8 6v6M16 6v6M4 10v2M20 10v2"/><circle cx="12" cy="19" r="3"/></svg></div>
+        <h3 class="fxc-t">Music studio</h3><p class="fxc-d">Create, rehearse and record in acoustically treated professional studios.</p></div>
+      <div class="fxc rv x3"><div class="fxc-i" style="background:rgba(224,160,18,.22);color:var(--g1)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div>
+        <h3 class="fxc-t">Expert mentors</h3><p class="fxc-d">Learn from experienced mentors committed to guiding your musical path.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="tc" id="teachers"><div class="wrap">
+  <div class="tc-hd">
+    <div class="rv"><p class="eb" style="color:var(--f2)">Our team</p>
+      <h2 class="h-lg">Your teachers<br>and <span class="ital">artists</span>.</h2></div>
+    <p class="lede rv x1">Teachers are selected on recommendation, for their human qualities, their teaching ability and the way their subject completes the academy's catalogue.</p>
+  </div>
+  <div class="tc-g">
+    <article class="tcc rv"><div class="ph tcc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="tcc-bar" style="background:var(--g2)"></div>
+      <div class="tcc-bd"><h3 class="tcc-nm">Dieudonné Mougnol</h3><div class="tcc-rl" style="color:var(--g2)">Sound Engineer</div></div></article>
+    <article class="tcc rv x1"><div class="ph tcc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="tcc-bar" style="background:var(--f3)"></div>
+      <div class="tcc-bd"><h3 class="tcc-nm">Joel Mbida</h3><div class="tcc-rl" style="color:var(--f3)">Drums &amp; Percussion</div></div></article>
+    <article class="tcc rv x2"><div class="ph tcc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="tcc-bar" style="background:var(--g1)"></div>
+      <div class="tcc-bd"><h3 class="tcc-nm">Joel Ebounlo</h3><div class="tcc-rl" style="color:var(--g1)">Piano Teacher</div></div></article>
+    <article class="tcc rv x3"><div class="ph tcc-im"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="tcc-bar" style="background:var(--f1)"></div>
+      <div class="tcc-bd"><h3 class="tcc-nm">Njimafo Guerin</h3><div class="tcc-rl" style="color:var(--f1)">Bass &amp; Theory</div></div></article>
+  </div>
+</div></section>
+
+<section class="qt"><div class="ph qt-bg"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-choir"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="qt-sc"></div>
+  <div class="wrap"><div class="qt-in">
+    <span class="qt-mk rv">&#8220;</span>
+    <p class="qt-tx rv x1">In every performance, our students echo a heritage of passion, unity and musical storytelling that connects the generations.</p>
+    <div class="qt-by rv x2">ZTF Music Academy · Voices that inspire our culture</div>
+  </div></div>
+</section>
+
+<section class="gl" aria-hidden="true">
+  <div class="gl-t gl-a"><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-wave"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-rhythm"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-strings"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-choir"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-voice"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-wave"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-rhythm"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-strings"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-choir"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-voice"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div></div>
+  <div class="gl-t gl-b"><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-choir"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-voice"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-wave"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-rhythm"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-strings"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-choir"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-voice"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr3)"/><use href="#m-portrait"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr4)"/><use href="#m-keys"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr5)"/><use href="#m-wave"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr0)"/><use href="#m-rhythm"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ph gl-i"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr1)"/><use href="#m-strings"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div></div>
+</section>
+
+<section class="fq" id="faq"><div class="wrap"><div class="fq-g">
+  <div class="rv">
+    <p class="eb" style="color:var(--f1)">Before you ask</p>
+    <h2 class="h-lg">Questions we<br>get <span class="ital">a lot</span>.</h2>
+    <p class="lede">Anything else, message us on WhatsApp. We answer 24 hours a day, seven days a week.</p>
+  </div>
+  <div class="fq-l rv x1">
+    <details class="fq-i" open><summary><span class="fq-ic"></span><span>How long does a course take?</span></summary>
+      <p>ZTF courses are accelerated. Most run between one and two weeks. Online, you work through the same material at your own pace and keep access afterwards.</p></details>
+    <details class="fq-i"><summary><span class="fq-ic"></span><span>Do I need to read music to start?</span></summary>
+      <p>No. The beginner level starts with introduction to the instrument, musical basics, reading, rhythm and posture. Reading is taught, not assumed.</p></details>
+    <details class="fq-i"><summary><span class="fq-ic"></span><span>Do I have to be a Christian to enrol?</span></summary>
+      <p>The academy is a Christian institution and the teaching is shaped by that, including spiritual foundations at beginner level and ministry work at advanced level. Anyone willing to learn in that setting is welcome to register.</p></details>
+    <details class="fq-i"><summary><span class="fq-ic"></span><span>What ages do you teach?</span></summary>
+      <p>Children, teenagers and adults, each with their own track. Private lessons are available at any age for targeted, personalised progress.</p></details>
+    <details class="fq-i"><summary><span class="fq-ic"></span><span>Do I need my own instrument?</span></summary>
+      <p>High quality equipment is available to students at no extra cost, and the academy has acoustically treated studios for rehearsal and recording.</p></details>
+  </div>
+</div></div></section>
+
+<section class="ct"><div class="ph ct-bg"><svg class="art" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="1000" fill="url(#gr2)"/><use href="#m-stage"/><rect width="800" height="1000" filter="url(#grain)" opacity=".13"/></svg></div><div class="ct-sc"></div><div class="ct-tt"></div>
+  <div class="wrap"><div class="ct-in">
+    <p class="eb on-dk ctr rv">Join the programme</p>
+    <h2 class="h-lg rv x1" style="color:#fff;margin:0 0 16px">Learn music from the<br>fundamentals <span class="ital">up</span>.</h2>
+    <p class="lede rv x2" style="max-width:44rem;margin:0 auto">Build a solid musical foundation through guided teaching in theory, technique and performance. Begin your path toward musical mastery with determination and passion.</p>
+    <div class="ct-bt rv x3"><a class="btn b-g1" href="#">Register now</a><a class="btn b-lt" href="#">Talk to us on WhatsApp</a></div>
+    <div class="ct-py rv x4">Open 24/7, Monday to Sunday · ztfmusic@academydemusic.com</div>
+  </div></div>
+</section>
+
+<footer class="ft"><div class="wrap">
+  <div class="ft-g">
+    <div>
+      <a href="#"><svg class="mark" viewBox="0 0 132 40" aria-label="ZMA Course Online"><text x="0" y="30" font-family="Georgia,serif" font-size="30" font-weight="700" letter-spacing="-1.4" fill="currentColor">ZMA</text><circle cx="80" cy="12" r="3" fill="#2647E8"/><circle cx="90" cy="12" r="3" fill="#E8371C"/><circle cx="100" cy="12" r="3" fill="#C42E86"/><circle cx="110" cy="12" r="3" fill="#E0A012"/><circle cx="120" cy="12" r="3" fill="#0E9F6E"/><text x="80" y="30" font-family="ui-monospace,monospace" font-size="7.5" letter-spacing="1.6" fill="currentColor" opacity=".72">COURSE ONLINE</text></svg></a>
+      <p class="ft-ab">ZTF Music Academy (ZMA) is a music and worship school offering accelerated courses, usually lasting between one and two weeks.</p>
+      <div class="ft-so">
+        <a href="https://www.facebook.com/ZTFMusic" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+        <a href="https://www.instagram.com/ztfmusic" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
+        <a href="https://www.youtube.com/@ztfmusic" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2s-.2-1.4-.8-2c-.7-.8-1.5-.8-1.9-.9C16.3 4.1 12 4.1 12 4.1s-4.3 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2-.8 2S2.2 8.8 2.2 10.5v1.6c0 1.6.2 3.3.2 3.3s.2 1.4.8 2c.7.8 1.7.7 2.1.8 1.5.1 6.7.2 6.7.2s4.3 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.6c0-1.7-.2-3.3-.2-3.3zM10 14.6V8.9l5.5 2.9-5.5 2.8z"/></svg></a>
+        <a href="https://www.tiktok.com/@ztfmusic" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.4 2.1 1.7 3.6 3.9 3.8v2.6c-1.4.1-2.7-.3-3.9-1.1v5.4c0 3.6-2.8 6.3-6.2 6.3-2.2 0-4.2-1.2-5.2-3.1-1.6-3 .5-7.1 4.2-7.4.5 0 1 0 1.5.1v2.8c-1.9-.6-3.5.8-3.2 2.5.2 1.1 1.2 1.9 2.4 1.8 1.4-.1 2.3-1.2 2.3-2.6V3H16z"/></svg></a>
+      </div>
+    </div>
+    <div class="ft-c1"><h5>Learn</h5><ul><li><a href="#about">About us</a></li><li><a href="#levels">Programmes</a></li><li><a href="#courses">All courses</a></li><li><a href="#teachers">Our team</a></li><li><a href="#">Achievements</a></li></ul></div>
+    <div class="ft-c2"><h5>Support</h5><ul><li><a href="#faq">FAQ</a></li><li><a href="#">Resources</a></li><li><a href="#">Register</a></li><li><a href="#">WhatsApp us</a></li></ul></div>
+    <div class="ft-c3"><h5>Contact</h5><ul><li><a href="tel:+352661700892">+352 661 700 892</a></li><li><a href="mailto:ztfmusic@academydemusic.com">ztfmusic@academydemusic.com</a></li><li>Rue de la Cavantine 16<br>1080 Molenbeek-Saint-Jean<br>Belgium</li><li>Open 24/7, Monday to Sunday</li></ul></div>
+  </div>
+  <div class="ft-bt"><p>&copy; 2026 ZTF Music Academy. All rights reserved.</p><p>ZMA Course Online</p></div>
+</div></footer>
+
+<script>
+/* Optional enhancement. The page is complete without this file. */
+document.documentElement.className += ' js';
+(function(){
+  var nav = document.querySelector('.nav');
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('stuck', window.scrollY > 60);
+  }, {passive:true});
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:.08, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

@@ -108,16 +108,16 @@ export const CoursePlayer = () => {
           <Lock className="h-8 w-8 text-destructive" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">Accès restreint</h2>
-          <p className="text-muted-foreground mt-2">Vous devez vous inscrire à ce cours pour accéder au contenu.</p>
+          <h2 className="text-2xl font-bold">Restricted access</h2>
+          <p className="text-muted-foreground mt-2">You need to enroll in this course to access its content.</p>
         </div>
         {course && (
           <Link to={`/checkout/${course.id}`}>
-            <Button size="lg" className="gap-2">S'inscrire pour {course.price}€</Button>
+            <Button size="lg" className="gap-2">Enroll for {course.price}€</Button>
           </Link>
         )}
         <Link to="/catalogue">
-          <Button variant="outline">Retour au catalogue</Button>
+          <Button variant="outline">Back to catalog</Button>
         </Link>
       </div>
     )
@@ -180,12 +180,12 @@ export const CoursePlayer = () => {
         <div className="flex items-center gap-4 border-b border-border px-6 py-3 bg-card/80 backdrop-blur-sm">
           <Link to="/dashboard">
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground h-8 px-2.5">
-              <ChevronLeft className="h-4 w-4" /> Mon espace
+              <ChevronLeft className="h-4 w-4" /> My Space
             </Button>
           </Link>
           <Separator orientation="vertical" className="h-4" />
-          <p className="text-sm font-semibold truncate flex-1">{course?.title ?? 'Cours'}</p>
-          <Badge variant="muted" className="text-xs">{doneCount}/{allLessons.length} leçons</Badge>
+          <p className="text-sm font-semibold truncate flex-1">{course?.title ?? 'Course'}</p>
+          <Badge variant="muted" className="text-xs">{doneCount}/{allLessons.length} lessons</Badge>
           <Link to={`/chat/${courseId}`}>
             <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
               <MessageSquare className="h-3.5 w-3.5" /> Chat
@@ -256,12 +256,12 @@ export const CoursePlayer = () => {
                       onClick={() => markLessonComplete(activeLesson)}
                       className="flex items-center gap-1.5 text-xs text-white/70 hover:text-white border border-white/20 rounded-full px-3 py-1 transition-colors"
                     >
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Terminé
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Done
                     </button>
                   )}
                   {activeLesson && completedLessons.includes(activeLesson) && (
                     <span className="flex items-center gap-1.5 text-xs text-emerald-400">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Leçon complétée
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Lesson completed
                     </span>
                   )}
                   <button
@@ -296,15 +296,15 @@ export const CoursePlayer = () => {
                 </div>
                 <p className="text-sm text-white/60 text-center max-w-xs">
                   {activeItem
-                    ? `"${activeItem.title}" — Aucune vidéo disponible pour cette leçon.`
-                    : 'Sélectionnez une leçon dans le panneau latéral.'}
+                    ? `"${activeItem.title}" — No video available for this lesson.`
+                    : 'Select a lesson from the side panel.'}
                 </p>
                 {activeLesson && !completedLessons.includes(activeLesson) && (
                   <button
                     onClick={() => markLessonComplete(activeLesson)}
                     className="text-xs text-white/50 hover:text-white/80 border border-white/20 rounded-full px-3 py-1 transition-colors"
                   >
-                    Marquer comme terminé
+                    Mark as complete
                   </button>
                 )}
               </div>
@@ -317,13 +317,13 @@ export const CoursePlayer = () => {
           <Tabs defaultValue="overview">
             <TabsList>
               <TabsTrigger value="overview" className="gap-1.5 text-xs">
-                <BookOpen className="h-3.5 w-3.5" /> Vue d'ensemble
+                <BookOpen className="h-3.5 w-3.5" /> Overview
               </TabsTrigger>
               <TabsTrigger value="resources" className="gap-1.5 text-xs">
-                <FileText className="h-3.5 w-3.5" /> Ressources
+                <FileText className="h-3.5 w-3.5" /> Resources
               </TabsTrigger>
               <TabsTrigger value="notes" className="gap-1.5 text-xs">
-                <StickyNote className="h-3.5 w-3.5" /> Mes notes
+                <StickyNote className="h-3.5 w-3.5" /> My Notes
               </TabsTrigger>
               <TabsTrigger value="qa" className="gap-1.5 text-xs">
                 <MessageSquare className="h-3.5 w-3.5" /> Q&A
@@ -332,27 +332,27 @@ export const CoursePlayer = () => {
 
             <TabsContent value="overview" className="mt-4">
               <h3 className="font-semibold mb-1.5">
-                {activeItem?.title ?? 'Sélectionnez une leçon dans le menu latéral'}
+                {activeItem?.title ?? 'Select a lesson from the side menu'}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {activeItem
-                  ? `Module : ${activeItem.sectionTitle}.${activeItem.mediaId ? ' Vidéo disponible.' : ' Aucune vidéo pour cette leçon.'}`
-                  : 'Choisissez une leçon pour commencer votre apprentissage.'}
+                  ? `Module: ${activeItem.sectionTitle}.${activeItem.mediaId ? ' Video available.' : ' No video for this lesson.'}`
+                  : 'Choose a lesson to start learning.'}
               </p>
               {progress === 100 && (
                 <div className="mt-3 flex items-center gap-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3">
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  <p className="text-sm font-medium">Félicitations ! Vous avez terminé ce cours. Votre certificat est disponible dans votre espace.</p>
+                  <p className="text-sm font-medium">Congratulations! You've completed this course. Your certificate is available in your dashboard.</p>
                 </div>
               )}
             </TabsContent>
             <TabsContent value="resources">
-              <p className="text-sm text-muted-foreground mt-4">Aucune ressource téléchargeable pour cette leçon.</p>
+              <p className="text-sm text-muted-foreground mt-4">No downloadable resources for this lesson.</p>
             </TabsContent>
             <TabsContent value="notes">
               <textarea
                 className="w-full h-20 text-sm border border-input rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
-                placeholder="Prenez vos notes ici... (non sauvegardées)"
+                placeholder="Take your notes here... (not saved)"
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
               />
@@ -361,7 +361,7 @@ export const CoursePlayer = () => {
               <div className="mt-4 flex gap-3">
                 <Link to={`/chat/${courseId}`}>
                   <Button size="sm" variant="outline" className="gap-1.5">
-                    <MessageSquare className="h-3.5 w-3.5" /> Poser une question dans le chat
+                    <MessageSquare className="h-3.5 w-3.5" /> Ask a question in chat
                   </Button>
                 </Link>
               </div>
@@ -375,7 +375,7 @@ export const CoursePlayer = () => {
         {/* Progress */}
         <div className="p-4 border-b border-border space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Progression</span>
+            <span className="font-medium">Progress</span>
             <span className="text-muted-foreground font-semibold">{progress}%</span>
           </div>
           <Progress value={progress} />
@@ -421,7 +421,7 @@ export const CoursePlayer = () => {
                       <div className="flex-1 min-w-0">
                         <span className="truncate font-medium text-xs block">{lesson.title}</span>
                         {lesson.mediaId && (
-                          <span className="text-[10px] opacity-60">▶ Vidéo disponible</span>
+                          <span className="text-[10px] opacity-60">▶ Video available</span>
                         )}
                       </div>
                     </button>
@@ -431,7 +431,7 @@ export const CoursePlayer = () => {
             ))}
             {curriculum.length === 0 && (
               <p className="text-xs text-muted-foreground px-3 py-4 text-center">
-                Programme en cours de construction.
+                Curriculum is being built.
               </p>
             )}
           </div>
@@ -440,7 +440,7 @@ export const CoursePlayer = () => {
         {/* Next */}
         <div className="p-4 border-t border-border">
           <Button className="w-full gap-2" size="sm" onClick={goNext} disabled={activeIdx >= allLessons.length - 1}>
-            Leçon suivante <SkipForward className="h-3.5 w-3.5" />
+            Next lesson <SkipForward className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>
