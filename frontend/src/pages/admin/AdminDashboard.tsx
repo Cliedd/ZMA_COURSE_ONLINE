@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Users, BookOpen, Clock, TrendingUp, CheckCircle2, XCircle, ShieldCheck, Loader2, Eye, RefreshCw } from 'lucide-react'
+import { Users, BookOpen, Clock, TrendingUp, CheckCircle2, XCircle, ShieldCheck, Loader2, Eye, RefreshCw, Archive, PlayCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
@@ -9,66 +9,76 @@ import { Separator } from '../../components/ui/separator'
 import { courseApi } from '../../services/api'
 import type { Course } from '../../types'
 
+type ActionKind = 'startReview' | 'approve' | 'reject' | 'archive' | 'delete'
+
 export const AdminDashboard = () => {
   const queryClient = useQueryClient()
-  const [actionLoading, setActionLoading] = useState<Record<string, 'publish' | 'delete' | null>>({})
+  const [actionLoading, setActionLoading] = useState<Record<string, ActionKind | null>>({})
 
-  // Load all courses (published + unpublished) — admin endpoint
+  // Load all courses across every status — admin endpoint
   const { data: allCourses = [], isLoading, error } = useQuery<Course[]>({
     queryKey: ['admin-courses'],
     queryFn: () => courseApi.getAllAdmin({ size: 500 }),
   })
 
-  const publishedCourses = allCourses.filter(c => c.published)
-  const pendingCourses = allCourses.filter(c => !c.published)
+  const submittedCourses = allCourses.filter(c => c.status === 'SUBMITTED')
+  const inReviewCourses = allCourses.filter(c => c.status === 'IN_REVIEW')
+  const publishedCourses = allCourses.filter(c => c.status === 'PUBLISHED')
+  const pendingCourses = [...submittedCourses, ...inReviewCourses]
 
-  const handlePublish = async (courseId: string, published: boolean) => {
-    setActionLoading(prev => ({ ...prev, [courseId]: 'publish' }))
+  const runAction = async (courseId: string, kind: ActionKind, action: () => Promise<unknown>) => {
+    setActionLoading(prev => ({ ...prev, [courseId]: kind }))
     try {
-      await courseApi.publish(courseId, published)
+      await action()
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
     } finally {
       setActionLoading(prev => ({ ...prev, [courseId]: null }))
     }
   }
 
-  const handleReject = async (courseId: string) => {
-    if (!confirm('Supprimer ce cours ? Cette action est irréversible.')) return
-    setActionLoading(prev => ({ ...prev, [courseId]: 'delete' }))
-    try {
-      await courseApi.delete(courseId)
-      queryClient.invalidateQueries({ queryKey: ['admin-courses'] })
-    } finally {
-      setActionLoading(prev => ({ ...prev, [courseId]: null }))
-    }
+  const handleStartReview = (courseId: string) =>
+    runAction(courseId, 'startReview', () => courseApi.startReview(courseId))
+
+  const handleApprove = (courseId: string) =>
+    runAction(courseId, 'approve', () => courseApi.approve(courseId))
+
+  const handleReject = (courseId: string) => {
+    const comment = prompt('Reason for rejection (visible to the teacher):')
+    if (!comment || !comment.trim()) return
+    return runAction(courseId, 'reject', () => courseApi.reject(courseId, comment.trim()))
+  }
+
+  const handleArchive = (courseId: string) => {
+    if (!confirm('Archive this course? It will be removed from the public catalog; enrolled students will keep their access.')) return
+    return runAction(courseId, 'archive', () => courseApi.archive(courseId))
   }
 
   const kpis = [
     {
-      label: 'Cours publiés',
+      label: 'Published Courses',
       value: isLoading ? '…' : String(publishedCourses.length),
-      change: `${allCourses.length} cours au total`,
+      change: `${allCourses.length} courses total`,
       icon: BookOpen,
       color: 'text-emerald-600 bg-emerald-50',
     },
     {
-      label: 'En attente',
+      label: 'Pending',
       value: isLoading ? '…' : String(pendingCourses.length),
-      change: 'Brouillons à valider',
+      change: 'Courses to review',
       icon: Clock,
       color: 'text-amber-600 bg-amber-50',
     },
     {
-      label: 'Utilisateurs',
+      label: 'Users',
       value: '—',
-      change: 'API non disponible',
+      change: 'API unavailable',
       icon: Users,
       color: 'text-blue-600 bg-blue-50',
     },
     {
-      label: 'Revenus',
+      label: 'Revenue',
       value: '—',
-      change: 'API non disponible',
+      change: 'API unavailable',
       icon: TrendingUp,
       color: 'text-violet-600 bg-violet-50',
     },
@@ -85,7 +95,7 @@ export const AdminDashboard = () => {
           </div>
           <div>
             <h1 className="text-2xl font-bold">Administration</h1>
-            <p className="text-sm text-muted-foreground">Vue d'ensemble de la plateforme</p>
+            <p className="text-sm text-muted-foreground">Platform overview</p>
           </div>
         </div>
         <Button
@@ -94,7 +104,7 @@ export const AdminDashboard = () => {
           className="gap-1.5 text-xs"
           onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-courses'] })}
         >
-          <RefreshCw className="h-3.5 w-3.5" /> Actualiser
+          <RefreshCw className="h-3.5 w-3.5" /> Refresh
         </Button>
       </div>
 
@@ -120,8 +130,8 @@ export const AdminDashboard = () => {
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">File de validation des cours</CardTitle>
-            <Badge variant="secondary" className="text-xs">{pendingCourses.length} en attente</Badge>
+            <CardTitle className="text-base">Course Validation Queue</CardTitle>
+            <Badge variant="secondary" className="text-xs">{pendingCourses.length} pending</Badge>
           </div>
         </CardHeader>
         <Separator />
@@ -132,20 +142,20 @@ export const AdminDashboard = () => {
             </div>
           ) : error ? (
             <div className="py-10 text-center text-sm text-destructive">
-              Erreur lors du chargement des cours.
+              Error loading courses.
             </div>
           ) : pendingCourses.length === 0 ? (
             <div className="flex flex-col items-center py-10 gap-2 text-center">
               <CheckCircle2 className="h-8 w-8 text-emerald-500" />
-              <p className="text-sm text-muted-foreground">Aucun cours en attente de validation.</p>
+              <p className="text-sm text-muted-foreground">No courses pending review.</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Cours</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">Niveau</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden lg:table-cell">Prix</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Course</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">Status</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden lg:table-cell">Price</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -161,13 +171,12 @@ export const AdminDashboard = () => {
                         </div>
                       </td>
                       <td className="px-4 py-4 hidden md:table-cell">
-                        {course.level
-                          ? <Badge variant="outline" className="text-xs">{course.level}</Badge>
-                          : <span className="text-xs text-muted-foreground">—</span>
-                        }
+                        <Badge variant="outline" className="text-xs">
+                          {course.status === 'SUBMITTED' ? 'Submitted' : 'In Review'}
+                        </Badge>
                       </td>
                       <td className="px-4 py-4 hidden lg:table-cell text-xs text-muted-foreground">
-                        {course.price === 0 ? 'Gratuit' : `${course.price} €`}
+                        {course.price === 0 ? 'Free' : `${course.price} €`}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2 justify-end">
@@ -178,31 +187,48 @@ export const AdminDashboard = () => {
                               </Button>
                             </Link>
                           )}
-                          <Button
-                            size="sm"
-                            className="gap-1.5 text-xs h-7 bg-emerald-600 hover:bg-emerald-700 text-white"
-                            onClick={() => handlePublish(course.id, true)}
-                            disabled={!!loading}
-                          >
-                            {loading === 'publish'
-                              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              : <CheckCircle2 className="h-3.5 w-3.5" />
-                            }
-                            Valider
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="gap-1.5 text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/5"
-                            onClick={() => handleReject(course.id)}
-                            disabled={!!loading}
-                          >
-                            {loading === 'delete'
-                              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              : <XCircle className="h-3.5 w-3.5" />
-                            }
-                            Rejeter
-                          </Button>
+                          {course.status === 'SUBMITTED' ? (
+                            <Button
+                              size="sm"
+                              className="gap-1.5 text-xs h-7 bg-primary hover:bg-primary/90 text-white"
+                              onClick={() => handleStartReview(course.id)}
+                              disabled={!!loading}
+                            >
+                              {loading === 'startReview'
+                                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                : <PlayCircle className="h-3.5 w-3.5" />
+                              }
+                              Start review
+                            </Button>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                className="gap-1.5 text-xs h-7 bg-emerald-600 hover:bg-emerald-700 text-white"
+                                onClick={() => handleApprove(course.id)}
+                                disabled={!!loading}
+                              >
+                                {loading === 'approve'
+                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  : <CheckCircle2 className="h-3.5 w-3.5" />
+                                }
+                                Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-1.5 text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/5"
+                                onClick={() => handleReject(course.id)}
+                                disabled={!!loading}
+                              >
+                                {loading === 'reject'
+                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  : <XCircle className="h-3.5 w-3.5" />
+                                }
+                                Reject
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -219,8 +245,8 @@ export const AdminDashboard = () => {
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Cours publiés</CardTitle>
-              <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700">{publishedCourses.length} publiés</Badge>
+              <CardTitle className="text-base">Published Courses</CardTitle>
+              <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700">{publishedCourses.length} published</Badge>
             </div>
           </CardHeader>
           <Separator />
@@ -228,9 +254,9 @@ export const AdminDashboard = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Cours</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">Niveau</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden lg:table-cell">Étudiants</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Course</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden md:table-cell">Level</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden lg:table-cell">Students</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -252,7 +278,7 @@ export const AdminDashboard = () => {
                         }
                       </td>
                       <td className="px-4 py-4 hidden lg:table-cell text-xs text-muted-foreground">
-                        {course.studentsCount ?? 0} étudiant{(course.studentsCount ?? 0) !== 1 ? 's' : ''}
+                        {course.studentsCount ?? 0} student{(course.studentsCount ?? 0) !== 1 ? 's' : ''}
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2 justify-end">
@@ -267,10 +293,14 @@ export const AdminDashboard = () => {
                             size="sm"
                             variant="outline"
                             className="gap-1.5 text-xs h-7 text-amber-600 border-amber-300 hover:bg-amber-50"
-                            onClick={() => handlePublish(course.id, false)}
+                            onClick={() => handleArchive(course.id)}
                             disabled={!!loading}
                           >
-                            Dépublier
+                            {loading === 'archive'
+                              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              : <Archive className="h-3.5 w-3.5" />
+                            }
+                            Archive
                           </Button>
                         </div>
                       </td>

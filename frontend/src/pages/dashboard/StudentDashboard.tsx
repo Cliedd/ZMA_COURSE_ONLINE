@@ -28,12 +28,12 @@ const StatCard = ({ label, value, icon: Icon, sub }: any) => (
 
 // Generate a printable HTML certificate in a new tab
 function downloadCertificate(certNumber: string, courseTitle: string, email: string) {
-  const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  const date = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
   const html = `<!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>Certificat ${certNumber}</title>
+<title>Certificate ${certNumber}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -60,14 +60,14 @@ function downloadCertificate(certNumber: string, courseTitle: string, email: str
   <div class="logo">ZTF <span>Music</span></div>
   <div class="academy">Academy</div>
   <div class="divider"></div>
-  <div class="headline">Certificat de réussite</div>
-  <div class="title">Félicitations !</div>
-  <p class="text">Ce certificat est décerné à</p>
+  <div class="headline">Certificate of Completion</div>
+  <div class="title">Congratulations!</div>
+  <p class="text">This certificate is awarded to</p>
   <div class="name">${email}</div>
-  <p class="text">pour avoir complété avec succès le cours</p>
+  <p class="text">for successfully completing the course</p>
   <div class="course">${courseTitle}</div>
   <div class="cert-num">${certNumber}</div>
-  <div class="date">Délivré le ${date}</div>
+  <div class="date">Issued on ${date}</div>
   <div class="seal"><div class="seal-text">ZTF<br/>Academy</div></div>
 </div>
 <script>window.onload=()=>window.print()</script>
@@ -116,41 +116,41 @@ export const StudentDashboard = () => {
             <AvatarFallback className="text-sm font-semibold">{initials}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold">Mon espace étudiant</h1>
+            <h1 className="text-2xl font-bold">My Student Space</h1>
             <p className="text-sm text-muted-foreground">{email}</p>
           </div>
         </div>
         <Link to="/catalogue">
           <Button variant="outline" size="sm" className="gap-2">
-            Découvrir des cours <ArrowRight className="h-3.5 w-3.5" />
+            Discover courses <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </Link>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Cours inscrits" value={isLoading ? '—' : enrollments.length} icon={BookOpen} sub="Tous statuts confondus" />
-        <StatCard label="En cours" value={isLoading ? '—' : inProgress.length} icon={TrendingUp} sub={`Progression moyenne : ${avgProgress}%`} />
-        <StatCard label="Certificats" value={isLoading ? '—' : certificates.length} icon={Award} sub="Cours terminés à 100%" />
+        <StatCard label="Enrolled Courses" value={isLoading ? '—' : enrollments.length} icon={BookOpen} sub="All statuses" />
+        <StatCard label="In Progress" value={isLoading ? '—' : inProgress.length} icon={TrendingUp} sub={`Average progress: ${avgProgress}%`} />
+        <StatCard label="Certificates" value={isLoading ? '—' : certificates.length} icon={Award} sub="Courses completed 100%" />
       </div>
 
       {/* In progress */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Mes cours</CardTitle>
+          <CardTitle className="text-base">My Courses</CardTitle>
         </CardHeader>
         <Separator />
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-6 text-sm text-muted-foreground">Chargement...</div>
+            <div className="p-6 text-sm text-muted-foreground">Loading...</div>
           ) : enrollments.length === 0 ? (
             <div className="flex flex-col items-center py-10 gap-3 text-center">
               <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">Vous n'êtes inscrit à aucun cours.</p>
+              <p className="text-sm text-muted-foreground">You're not enrolled in any courses yet.</p>
               <Link to="/catalogue">
-                <Button size="sm" variant="outline">Parcourir le catalogue</Button>
+                <Button size="sm" variant="outline">Browse the catalog</Button>
               </Link>
             </div>
           ) : (
@@ -165,7 +165,7 @@ export const StudentDashboard = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {e.courseTitle || `Cours ${e.courseId.slice(0, 8)}`}
+                        {e.courseTitle || `Course ${e.courseId.slice(0, 8)}`}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         {e.courseLevel && (
@@ -187,7 +187,7 @@ export const StudentDashboard = () => {
                       </Link>
                       <Link to={`/learning/${e.courseId}`}>
                         <Button size="sm" variant="ghost" className="gap-1.5 text-xs">
-                          {progress > 0 ? 'Reprendre' : 'Commencer'} <ArrowRight className="h-3 w-3" />
+                          {progress > 0 ? 'Resume' : 'Start'} <ArrowRight className="h-3 w-3" />
                         </Button>
                       </Link>
                     </div>
@@ -204,7 +204,7 @@ export const StudentDashboard = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <CreditCard className="h-4 w-4" /> Historique de paiements
+              <CreditCard className="h-4 w-4" /> Payment History
             </CardTitle>
           </CardHeader>
           <Separator />
@@ -216,13 +216,13 @@ export const StudentDashboard = () => {
                     <CreditCard className="h-4 w-4 text-emerald-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">Paiement cours</p>
+                    <p className="text-sm font-medium">Course payment</p>
                     <p className="text-xs text-muted-foreground font-mono mt-0.5">{p.id.slice(0, 12).toUpperCase()}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold">{p.amount}€</p>
                     <Badge variant={p.status === 'SUCCESS' ? 'success' : 'muted'} className="text-[10px]">
-                      {p.status === 'SUCCESS' ? 'Validé' : p.status}
+                      {p.status === 'SUCCESS' ? 'Paid' : p.status}
                     </Badge>
                   </div>
                 </li>
@@ -237,7 +237,7 @@ export const StudentDashboard = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <Award className="h-4 w-4 text-secondary" /> Mes certificats
+              <Award className="h-4 w-4 text-secondary" /> My Certificates
             </CardTitle>
           </CardHeader>
           <Separator />
@@ -245,7 +245,7 @@ export const StudentDashboard = () => {
             <ul className="divide-y divide-border">
               {certificates.map(c => {
                 const enrollment = enrollments.find(e => e.courseId === c.courseId)
-                const courseTitle = enrollment?.courseTitle ?? `Cours ${c.courseId.slice(0, 8)}`
+                const courseTitle = enrollment?.courseTitle ?? `Course ${c.courseId.slice(0, 8)}`
                 return (
                   <li key={c.id} className="flex items-center gap-4 px-6 py-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 shrink-0">
@@ -256,14 +256,14 @@ export const StudentDashboard = () => {
                       <p className="text-xs text-muted-foreground font-mono mt-0.5">{c.certNumber}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="success" className="shrink-0">Obtenu</Badge>
+                      <Badge variant="success" className="shrink-0">Earned</Badge>
                       <Button
                         size="sm"
                         variant="outline"
                         className="gap-1.5 text-xs h-7 shrink-0"
                         onClick={() => downloadCertificate(c.certNumber, courseTitle, email ?? '')}
                       >
-                        <Download className="h-3 w-3" /> Télécharger
+                        <Download className="h-3 w-3" /> Download
                       </Button>
                     </div>
                   </li>
@@ -279,7 +279,7 @@ export const StudentDashboard = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
-              <Award className="h-4 w-4 text-emerald-500" /> Cours terminés
+              <Award className="h-4 w-4 text-emerald-500" /> Completed Courses
             </CardTitle>
           </CardHeader>
           <Separator />
@@ -293,7 +293,7 @@ export const StudentDashboard = () => {
                       <Award className="h-4 w-4 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium">{e.courseTitle || `Cours ${e.courseId.slice(0, 8)}`}</p>
+                      <p className="text-sm font-medium">{e.courseTitle || `Course ${e.courseId.slice(0, 8)}`}</p>
                       {e.courseLevel && (
                         <Badge variant="outline" className="text-[10px] py-0 h-4 mt-0.5">{e.courseLevel}</Badge>
                       )}

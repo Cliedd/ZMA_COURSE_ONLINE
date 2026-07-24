@@ -11,8 +11,8 @@ import { cn } from '../../lib/utils'
 
 // Only 2 real steps — structure/video editing happens in the full CourseEditor
 const steps = [
-  { id: 1, label: 'Informations', icon: BookOpen, desc: 'Titre et description' },
-  { id: 2, label: 'Tarification', icon: DollarSign, desc: 'Prix du cours' },
+  { id: 1, label: 'Information', icon: BookOpen, desc: 'Title and description' },
+  { id: 2, label: 'Pricing', icon: DollarSign, desc: 'Course price' },
 ]
 
 export const CourseWizard = () => {
@@ -27,14 +27,14 @@ export const CourseWizard = () => {
 
   const handleSubmit = async () => {
     setError(null)
-    if (!title.trim()) { setError('Le titre est obligatoire.'); return }
-    if (price === '' || Number(price) < 0) { setError('Veuillez saisir un prix valide (0 = gratuit).'); return }
+    if (!title.trim()) { setError('Title is required.'); return }
+    if (price === '' || Number(price) < 0) { setError('Please enter a valid price (0 = free).'); return }
     try {
       const course = await createCourse.mutateAsync({ title, description, price: Number(price) })
       // Redirect directly to the full editor so the teacher can set up sections, videos, etc.
       navigate(`/teacher/cours/${course.id}`)
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? 'Erreur lors de la création du cours.')
+      setError(e?.response?.data?.message ?? 'Error creating the course.')
     }
   }
 
@@ -47,9 +47,9 @@ export const CourseWizard = () => {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Créer un nouveau cours</h1>
+        <h1 className="text-2xl font-bold">Create a new course</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Donnez un titre et un prix, puis vous configurerez tout le reste dans l'éditeur complet.
+          Give it a title and a price — you'll configure everything else in the full editor.
         </p>
       </div>
 
@@ -91,33 +91,33 @@ export const CourseWizard = () => {
             <p className="text-sm font-semibold">{steps[step - 1].label}</p>
             <p className="text-xs text-muted-foreground">{steps[step - 1].desc}</p>
           </div>
-          <Badge variant="muted" className="ml-auto text-[10px]">Étape {step}/2</Badge>
+          <Badge variant="muted" className="ml-auto text-[10px]">Step {step}/2</Badge>
         </div>
 
         <div className="px-8 py-8 min-h-[260px]">
           {step === 1 && (
             <div className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="title">Titre du cours <span className="text-destructive">*</span></Label>
+                <Label htmlFor="title">Course title <span className="text-destructive">*</span></Label>
                 <Input
                   id="title"
-                  placeholder="ex : Jazz Harmony Fundamentals"
+                  placeholder="e.g. Jazz Harmony Fundamentals"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   className="h-11"
                 />
-                <p className="text-xs text-muted-foreground">Choisissez un titre clair et accrocheur — c'est la première chose que vos étudiants verront.</p>
+                <p className="text-xs text-muted-foreground">Choose a clear, catchy title — it's the first thing students will see.</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="desc">Description <span className="text-muted-foreground text-xs">(optionnel)</span></Label>
+                <Label htmlFor="desc">Description <span className="text-muted-foreground text-xs">(optional)</span></Label>
                 <textarea
                   id="desc"
                   className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary transition-colors resize-none h-28"
-                  placeholder="Décrivez ce que les étudiants vont apprendre..."
+                  placeholder="Describe what students will learn..."
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">Vous pourrez compléter la description complète dans l'éditeur.</p>
+                <p className="text-xs text-muted-foreground">You'll be able to fill out the full description in the editor.</p>
               </div>
             </div>
           )}
@@ -125,7 +125,7 @@ export const CourseWizard = () => {
           {step === 2 && (
             <div className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="price">Prix en euros <span className="text-destructive">*</span></Label>
+                <Label htmlFor="price">Price in euros <span className="text-destructive">*</span></Label>
                 <div className="relative w-48">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">€</span>
                   <Input
@@ -139,27 +139,27 @@ export const CourseWizard = () => {
                     onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">Entrez 0 pour un cours gratuit. Vous pourrez modifier le prix depuis l'éditeur.</p>
+                <p className="text-xs text-muted-foreground">Enter 0 for a free course. You can change the price later from the editor.</p>
               </div>
 
               <Separator />
 
               <div className="rounded-xl bg-muted/50 border border-border p-4 space-y-2.5 text-sm">
-                <p className="font-semibold text-foreground">Récapitulatif</p>
+                <p className="font-semibold text-foreground">Summary</p>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Titre</span>
+                  <span>Title</span>
                   <span className="font-medium text-foreground truncate max-w-[200px]">{title || '—'}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Prix</span>
+                  <span>Price</span>
                   <span className="font-medium text-foreground">
-                    {price === '' ? '—' : price === 0 ? 'Gratuit' : `${price}€`}
+                    {price === '' ? '—' : price === 0 ? 'Free' : `${price}€`}
                   </span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Étape suivante</span>
+                  <span>Next step</span>
                   <span className="flex items-center gap-1 text-primary font-medium text-xs">
-                    <Pencil className="h-3 w-3" /> Éditeur complet
+                    <Pencil className="h-3 w-3" /> Full editor
                   </span>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export const CourseWizard = () => {
             disabled={step === 1}
             onClick={() => setStep(s => s - 1)}
           >
-            Précédent
+            Back
           </Button>
 
           <Button
@@ -189,9 +189,9 @@ export const CourseWizard = () => {
           >
             {step === 2
               ? createCourse.isPending
-                ? <><Loader2 className="h-4 w-4 animate-spin" /> Création...</>
-                : <><Pencil className="h-4 w-4" /> Créer et éditer</>
-              : <>Continuer <ChevronRight className="h-4 w-4" /></>
+                ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating...</>
+                : <><Pencil className="h-4 w-4" /> Create and edit</>
+              : <>Continue <ChevronRight className="h-4 w-4" /></>
             }
           </Button>
         </div>

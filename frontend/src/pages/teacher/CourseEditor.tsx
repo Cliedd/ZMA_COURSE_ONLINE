@@ -4,12 +4,12 @@ import { useAuthStore } from '../../store/authStore'
 import { useCourse } from '../../hooks/useCourses'
 import { courseApi, mediaApi } from '../../services/api'
 import { useQueryClient } from '@tanstack/react-query'
-import type { CurriculumSection } from '../../types'
+import type { CurriculumSection, CourseStatus } from '../../types'
 import {
   ChevronLeft, Save, Plus, Trash2, GripVertical, Upload,
   CheckCircle2, Loader2, Eye, BookOpen, Layout, Video,
-  AlertCircle, Play, X, Globe, Lock, Target, Settings,
-  Image as ImageIcon, Film, CheckCheck, RefreshCw,
+  AlertCircle, Play, X, Lock, Target, Settings,
+  Image as ImageIcon, Film, CheckCheck, RefreshCw, Send, Clock,
 } from 'lucide-react'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
@@ -20,27 +20,27 @@ import { cn } from '../../lib/utils'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const LEVELS = ['Licence', 'Master', 'Doctorat', 'Certificat', 'Atelier'] as const
+const LEVELS = ['Bachelor\'s', 'Master\'s', 'Doctorate', 'Certificate'] as const
 
 const DEPTS = [
-  'Interprétation et Pratique Instrumentale',
-  'Composition, Écriture et Théorie Musicale',
-  'Technologies Musicales et Production Audiovisuelle',
-  'Pédagogie Musicale et Formation des Formateurs',
-  'Musicologie, Patrimoine et Management Culturel',
+  'Performance & Instrumental Practice',
+  'Composition, Writing & Music Theory',
+  'Music Technology & Audiovisual Production',
+  'Music Education & Teacher Training',
+  'Musicology, Heritage & Cultural Management',
 ]
 
 const GRADIENTS = [
-  { label: 'Bleu royal',    from: 'from-blue-700',    to: 'to-blue-900' },
-  { label: 'Ambre-Orange',  from: 'from-amber-600',   to: 'to-orange-800' },
-  { label: 'Émeraude',      from: 'from-emerald-600', to: 'to-teal-800' },
-  { label: 'Violet',        from: 'from-purple-600',  to: 'to-violet-900' },
+  { label: 'Royal Blue',    from: 'from-blue-700',    to: 'to-blue-900' },
+  { label: 'Amber-Orange',  from: 'from-amber-600',   to: 'to-orange-800' },
+  { label: 'Emerald',       from: 'from-emerald-600', to: 'to-teal-800' },
+  { label: 'Purple',        from: 'from-purple-600',  to: 'to-violet-900' },
   { label: 'Rose',          from: 'from-rose-600',    to: 'to-pink-800' },
   { label: 'Cyan',          from: 'from-cyan-600',    to: 'to-sky-800' },
   { label: 'Indigo',        from: 'from-indigo-600',  to: 'to-blue-900' },
-  { label: 'Jaune',         from: 'from-yellow-500',  to: 'to-amber-700' },
-  { label: 'Vert',          from: 'from-green-600',   to: 'to-emerald-800' },
-  { label: 'Rouge',         from: 'from-red-600',     to: 'to-rose-800' },
+  { label: 'Yellow',        from: 'from-yellow-500',  to: 'to-amber-700' },
+  { label: 'Green',         from: 'from-green-600',   to: 'to-emerald-800' },
+  { label: 'Red',           from: 'from-red-600',     to: 'to-rose-800' },
 ] as const
 
 type Section = 'objectives' | 'curriculum' | 'presentation' | 'videos' | 'settings'
@@ -56,7 +56,7 @@ interface SidebarItem {
 function BulletEditor({
   items,
   onChange,
-  placeholder = 'Ajouter un élément…',
+  placeholder = 'Add an item…',
   minItems = 0,
 }: {
   items: string[]
@@ -96,7 +96,7 @@ function BulletEditor({
         onClick={addItem}
         className="flex items-center gap-2 text-sm text-primary hover:underline mt-1"
       >
-        <Plus className="h-3.5 w-3.5" /> Ajouter
+        <Plus className="h-3.5 w-3.5" /> Add
       </button>
     </div>
   )
@@ -181,13 +181,13 @@ function ImageUploader({
     <div className="space-y-3">
       {previewUrl ? (
         <div className="relative rounded-xl overflow-hidden border border-border h-48 bg-muted/30">
-          <img src={previewUrl} alt="Vignette" className="w-full h-full object-cover" />
+          <img src={previewUrl} alt="Thumbnail" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
             <button
               onClick={() => inputRef.current?.click()}
               className="bg-white/90 text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-white transition-colors"
             >
-              <ImageIcon className="h-4 w-4" /> Changer la vignette
+              <ImageIcon className="h-4 w-4" /> Change thumbnail
             </button>
           </div>
           {state === 'uploading' && (
@@ -218,9 +218,9 @@ function ImageUploader({
           ) : (
             <>
               <ImageIcon className="h-10 w-10 text-muted-foreground mb-3" />
-              <p className="text-sm font-medium">Glissez une image ici</p>
-              <p className="text-xs text-muted-foreground mt-1">ou cliquez pour parcourir</p>
-              <p className="text-xs text-muted-foreground mt-0.5">JPG, PNG, WebP — max 5 Mo</p>
+              <p className="text-sm font-medium">Drag an image here</p>
+              <p className="text-xs text-muted-foreground mt-1">or click to browse</p>
+              <p className="text-xs text-muted-foreground mt-0.5">JPG, PNG, WebP — max 5MB</p>
             </>
           )}
         </div>
@@ -228,13 +228,13 @@ function ImageUploader({
 
       {state === 'done' && (
         <div className="flex items-center gap-1.5 text-xs text-emerald-600">
-          <CheckCircle2 className="h-3.5 w-3.5" /> Vignette uploadée avec succès
+          <CheckCircle2 className="h-3.5 w-3.5" /> Thumbnail uploaded successfully
         </div>
       )}
       {state === 'error' && (
         <div className="flex items-center gap-1.5 text-xs text-destructive">
-          <AlertCircle className="h-3.5 w-3.5" /> Erreur lors de l'upload
-          <button onClick={() => setState('idle')} className="ml-1 underline">Réessayer</button>
+          <AlertCircle className="h-3.5 w-3.5" /> Upload error
+          <button onClick={() => setState('idle')} className="ml-1 underline">Retry</button>
         </div>
       )}
 
@@ -249,7 +249,7 @@ function ImageUploader({
   )
 }
 
-// ─── VideoUploader (présentation) ─────────────────────────────────────────────
+// ─── VideoUploader (trailer) ─────────────────────────────────────────────
 
 function VideoUploader({
   courseId,
@@ -322,7 +322,7 @@ function VideoUploader({
           onClick={() => inputRef.current?.click()}
           className="flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/5 transition-all w-full justify-center"
         >
-          <Film className="h-4 w-4" /> Uploader une vidéo de présentation (MP4)
+          <Film className="h-4 w-4" /> Upload a trailer video (MP4)
         </button>
       )}
       {state === 'uploading' && (
@@ -339,7 +339,7 @@ function VideoUploader({
       {state === 'done' && (
         <div className="flex items-center gap-2 text-sm text-emerald-600 px-4 py-2 rounded-lg bg-emerald-50 border border-emerald-200">
           <CheckCheck className="h-4 w-4" />
-          <span>Vidéo de présentation uploadée</span>
+          <span>Trailer video uploaded</span>
           <button
             onClick={() => { setState('idle'); setFileName('') }}
             className="ml-auto text-muted-foreground hover:text-foreground"
@@ -351,8 +351,8 @@ function VideoUploader({
       {state === 'error' && (
         <div className="flex items-center gap-2 text-sm text-destructive px-4 py-2 rounded-lg bg-destructive/10 border border-destructive/20">
           <AlertCircle className="h-4 w-4" />
-          <span>Erreur lors de l'upload</span>
-          <button onClick={() => setState('idle')} className="ml-auto underline text-xs">Réessayer</button>
+          <span>Upload error</span>
+          <button onClick={() => setState('idle')} className="ml-auto underline text-xs">Retry</button>
         </div>
       )}
     </div>
@@ -436,14 +436,14 @@ function LessonVideoUploader({ courseId, lessonId, onVideoUploaded, hasVideo }: 
           onClick={() => inputRef.current?.click()}
           className="flex items-center gap-2 text-xs text-primary hover:underline"
         >
-          <Upload className="h-3.5 w-3.5" /> Uploader une vidéo
+          <Upload className="h-3.5 w-3.5" /> Upload a video
         </button>
       )}
       {state === 'idle' && initialDone && (
         <div className="flex items-center gap-1.5 text-xs text-emerald-600">
-          <CheckCircle2 className="h-3.5 w-3.5" /> Vidéo liée ✓
+          <CheckCircle2 className="h-3.5 w-3.5" /> Video linked ✓
           <button onClick={() => inputRef.current?.click()} className="ml-1 text-muted-foreground hover:text-foreground underline">
-            Remplacer
+            Replace
           </button>
         </div>
       )}
@@ -460,16 +460,16 @@ function LessonVideoUploader({ courseId, lessonId, onVideoUploaded, hasVideo }: 
       )}
       {state === 'done' && (
         <div className="flex items-center gap-1.5 text-xs text-emerald-600">
-          <CheckCircle2 className="h-3.5 w-3.5" /> Vidéo uploadée ✓
+          <CheckCircle2 className="h-3.5 w-3.5" /> Video uploaded ✓
           <button onClick={() => inputRef.current?.click()} className="ml-1 text-muted-foreground hover:text-foreground underline">
-            Remplacer
+            Replace
           </button>
         </div>
       )}
       {state === 'error' && (
         <div className="flex items-center gap-1.5 text-xs text-destructive">
-          <AlertCircle className="h-3.5 w-3.5" /> Erreur d'upload
-          <button onClick={() => setState('idle')} className="ml-1 underline">Réessayer</button>
+          <AlertCircle className="h-3.5 w-3.5" /> Upload error
+          <button onClick={() => setState('idle')} className="ml-1 underline">Retry</button>
         </div>
       )}
     </div>
@@ -479,7 +479,7 @@ function LessonVideoUploader({ courseId, lessonId, onVideoUploaded, hasVideo }: 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
 function Toast({ message, onClose }: { message: string; onClose: () => void }) {
-  const isError = message.startsWith('Erreur')
+  const isError = message.startsWith('Error')
   return (
     <div className={cn(
       'fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium border max-w-sm',
@@ -514,15 +514,15 @@ function CoursePreviewCard({
     <div className="w-56 rounded-xl overflow-hidden border border-border shadow-sm">
       <div className={cn('h-28 bg-gradient-to-br flex items-end p-3', g.from, g.to)}>
         <span className="text-white text-xs font-semibold px-2 py-0.5 rounded-md bg-white/20 backdrop-blur-sm">
-          {level || 'Niveau'}
+          {level || 'Level'}
         </span>
       </div>
       <div className="p-3 bg-white">
         <p className="text-sm font-semibold text-foreground line-clamp-2 leading-tight mb-2">
-          {title || 'Titre du cours'}
+          {title || 'Course title'}
         </p>
         <p className="text-base font-bold text-primary">
-          {price !== '' ? `${price} €` : 'Gratuit'}
+          {price !== '' ? `${price} €` : 'Free'}
         </p>
       </div>
     </div>
@@ -639,9 +639,9 @@ export const CourseEditor = () => {
         debouches: buildDebouches(),
       } as any)
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      showToast('Objectifs sauvegardés ✓')
+      showToast('Objectives saved ✓')
     } catch (e: any) {
-      showToast('Erreur : ' + (e?.response?.data?.message ?? e?.message ?? 'inconnue'))
+      showToast('Error: ' + (e?.response?.data?.message ?? e?.message ?? 'unknown'))
     } finally {
       setSaving(false)
     }
@@ -655,9 +655,9 @@ export const CourseEditor = () => {
         curriculumJson: JSON.stringify(sections),
       } as any)
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      showToast('Programme sauvegardé ✓')
+      showToast('Curriculum saved ✓')
     } catch (e: any) {
-      showToast('Erreur : ' + (e?.response?.data?.message ?? e?.message ?? 'inconnue'))
+      showToast('Error: ' + (e?.response?.data?.message ?? e?.message ?? 'unknown'))
     } finally {
       setSaving(false)
     }
@@ -677,9 +677,9 @@ export const CourseEditor = () => {
         durationHours: durationHours === '' ? undefined : Number(durationHours),
       } as any)
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      showToast('Présentation sauvegardée ✓')
+      showToast('Presentation saved ✓')
     } catch (e: any) {
-      showToast('Erreur : ' + (e?.response?.data?.message ?? e?.message ?? 'inconnue'))
+      showToast('Error: ' + (e?.response?.data?.message ?? e?.message ?? 'unknown'))
     } finally {
       setSaving(false)
     }
@@ -694,26 +694,36 @@ export const CourseEditor = () => {
         gradientIndex,
       } as any)
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      showToast('Paramètres sauvegardés ✓')
+      showToast('Settings saved ✓')
     } catch (e: any) {
-      showToast('Erreur : ' + (e?.response?.data?.message ?? e?.message ?? 'inconnue'))
+      showToast('Error: ' + (e?.response?.data?.message ?? e?.message ?? 'unknown'))
     } finally {
       setSaving(false)
     }
   }
 
-  const togglePublish = async () => {
+  const submitForReview = async () => {
     setPublishing(true)
     try {
-      await courseApi.publish(courseId!, !course?.published)
+      await courseApi.submit(courseId!)
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      showToast(course?.published ? 'Cours dépublié' : 'Cours publié ! 🎉')
+      showToast('Course submitted for review ✓')
     } catch (e: any) {
-      showToast('Erreur : ' + (e?.response?.data?.message ?? e?.message ?? 'inconnue'))
+      showToast('Error: ' + (e?.response?.data?.message ?? e?.message ?? 'unknown'))
     } finally {
       setPublishing(false)
     }
   }
+
+  const STATUS_META: Record<CourseStatus, { label: string; badgeClass: string }> = {
+    DRAFT:            { label: 'Draft',           badgeClass: 'bg-gray-100 text-gray-700 border-gray-200' },
+    SUBMITTED:        { label: 'Submitted',       badgeClass: 'bg-amber-50 text-amber-700 border-amber-200' },
+    IN_REVIEW:        { label: 'In Review',       badgeClass: 'bg-amber-50 text-amber-700 border-amber-200' },
+    REVISION_NEEDED:  { label: 'Needs Revision',  badgeClass: 'bg-red-50 text-red-700 border-red-200' },
+    PUBLISHED:        { label: 'Published',       badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    ARCHIVED:         { label: 'Archived',        badgeClass: 'bg-gray-100 text-gray-500 border-gray-200' },
+  }
+  const canSubmit = course?.status === 'DRAFT' || course?.status === 'REVISION_NEEDED'
 
   // ── Curriculum helpers ──
   const addSection = () =>
@@ -727,7 +737,7 @@ export const CourseEditor = () => {
 
   const addLesson = (sIdx: number) =>
     setSections(prev => prev.map((s, i) =>
-      i === sIdx ? { ...s, lessons: [...s.lessons, { title: `Leçon ${s.lessons.length + 1}` }] } : s
+      i === sIdx ? { ...s, lessons: [...s.lessons, { title: `Lesson ${s.lessons.length + 1}` }] } : s
     ))
 
   const removeLesson = (sIdx: number, lIdx: number) =>
@@ -763,9 +773,9 @@ export const CourseEditor = () => {
     try {
       await courseApi.update(courseId!, { title, curriculumJson: JSON.stringify(newSections) } as any)
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      showToast('Vidéo liée à la leçon ✓')
+      showToast('Video linked to lesson ✓')
     } catch {
-      showToast('Erreur lors de la sauvegarde du curriculum')
+      showToast('Error saving the curriculum')
     }
   }
 
@@ -781,11 +791,11 @@ export const CourseEditor = () => {
   const settingsDone = price !== ''
 
   const sidebarItems: SidebarItem[] = [
-    { id: 'objectives',    label: 'Objectifs',       icon: <Target className="h-4 w-4" /> },
-    { id: 'curriculum',   label: 'Programme',        icon: <Layout className="h-4 w-4" /> },
-    { id: 'presentation', label: 'Présentation',     icon: <BookOpen className="h-4 w-4" /> },
-    { id: 'videos',       label: 'Vidéos',           icon: <Video className="h-4 w-4" /> },
-    { id: 'settings',     label: 'Paramètres',       icon: <Settings className="h-4 w-4" /> },
+    { id: 'objectives',    label: 'Objectives',      icon: <Target className="h-4 w-4" /> },
+    { id: 'curriculum',   label: 'Curriculum',       icon: <Layout className="h-4 w-4" /> },
+    { id: 'presentation', label: 'Presentation',     icon: <BookOpen className="h-4 w-4" /> },
+    { id: 'videos',       label: 'Videos',           icon: <Video className="h-4 w-4" /> },
+    { id: 'settings',     label: 'Settings',         icon: <Settings className="h-4 w-4" /> },
   ]
 
   const completionMap: Record<Section, boolean> = {
@@ -805,8 +815,8 @@ export const CourseEditor = () => {
 
   if (!course) return (
     <div className="text-center py-20">
-      <p className="text-muted-foreground">Cours introuvable.</p>
-      <Link to="/teacher"><Button className="mt-4">Retour</Button></Link>
+      <p className="text-muted-foreground">Course not found.</p>
+      <Link to="/teacher"><Button className="mt-4">Back</Button></Link>
     </div>
   )
 
@@ -830,13 +840,10 @@ export const CourseEditor = () => {
               <p className="text-sm font-semibold text-foreground truncate max-w-xs">{course.title}</p>
             </div>
             <Badge
-              variant={course.published ? 'default' : 'secondary'}
-              className={cn(
-                'text-[10px] shrink-0',
-                course.published ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : ''
-              )}
+              variant="secondary"
+              className={cn('text-[10px] shrink-0', STATUS_META[course.status].badgeClass)}
             >
-              {course.published ? 'Publié' : 'Brouillon'}
+              {STATUS_META[course.status].label}
             </Badge>
           </div>
 
@@ -845,27 +852,28 @@ export const CourseEditor = () => {
             {course.slug && (
               <Link to={`/course/${course.slug}`} target="_blank">
                 <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8">
-                  <Eye className="h-3.5 w-3.5" /> Voir le cours
+                  <Eye className="h-3.5 w-3.5" /> View course
                 </Button>
               </Link>
             )}
-            <Button
-              size="sm"
-              variant={course.published ? 'outline' : 'default'}
-              className={cn(
-                'gap-1.5 text-xs h-8',
-                !course.published && 'bg-primary hover:bg-primary/90 text-white'
-              )}
-              onClick={togglePublish}
-              disabled={publishing}
-            >
-              {publishing
-                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                : course.published
-                  ? <><Lock className="h-3.5 w-3.5" /> Dépublier</>
-                  : <><Globe className="h-3.5 w-3.5" /> Publier</>
-              }
-            </Button>
+            {canSubmit && (
+              <Button
+                size="sm"
+                className="gap-1.5 text-xs h-8 bg-primary hover:bg-primary/90 text-white"
+                onClick={submitForReview}
+                disabled={publishing}
+              >
+                {publishing
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <><Send className="h-3.5 w-3.5" /> Submit for review</>
+                }
+              </Button>
+            )}
+            {(course.status === 'SUBMITTED' || course.status === 'IN_REVIEW') && (
+              <Badge variant="secondary" className="text-[10px] gap-1 bg-amber-50 text-amber-700 border-amber-200">
+                <Clock className="h-3 w-3" /> Awaiting review
+              </Badge>
+            )}
           </div>
         </div>
       </div>
@@ -877,7 +885,7 @@ export const CourseEditor = () => {
         <aside className="w-56 shrink-0 border-r border-border bg-white sticky top-14 self-start h-[calc(100vh-3.5rem)] overflow-y-auto">
           <nav className="py-4 px-3 space-y-1">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 mb-3">
-              Étapes de création
+              Creation steps
             </p>
             {sidebarItems.map((item, idx) => {
               const done = completionMap[item.id]
@@ -910,13 +918,13 @@ export const CourseEditor = () => {
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-8 py-8">
 
-            {/* ── SECTION: Objectifs ── */}
+            {/* ── SECTION: Objectives ── */}
             {activeSection === 'objectives' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Objectifs du cours</h2>
+                  <h2 className="text-xl font-bold text-foreground">Course objectives</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Définissez ce que les étudiants apprendront et à qui ce cours s'adresse.
+                    Define what students will learn and who this course is for.
                   </p>
                 </div>
 
@@ -924,22 +932,22 @@ export const CourseEditor = () => {
                   <CardContent className="p-6 space-y-6">
                     <div className="space-y-3">
                       <div>
-                        <Label className="text-sm font-semibold">Ce que les étudiants apprendront</Label>
-                        <p className="text-xs text-muted-foreground mt-0.5">Minimum 4 points. Soyez précis et concret.</p>
+                        <Label className="text-sm font-semibold">What students will learn</Label>
+                        <p className="text-xs text-muted-foreground mt-0.5">Minimum 4 points. Be specific and concrete.</p>
                       </div>
                       <BulletEditor
                         items={objectives}
                         onChange={setObjectives}
-                        placeholder="ex : Maîtriser les gammes pentatoniques"
+                        placeholder="e.g. Master pentatonic scales"
                         minItems={4}
                       />
                     </div>
 
                     <div className="border-t border-border pt-6 space-y-3">
-                      <Label className="text-sm font-semibold">À qui ce cours s'adresse</Label>
+                      <Label className="text-sm font-semibold">Who this course is for</Label>
                       <textarea
                         className="w-full h-24 text-sm border border-input rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
-                        placeholder="ex : Musiciens débutants souhaitant apprendre le jazz, étudiants en conservatoire..."
+                        placeholder="e.g. Beginner musicians wanting to learn jazz, conservatory students..."
                         value={targetAudience}
                         onChange={e => setTargetAudience(e.target.value)}
                       />
@@ -947,13 +955,13 @@ export const CourseEditor = () => {
 
                     <div className="border-t border-border pt-6 space-y-3">
                       <div>
-                        <Label className="text-sm font-semibold">Prérequis</Label>
-                        <p className="text-xs text-muted-foreground mt-0.5">Connaissances ou équipements nécessaires avant de suivre ce cours.</p>
+                        <Label className="text-sm font-semibold">Prerequisites</Label>
+                        <p className="text-xs text-muted-foreground mt-0.5">Knowledge or equipment needed before taking this course.</p>
                       </div>
                       <BulletEditor
                         items={requirements}
                         onChange={setRequirements}
-                        placeholder="ex : Savoir lire une partition de base"
+                        placeholder="e.g. Basic sheet music reading"
                       />
                     </div>
                   </CardContent>
@@ -962,28 +970,28 @@ export const CourseEditor = () => {
                 <div className="flex justify-end">
                   <Button onClick={saveObjectives} disabled={saving} className="gap-2 min-w-[140px] bg-primary hover:bg-primary/90 text-white">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                    Sauvegarder
+                    Save
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* ── SECTION: Programme (Curriculum) ── */}
+            {/* ── SECTION: Curriculum ── */}
             {activeSection === 'curriculum' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Programme du cours</h2>
+                  <h2 className="text-xl font-bold text-foreground">Course curriculum</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Organisez votre cours en sections et leçons.
+                    Organize your course into sections and lessons.
                   </p>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
-                    {sections.length} section{sections.length !== 1 ? 's' : ''} · {totalLessons} leçon{totalLessons !== 1 ? 's' : ''}
+                    {sections.length} section{sections.length !== 1 ? 's' : ''} · {totalLessons} lesson{totalLessons !== 1 ? 's' : ''}
                   </p>
                   <Button variant="outline" size="sm" onClick={addSection} className="gap-1.5 text-xs">
-                    <Plus className="h-3.5 w-3.5" /> Ajouter une section
+                    <Plus className="h-3.5 w-3.5" /> Add a section
                   </Button>
                 </div>
 
@@ -991,10 +999,10 @@ export const CourseEditor = () => {
                   <Card>
                     <CardContent className="py-16 text-center">
                       <Layout className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                      <p className="font-semibold text-sm">Aucune section pour l'instant</p>
-                      <p className="text-xs text-muted-foreground mt-1">Cliquez sur "Ajouter une section" pour structurer votre cours.</p>
+                      <p className="font-semibold text-sm">No sections yet</p>
+                      <p className="text-xs text-muted-foreground mt-1">Click "Add a section" to structure your course.</p>
                       <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={addSection}>
-                        <Plus className="h-3.5 w-3.5" /> Ajouter la première section
+                        <Plus className="h-3.5 w-3.5" /> Add the first section
                       </Button>
                     </CardContent>
                   </Card>
@@ -1011,10 +1019,10 @@ export const CourseEditor = () => {
                             value={section.title}
                             onChange={e => updateSectionTitle(sIdx, e.target.value)}
                             className="h-8 text-sm font-semibold border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
-                            placeholder="Titre de la section"
+                            placeholder="Section title"
                           />
                           <span className="text-xs text-muted-foreground shrink-0">
-                            {section.lessons.length} leçon{section.lessons.length !== 1 ? 's' : ''}
+                            {section.lessons.length} lesson{section.lessons.length !== 1 ? 's' : ''}
                           </span>
                           <button
                             onClick={() => removeSection(sIdx)}
@@ -1034,10 +1042,10 @@ export const CourseEditor = () => {
                                   value={lessonObj.title}
                                   onChange={e => updateLesson(sIdx, lIdx, e.target.value)}
                                   className="h-7 text-sm border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
-                                  placeholder="Titre de la leçon"
+                                  placeholder="Lesson title"
                                 />
                                 {lessonObj.mediaId && (
-                                  <span className="text-[10px] text-emerald-600 shrink-0 font-medium">▶ vidéo</span>
+                                  <span className="text-[10px] text-emerald-600 shrink-0 font-medium">▶ video</span>
                                 )}
                                 <span className="text-[10px] text-muted-foreground shrink-0 font-mono">
                                   {String(lIdx + 1).padStart(2, '0')}
@@ -1055,7 +1063,7 @@ export const CourseEditor = () => {
                             onClick={() => addLesson(sIdx)}
                             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg border border-dashed border-border text-xs text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/5 transition-all"
                           >
-                            <Plus className="h-3.5 w-3.5" /> Ajouter une leçon
+                            <Plus className="h-3.5 w-3.5" /> Add a lesson
                           </button>
                         </div>
                       </Card>
@@ -1066,19 +1074,19 @@ export const CourseEditor = () => {
                 <div className="flex justify-end">
                   <Button onClick={saveCurriculum} disabled={saving} className="gap-2 min-w-[160px] bg-primary hover:bg-primary/90 text-white">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                    Sauvegarder le programme
+                    Save curriculum
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* ── SECTION: Présentation ── */}
+            {/* ── SECTION: Presentation ── */}
             {activeSection === 'presentation' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Présentation du cours</h2>
+                  <h2 className="text-xl font-bold text-foreground">Course presentation</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Ces informations apparaissent sur la page publique du cours.
+                    This information appears on the course's public page.
                   </p>
                 </div>
 
@@ -1086,21 +1094,21 @@ export const CourseEditor = () => {
                   <CardContent className="p-6 space-y-6">
                     {/* Title */}
                     <div className="space-y-1.5">
-                      <Label className="text-sm font-semibold">Titre du cours <span className="text-destructive">*</span></Label>
+                      <Label className="text-sm font-semibold">Course title <span className="text-destructive">*</span></Label>
                       <Input
                         value={title}
                         onChange={e => setTitle(e.target.value)}
-                        placeholder="ex : Harmonie Jazz — Niveau 1"
+                        placeholder="e.g. Jazz Harmony — Level 1"
                         className="text-base"
                       />
                     </div>
 
                     {/* Description */}
                     <div className="space-y-1.5">
-                      <Label className="text-sm font-semibold">Description complète</Label>
+                      <Label className="text-sm font-semibold">Full description</Label>
                       <textarea
                         className="w-full h-32 text-sm border border-input rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
-                        placeholder="Décrivez en détail ce que les étudiants vont apprendre, les méthodes pédagogiques, l'organisation du cours..."
+                        placeholder="Describe in detail what students will learn, the teaching methods, the course structure..."
                         value={description}
                         onChange={e => setDesc(e.target.value)}
                       />
@@ -1109,21 +1117,21 @@ export const CourseEditor = () => {
                     {/* Short description */}
                     <div className="space-y-1.5">
                       <Label className="text-sm font-semibold">
-                        Description courte
-                        <span className="text-xs font-normal text-muted-foreground ml-1">(affichée sur la carte cours)</span>
+                        Short description
+                        <span className="text-xs font-normal text-muted-foreground ml-1">(shown on the course card)</span>
                       </Label>
                       <Input
                         value={shortDesc}
                         onChange={e => setShortDesc(e.target.value)}
-                        placeholder="Résumé accrocheur en une ligne"
+                        placeholder="Catchy one-line summary"
                       />
                     </div>
 
                     {/* Thumbnail */}
                     <div className="space-y-2 border-t border-border pt-6">
-                      <Label className="text-sm font-semibold">Vignette du cours</Label>
+                      <Label className="text-sm font-semibold">Course thumbnail</Label>
                       <p className="text-xs text-muted-foreground">
-                        Image principale affichée sur la carte et en haut de la page du cours. Recommandé : 1280×720 px.
+                        Main image shown on the card and at the top of the course page. Recommended: 1280×720 px.
                       </p>
                       <ImageUploader
                         onUploaded={url => setThumbnailUrl(url)}
@@ -1133,71 +1141,71 @@ export const CourseEditor = () => {
 
                     {/* Preview video */}
                     <div className="space-y-2 border-t border-border pt-6">
-                      <Label className="text-sm font-semibold">Vidéo de présentation</Label>
+                      <Label className="text-sm font-semibold">Trailer video</Label>
                       <p className="text-xs text-muted-foreground">
-                        Courte vidéo (1–3 min) où vous vous présentez et expliquez le cours. Visible publiquement.
+                        A short video (1–3 min) introducing yourself and the course. Visible publicly.
                       </p>
                       <VideoUploader
                         courseId={course.id}
                         onUploaded={mediaId => setPreviewVideoMediaId(mediaId)}
                       />
                       {previewVideoMediaId && (
-                        <p className="text-xs text-muted-foreground">ID média : {previewVideoMediaId}</p>
+                        <p className="text-xs text-muted-foreground">Media ID: {previewVideoMediaId}</p>
                       )}
                     </div>
 
                     {/* Dept, filiere, level */}
                     <div className="border-t border-border pt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div className="space-y-1.5">
-                        <Label className="text-sm font-semibold">Département</Label>
+                        <Label className="text-sm font-semibold">Department</Label>
                         <select
                           className="w-full h-10 text-sm border border-input rounded-lg px-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
                           value={department}
                           onChange={e => setDept(e.target.value)}
                         >
-                          <option value="">— Sélectionner —</option>
+                          <option value="">— Select —</option>
                           {DEPTS.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label className="text-sm font-semibold">Filière</Label>
+                        <Label className="text-sm font-semibold">Specialization</Label>
                         <Input
                           value={filiere}
                           onChange={e => setFiliere(e.target.value)}
-                          placeholder="ex : Piano classique"
+                          placeholder="e.g. Classical Piano"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label className="text-sm font-semibold">Niveau</Label>
+                        <Label className="text-sm font-semibold">Level</Label>
                         <select
                           className="w-full h-10 text-sm border border-input rounded-lg px-3 bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
                           value={level}
                           onChange={e => setLevel(e.target.value)}
                         >
-                          <option value="">— Sélectionner —</option>
+                          <option value="">— Select —</option>
                           {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
                         </select>
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label className="text-sm font-semibold">Crédits ECTS</Label>
+                        <Label className="text-sm font-semibold">ECTS Credits</Label>
                         <Input
                           type="number" min={0} max={180}
                           value={ects}
                           onChange={e => setEcts(e.target.value === '' ? '' : Number(e.target.value))}
-                          placeholder="ex : 30"
+                          placeholder="e.g. 30"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <Label className="text-sm font-semibold">Durée (heures de contenu)</Label>
+                        <Label className="text-sm font-semibold">Duration (hours of content)</Label>
                         <Input
                           type="number" min={0}
                           value={durationHours}
                           onChange={e => setDuration(e.target.value === '' ? '' : Number(e.target.value))}
-                          placeholder="ex : 40"
+                          placeholder="e.g. 40"
                         />
                       </div>
                     </div>
@@ -1207,19 +1215,19 @@ export const CourseEditor = () => {
                 <div className="flex justify-end">
                   <Button onClick={savePresentation} disabled={saving} className="gap-2 min-w-[140px] bg-primary hover:bg-primary/90 text-white">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                    Sauvegarder
+                    Save
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* ── SECTION: Vidéos ── */}
+            {/* ── SECTION: Videos ── */}
             {activeSection === 'videos' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Vidéos des leçons</h2>
+                  <h2 className="text-xl font-bold text-foreground">Lesson videos</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Uploadez une vidéo MP4/WebM pour chaque leçon. Les fichiers sont stockés de manière sécurisée.
+                    Upload an MP4/WebM video for each lesson. Files are stored securely.
                   </p>
                   {totalLessons > 0 && (
                     <div className="flex items-center gap-2 mt-3">
@@ -1230,7 +1238,7 @@ export const CourseEditor = () => {
                         />
                       </div>
                       <span className="text-xs text-muted-foreground">
-                        {lessonsWithVideo}/{totalLessons} leçon{totalLessons !== 1 ? 's' : ''} avec vidéo
+                        {lessonsWithVideo}/{totalLessons} lesson{totalLessons !== 1 ? 's' : ''} with video
                       </span>
                     </div>
                   )}
@@ -1240,15 +1248,15 @@ export const CourseEditor = () => {
                   <Card>
                     <CardContent className="py-16 text-center">
                       <Video className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                      <p className="font-semibold text-sm">Créez d'abord vos sections et leçons</p>
+                      <p className="font-semibold text-sm">Create your sections and lessons first</p>
                       <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
-                        Allez dans "Programme" pour structurer votre cours, puis revenez ici pour uploader les vidéos.
+                        Go to "Curriculum" to structure your course, then come back here to upload videos.
                       </p>
                       <Button
                         variant="outline" size="sm" className="mt-4 gap-1.5"
                         onClick={() => setActiveSection('curriculum')}
                       >
-                        <Layout className="h-3.5 w-3.5" /> Créer le programme
+                        <Layout className="h-3.5 w-3.5" /> Create curriculum
                       </Button>
                     </CardContent>
                   </Card>
@@ -1262,13 +1270,13 @@ export const CourseEditor = () => {
                           </div>
                           <p className="text-sm font-semibold">{section.title}</p>
                           <span className="text-xs text-muted-foreground ml-auto">
-                            {section.lessons.length} leçon{section.lessons.length !== 1 ? 's' : ''}
+                            {section.lessons.length} lesson{section.lessons.length !== 1 ? 's' : ''}
                           </span>
                         </div>
                         <div className="divide-y divide-border">
                           {section.lessons.length === 0 ? (
                             <div className="px-4 py-4 text-xs text-muted-foreground italic">
-                              Aucune leçon dans cette section.
+                              No lessons in this section yet.
                             </div>
                           ) : (
                             section.lessons.map((lesson, lIdx) => {
@@ -1303,13 +1311,13 @@ export const CourseEditor = () => {
               </div>
             )}
 
-            {/* ── SECTION: Paramètres ── */}
+            {/* ── SECTION: Settings ── */}
             {activeSection === 'settings' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Paramètres du cours</h2>
+                  <h2 className="text-xl font-bold text-foreground">Course settings</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Couleur, prix et publication du cours.
+                    Color, price, and publication status.
                   </p>
                 </div>
 
@@ -1317,9 +1325,9 @@ export const CourseEditor = () => {
                   <CardContent className="p-6 space-y-8">
                     {/* Gradient picker */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-semibold">Couleur du cours</Label>
+                      <Label className="text-sm font-semibold">Course color</Label>
                       <p className="text-xs text-muted-foreground">
-                        Choisissez un dégradé pour la carte et la bannière de votre cours.
+                        Choose a gradient for your course's card and banner.
                       </p>
                       <div className="grid grid-cols-5 gap-2">
                         {GRADIENTS.map((g, idx) => (
@@ -1338,29 +1346,29 @@ export const CourseEditor = () => {
                         ))}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Sélectionné : <span className="font-medium text-foreground">{GRADIENTS[gradientIndex]?.label}</span>
+                        Selected: <span className="font-medium text-foreground">{GRADIENTS[gradientIndex]?.label}</span>
                       </p>
                     </div>
 
                     {/* Price */}
                     <div className="space-y-1.5 border-t border-border pt-6">
-                      <Label className="text-sm font-semibold">Prix (€) <span className="text-destructive">*</span></Label>
+                      <Label className="text-sm font-semibold">Price (€) <span className="text-destructive">*</span></Label>
                       <div className="flex items-center gap-2 max-w-xs">
                         <Input
                           type="number" min={0} max={9999}
                           value={price}
                           onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                          placeholder="ex : 49"
+                          placeholder="e.g. 49"
                           className="text-lg font-semibold"
                         />
                         <span className="text-muted-foreground font-semibold text-lg">€</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">Entrez 0 pour un cours gratuit.</p>
+                      <p className="text-xs text-muted-foreground">Enter 0 for a free course.</p>
                     </div>
 
                     {/* Preview */}
                     <div className="space-y-3 border-t border-border pt-6">
-                      <Label className="text-sm font-semibold">Aperçu de la carte</Label>
+                      <Label className="text-sm font-semibold">Card preview</Label>
                       <CoursePreviewCard
                         title={title}
                         level={level}
@@ -1372,43 +1380,54 @@ export const CourseEditor = () => {
                     {/* Publication */}
                     <div className="space-y-3 border-t border-border pt-6">
                       <Label className="text-sm font-semibold">Publication</Label>
+                      {course.status === 'REVISION_NEEDED' && course.reviewComment && (
+                        <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
+                          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                          <div>
+                            <p className="font-semibold">Corrections requested by the administrator:</p>
+                            <p>{course.reviewComment}</p>
+                          </div>
+                        </div>
+                      )}
+                      {course.status === 'PUBLISHED' && (
+                        <p className="text-xs text-muted-foreground">
+                          Any edit will send this course back for review before republishing.
+                        </p>
+                      )}
                       <div className="flex items-center gap-4">
                         <div className={cn(
-                          'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium',
-                          course.published
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                          'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border',
+                          STATUS_META[course.status].badgeClass
                         )}>
-                          {course.published
-                            ? <><CheckCircle2 className="h-4 w-4" /> Publié</>
-                            : <><Lock className="h-4 w-4" /> Brouillon</>
+                          {course.status === 'PUBLISHED'
+                            ? <CheckCircle2 className="h-4 w-4" />
+                            : course.status === 'SUBMITTED' || course.status === 'IN_REVIEW'
+                              ? <Clock className="h-4 w-4" />
+                              : <Lock className="h-4 w-4" />
                           }
+                          {STATUS_META[course.status].label}
                         </div>
-                        <Button
-                          variant={course.published ? 'outline' : 'default'}
-                          size="sm"
-                          onClick={togglePublish}
-                          disabled={publishing}
-                          className={cn(
-                            'gap-2',
-                            !course.published && 'bg-primary hover:bg-primary/90 text-white'
-                          )}
-                        >
-                          {publishing
-                            ? <Loader2 className="h-4 w-4 animate-spin" />
-                            : course.published
-                              ? <><Lock className="h-4 w-4" /> Dépublier</>
-                              : <><Globe className="h-4 w-4" /> Publier le cours</>
-                          }
-                        </Button>
+                        {canSubmit && (
+                          <Button
+                            size="sm"
+                            onClick={submitForReview}
+                            disabled={publishing}
+                            className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                          >
+                            {publishing
+                              ? <Loader2 className="h-4 w-4 animate-spin" />
+                              : <><Send className="h-4 w-4" /> Submit for review</>
+                            }
+                          </Button>
+                        )}
                       </div>
-                      {course.published && course.slug && (
+                      {course.status === 'PUBLISHED' && course.slug && (
                         <Link
                           to={`/course/${course.slug}`}
                           target="_blank"
                           className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                         >
-                          <Eye className="h-3 w-3" /> Voir le cours publié
+                          <Eye className="h-3 w-3" /> View published course
                         </Link>
                       )}
                     </div>
@@ -1418,7 +1437,7 @@ export const CourseEditor = () => {
                 <div className="flex justify-end">
                   <Button onClick={saveSettings} disabled={saving} className="gap-2 min-w-[160px] bg-primary hover:bg-primary/90 text-white">
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                    Sauvegarder les paramètres
+                    Save settings
                   </Button>
                 </div>
               </div>
