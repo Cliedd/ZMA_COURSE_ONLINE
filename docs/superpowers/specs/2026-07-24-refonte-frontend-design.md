@@ -53,9 +53,10 @@ s'échappe de force du conteneur imposé par l'unique gabarit.
 
 ## 3. Périmètre
 
-**Inclus** — les 19 routes du CDC, plus `/enseignants` (20ᵉ route, ajoutée), plus les 2 routes
-existantes absentes de la cartographie du CDC (`/paiement/:courseId`, `/discussion/:courseId`),
-plus une véritable page 404. Plus les endpoints Spring manquants (voir § 9, chantier 4).
+**Inclus** — les 19 routes du CDC, plus `/teachers` (20ᵉ route, ajoutée), plus les 2 routes
+existantes absentes de la cartographie du CDC (`/checkout/:courseId`, `/chat/:courseId`),
+plus une véritable page 404 — soit 23 routes, détaillées au § 11. Plus les endpoints Spring
+manquants (voir § 10, chantier 4).
 
 **Exclu** — refonte des services backend existants ; migration MongoDB (V2 du CDC) ;
 langues autres que FR et EN ; React Big Calendar (reporté, voir § 4).
@@ -74,10 +75,12 @@ langues autres que FR et EN ; React Big Calendar (reporté, voir § 4).
 | D6 | **Magic UI supprimé intégralement** (9 composants) *(écart au CDC)* | Le CDC le justifie par « l'effet premium niveau MasterClass » ; or MasterClass n'a ni particules, ni bouton scintillant, ni texte à dégradé animé. Ces effets sont la signature des templates |
 | D7 | **Images réelles libres de droit**, casting varié, étalonnées, figées dans le dépôt. **Zéro génération IA** | Décision du porteur de projet. Les images générées à la volée changent de visage à chaque rechargement et coûtent plusieurs secondes de LCP |
 | D8 | **Section témoignages retirée** ; preuve sociale par chiffres réels d'API | Les 3 témoignages actuels sont fictifs. Y associer le visage d'une personne réelle et identifiable poserait un problème de droit à l'image |
-| D9 | **`/enseignants` ajoutée en 20ᵉ route** | Le CDC prévoit `/profil/:username` sans page d'index. Manque réel pour une institution mettant en avant ses enseignants |
+| D9 | **`/teachers` ajoutée en 20ᵉ route** | Le CDC prévoit la fiche d'un enseignant sans page d'index. Manque réel pour une institution mettant en avant ses enseignants |
 | D10 | **FID → INP < 200 ms** *(écart au CDC)* | Google a retiré le FID des Core Web Vitals en mars 2024 |
 | D11 | **React Big Calendar reporté** *(écart au CDC)* | Aucune des 20 routes ne comporte de planning de sessions live |
 | D12 | **Backend inclus** : les endpoints manquants seront écrits | Choix du porteur de projet |
+| D13 | **Routes conservées en anglais** *(écart au CDC)* | Choix du porteur de projet. Le CDC (partie VIII) prescrit des chemins français. Le maintien en anglais évite un renommage à risque : `OAuth2SuccessHandler.java:66` redirige en dur vers `/dashboard?token=…`, et cette route ne doit pas bouger |
+| D14 | **Visuels de banque en attendant le matériel réel de ZTF** | Le matériel photo de l'académie sera fourni ultérieurement. D'ici là, exigence de sérieux et de professionnalisme absolus sur les visuels de substitution (voir § 9.2) |
 
 ---
 
@@ -258,7 +261,8 @@ Des conventions écrites se dégradent ; des conventions outillées non. En CI, 
 **Desktop** — trois entrées (`Formations`, `L'Académie`, `Diplômes`) plus une recherche visible.
 Le menu Formations se déploie sur deux axes : par département (5) et par niveau (5). Chaque
 entrée pointe vers une **URL de catalogue filtrée et partageable**
-(`/catalogue?departement=interpretation&niveau=licence`).
+(`/catalogue?department=interpretation&level=licence` — paramètres en anglais, conformément à
+D13 et à l'usage déjà en place dans `HomePage` et `RootLayout`).
 
 **Mobile** — tiroir plein écran (`Dialog` Radix : piège de focus, Échap, verrouillage du
 défilement, ARIA) ; une fois connecté, **barre basse à quatre onglets** (Accueil, Explorer,
@@ -308,6 +312,23 @@ des bibliothèques lourdes (Video.js, HLS.js, Wavesurfer, React-PDF, Tiptap, dnd
 4. Livraison — `<picture>` + `srcset`/`sizes`, dimensions déclarées, `lazy` sauf le hero
 5. Versionné dans le dépôt ; le proxy `/pollinations/` disparaît de nginx
 
+**Standard de direction artistique** (D14). Le matériel photo réel de ZTF sera fourni plus tard ;
+les visuels de substitution doivent d'ici là tenir un niveau institutionnel, sans exception :
+
+- **Le geste et l'instrument priment sur le visage.** Mains sur un clavier, archet, table de
+  mixage, partition. Plus intemporel, plus élégant, et cela évite le catalogue de portraits qui
+  trahit immédiatement la banque d'images.
+- **Aucun visage identifiable en position d'engagement institutionnel.** Un portrait de banque
+  ne peut jamais illustrer un enseignant nommé, un étudiant diplômé ou un témoignage. Ces
+  emplacements affichent un état vide soigné jusqu'à réception du matériel ZTF.
+- **Lumière dirigée, jamais de flash frontal ni de fond blanc de studio générique.** Contre-jour,
+  lumière de scène, lumière naturelle latérale.
+- **Rejet systématique** des poses souriantes face caméra, des mises en scène « corporate » et
+  des images à filigrane ou à cadrage publicitaire.
+- **Emplacements du matériel réel documentés** dans le code (`design/images/manifest.ts`), avec
+  ratio, usage et légende attendus — pour que la substitution ultérieure soit un remplacement de
+  fichiers, pas une reprise de mise en page.
+
 ### 9.3 Accessibilité WCAG 2.1 AA
 
 Contrastes calculés et rejoués en CI (d'où l'existence de `--gold-ink` et la restriction de
@@ -353,35 +374,38 @@ ne le réclame pas. Il grandit au contact des pages réelles.
 
 ## 11. Inventaire des routes
 
-Les routes sont renommées en français conformément au CDC. Les anciens chemins anglais
-(`/course/:slug`, `/learning/:id`, `/dashboard`, `/checkout/:id`, `/chat/:id`, `/teacher`)
-sont conservés en **redirections permanentes** pour ne pas casser les liens existants.
+Les chemins restent en anglais (D13), contrairement à la partie VIII du CDC. Les routes
+existantes ne bougent pas ; les routes manquantes sont créées selon la même convention.
+`/dashboard` est **gelée** : `OAuth2SuccessHandler.java:66` y redirige en dur.
 
-| Route | Page | Accès | Gabarit | Chantier |
-|---|---|---|---|---|
-| `/` | Accueil | Public | Public | 1 |
-| `/catalogue` | Catalogue | Public | Public | 1 |
-| `/cours/:slug` | Détail cours | Public | Public | 1 |
-| `/enseignants` | Équipe pédagogique *(nouveau)* | Public | Public | 1 |
-| `/profil/:username` | Profil enseignant | Public | Public | 1 |
-| `/certif/verifier/:token` | Vérification certificat | Public | Public | 4 |
-| `/auth/connexion` | Connexion | Visiteur | Auth | 2 |
-| `/auth/inscription` | Inscription | Visiteur | Auth | 2 |
-| `/paiement/:courseId` | Paiement | Étudiant | App | 2 |
-| `/apprendre/:courseId/:lessonId` | Lecteur de cours | Acheteur | Immersive | 2 |
-| `/tableau-de-bord` | Tableau de bord étudiant | Étudiant | App | 2 |
-| `/mes-cours` | Mes cours | Étudiant | App | 2 |
-| `/certificats` | Mes certificats | Étudiant | App | 2 |
-| `/parametres` | Paramètres du compte | Connecté | App | 2 |
-| `/discussion/:courseId` | Messagerie de cours | Acheteur | App | 2 |
-| `/enseigner` | Tableau de bord enseignant | Enseignant | App | 3 |
-| `/enseigner/cours/creer` | Créer un cours | Enseignant | App | 3 |
-| `/enseigner/cours/:id/editer` | Éditer un cours | Enseignant | App | 3 |
-| `/admin` | Vue d'ensemble | Admin | App | 4 |
-| `/admin/validation` | File de validation | Admin | App | 4 |
-| `/admin/utilisateurs` | Gestion des utilisateurs | Admin | App | 4 |
-| `/admin/finances` | Finances | Admin | App | 4 |
-| `*` | 404 | Public | Public | 0 |
+| Route | Page | Accès | Gabarit | Chantier | État |
+|---|---|---|---|---|---|
+| `/` | Accueil | Public | Public | 1 | existe |
+| `/catalogue` | Catalogue | Public | Public | 1 | existe |
+| `/course/:slug` | Détail cours | Public | Public | 1 | existe |
+| `/teachers` | Équipe pédagogique | Public | Public | 1 | **nouveau** (D9) |
+| `/teachers/:username` | Profil enseignant | Public | Public | 1 | **nouveau** |
+| `/certificates/verify/:token` | Vérification certificat | Public | Public | 4 | **nouveau** |
+| `/auth/login` | Connexion | Visiteur | Auth | 2 | renommée depuis `/auth/connexion` |
+| `/auth/register` | Inscription | Visiteur | Auth | 2 | renommée depuis `/auth/inscription` |
+| `/checkout/:courseId` | Paiement | Étudiant | App | 2 | existe |
+| `/learning/:courseId/:lessonId` | Lecteur de cours | Acheteur | Immersive | 2 | existe, `:lessonId` ajouté (CDC) |
+| `/dashboard` | Tableau de bord étudiant | Étudiant | App | 2 | existe — **gelée (OAuth2)** |
+| `/my-courses` | Mes cours | Étudiant | App | 2 | **nouveau** |
+| `/certificates` | Mes certificats | Étudiant | App | 2 | **nouveau** |
+| `/settings` | Paramètres du compte | Connecté | App | 2 | **nouveau** |
+| `/chat/:courseId` | Messagerie de cours | Acheteur | App | 2 | existe |
+| `/teacher` | Tableau de bord enseignant | Enseignant | App | 3 | existe |
+| `/teacher/courses/new` | Créer un cours | Enseignant | App | 3 | renommée depuis `/enseigner/cours/creer` |
+| `/teacher/courses/:id/edit` | Éditer un cours | Enseignant | App | 3 | renommée depuis `/teacher/cours/:courseId` |
+| `/admin` | Vue d'ensemble | Admin | App | 4 | existe |
+| `/admin/review` | File de validation | Admin | App | 4 | **nouveau** |
+| `/admin/users` | Gestion des utilisateurs | Admin | App | 4 | **nouveau** |
+| `/admin/finance` | Finances | Admin | App | 4 | **nouveau** |
+| `*` | 404 | Public | Public | 0 | **nouveau** |
+
+Quatre routes seulement changent de chemin — les trois françaises restantes et l'éditeur, pour
+tenir la convention anglaise. Elles conservent une redirection depuis leur ancien chemin.
 
 ---
 
@@ -389,7 +413,7 @@ sont conservés en **redirections permanentes** pour ne pas casser les liens exi
 
 | Risque | Portée | Atténuation |
 |---|---|---|
-| Le matériel photo réel de ZTF n'existe pas | Le grief « pas sérieux » n'est qu'à moitié réglé | Banque d'images étalonnée en attendant ; les emplacements des photos réelles sont prévus et documentés |
+| Le matériel photo réel de ZTF tarde à arriver | Le grief « pas sérieux » n'est qu'à moitié réglé | Standard de direction artistique strict sur les visuels de substitution (§ 9.2) ; emplacements du matériel réel décrits dans `design/images/manifest.ts` pour que la substitution soit un simple remplacement de fichiers |
 | Les endpoints admin manquants sont plus lourds que prévu | Chantier 4 | Chantier 4 placé en dernier avant les finitions ; les 3 écrans admin ne sont vus par aucun des critiques |
 | La direction sombre fatigue sur les écrans denses | Chantiers 2 et 3 | La règle D2 confine le sombre au lecteur et au mode sombre optionnel ; les tableaux de bord restent clairs |
 | Volume total du chantier | Ensemble | Chantiers indépendants et livrables ; arrêt possible après le chantier 1 avec un gain déjà réel |
