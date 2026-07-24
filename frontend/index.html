@@ -4,8 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZMA Course Online — Académie de Musique</title>
-    <meta name="description" content="Apprenez la musique avec les meilleurs enseignants. Cours en ligne, certifications, communauté." />
+    <meta name="theme-color" content="#12243D" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>ZTF Music Académie — Formation musicale supérieure</title>
+    <meta name="description" content="Cinq départements, vingt-six parcours du certificat au doctorat. Les méthodes des grandes académies, enseignées en Afrique." />
+    <script>
+      // Pose data-theme avant le premier rendu — supprime le flash de thème clair.
+      // Doit rester synchrone et en dur : toute dépendance retarderait son exécution.
+      (function () {
+        try {
+          var stored = localStorage.getItem('zma-theme')
+          var resolved = (stored === 'light' || stored === 'dark')
+            ? stored
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          document.documentElement.setAttribute('data-theme', resolved)
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
