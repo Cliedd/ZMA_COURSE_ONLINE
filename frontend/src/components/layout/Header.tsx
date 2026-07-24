@@ -63,12 +63,12 @@ export const Header = () => {
   const logout = () => { storeLogout(); window.location.href = '/auth/connexion' }
   const initials = email ? email.slice(0, 2).toUpperCase() : 'ZM'
 
-  // Route "Mon espace" vers le bon dashboard selon le rôle
+  // Route "Dashboard" to the right space based on role
   const dashboardTo = role === 'TEACHER' ? '/teacher' : role === 'ADMIN' ? '/admin' : '/dashboard'
 
   const NAV = [
-    { to: '/catalogue',   label: 'Catalogue',  icon: BookOpen },
-    { to: dashboardTo,    label: 'Mon espace', icon: LayoutDashboard },
+    { to: '/catalogue',   label: 'Courses',    icon: BookOpen },
+    { to: dashboardTo,    label: 'Dashboard',  icon: LayoutDashboard },
   ]
 
   return (
@@ -142,7 +142,7 @@ export const Header = () => {
                           onClick={markAllRead}
                           className="flex items-center gap-1 text-[10px] text-primary hover:underline"
                         >
-                          <CheckCheck className="h-3 w-3" /> Tout marquer lu
+                          <CheckCheck className="h-3 w-3" /> Mark all read
                         </button>
                       )}
                     </div>
@@ -154,7 +154,7 @@ export const Header = () => {
                       ) : notifs.length === 0 ? (
                         <div className="py-8 text-center">
                           <Bell className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                          <p className="text-xs text-muted-foreground">Aucune notification</p>
+                          <p className="text-xs text-muted-foreground">No notifications</p>
                         </div>
                       ) : (
                         <ul className="divide-y divide-border">
@@ -168,7 +168,7 @@ export const Header = () => {
                             >
                               <p className={cn('leading-snug', !n.read && 'font-medium')}>{n.message}</p>
                               <p className="text-[10px] text-muted-foreground mt-1">
-                                {new Date(n.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                {new Date(n.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                               </p>
                             </li>
                           ))}
@@ -196,7 +196,7 @@ export const Header = () => {
                   <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-border bg-white dark:bg-card shadow-xl overflow-hidden z-50">
                     <div className="p-3 border-b border-border bg-muted/30">
                       <p className="text-xs font-semibold truncate">{email}</p>
-                      <p className="text-[10px] text-muted-foreground capitalize mt-0.5">{role?.toLowerCase() ?? 'étudiant'}</p>
+                      <p className="text-[10px] text-muted-foreground capitalize mt-0.5">{role?.toLowerCase() ?? 'student'}</p>
                     </div>
                     <div className="p-1.5 space-y-0.5">
                       <Link
@@ -204,20 +204,20 @@ export const Header = () => {
                         onClick={() => setUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                       >
-                        <LayoutDashboard className="h-3.5 w-3.5" /> Mon espace
+                        <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
                       </Link>
                       <Link
                         to="/catalogue"
                         onClick={() => setUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                       >
-                        <BookOpen className="h-3.5 w-3.5" /> Catalogue
+                        <BookOpen className="h-3.5 w-3.5" /> Courses
                       </Link>
                       <button
                         onClick={logout}
                         className="flex w-full items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-destructive hover:bg-destructive/10 transition-colors"
                       >
-                        <LogOut className="h-3.5 w-3.5" /> Déconnexion
+                        <LogOut className="h-3.5 w-3.5" /> Log out
                       </button>
                     </div>
                   </div>
@@ -227,11 +227,11 @@ export const Header = () => {
           ) : (
             <>
               <Link to="/auth/connexion">
-                <Button variant="ghost" size="sm" className="text-sm font-medium">Connexion</Button>
+                <Button variant="ghost" size="sm" className="text-sm font-medium">Log in</Button>
               </Link>
               <Link to="/auth/inscription">
                 <Button size="sm" className="gap-1.5 text-sm font-semibold">
-                  <User className="h-3.5 w-3.5" /> Commencer
+                  <User className="h-3.5 w-3.5" /> Get Started
                 </Button>
               </Link>
             </>
