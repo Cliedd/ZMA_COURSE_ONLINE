@@ -29,3 +29,9 @@ redis-data/
 # ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
 logs/
+
+# ── Local agent tooling ──────────────────────────────────────────────────────
+.claude/
+
+# ── TypeScript incremental build cache ───────────────────────────────────────
+frontend/tsconfig.tsbuildinfo
