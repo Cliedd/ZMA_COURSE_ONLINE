@@ -20,13 +20,13 @@ export const LoginPage = () => {
   }
 
   const handleLogin = async () => {
-    if (!email || !password) { setError('Veuillez remplir tous les champs.'); return }
+    if (!email || !password) { setError('Please fill in all fields.'); return }
     setError(null)
     setLoading(true)
     try {
       await login({ email, password })
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? 'Identifiants incorrects. Veuillez réessayer.')
+      setError(e?.response?.data?.message ?? 'Incorrect credentials. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -44,9 +44,9 @@ export const LoginPage = () => {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl gradient-hero mb-4">
               <Music className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold">Bon retour parmi nous</h1>
+            <h1 className="text-2xl font-bold">Welcome back</h1>
             <p className="text-sm text-muted-foreground">
-              Connectez-vous pour continuer votre apprentissage
+              Log in to continue your learning journey
             </p>
           </div>
 
@@ -57,23 +57,23 @@ export const LoginPage = () => {
             className="w-full gap-3 h-11 font-medium"
           >
             <Chrome className="h-4.5 w-4.5 text-red-500" />
-            Continuer avec Google
+            Continue with Google
           </Button>
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground font-medium">ou</span>
+            <span className="text-xs text-muted-foreground font-medium">or</span>
             <Separator className="flex-1" />
           </div>
 
           {/* Form */}
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Adresse email</Label>
+              <Label htmlFor="email">Email address</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="vous@exemple.com"
+                placeholder="you@example.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
@@ -82,9 +82,9 @@ export const LoginPage = () => {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Mot de passe</Label>
+                <Label htmlFor="password">Password</Label>
                 <button className="text-xs text-primary hover:underline font-medium">
-                  Mot de passe oublié ?
+                  Forgot password?
                 </button>
               </div>
               <div className="relative">
@@ -118,14 +118,14 @@ export const LoginPage = () => {
               onClick={handleLogin}
               disabled={loading}
             >
-              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Connexion...</> : 'Se connecter'}
+              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Logging in...</> : 'Log in'}
             </Button>
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
-            Pas encore de compte ?{' '}
+            Don't have an account yet?{' '}
             <Link to="/auth/inscription" className="text-primary font-semibold hover:underline">
-              S'inscrire gratuitement
+              Sign up for free
             </Link>
           </p>
         </div>
