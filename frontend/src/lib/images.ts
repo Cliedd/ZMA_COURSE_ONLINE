@@ -165,18 +165,18 @@ export const IMG = {
 export function getCourseImage(title: string, department: string, index: number): string {
   const t = (title + " " + department).toLowerCase()
 
-  if (t.includes("piano") || t.includes("clavier"))                     return IMG.card_piano
-  if (t.includes("guitare") || t.includes("guitar"))                    return IMG.card_guitar
-  if (t.includes("chant") || t.includes("voix") || t.includes("vocal") || t.includes("chœur")) return IMG.card_voice
-  if (t.includes("percus") || t.includes("batterie") || t.includes("djembé")) return IMG.card_drums
-  if (t.includes("studio") || t.includes("prod") || t.includes("audio") || t.includes("recording")) return IMG.card_studio
+  if (t.includes("piano") || t.includes("keyboard"))                    return IMG.card_piano
+  if (t.includes("guitar"))                                             return IMG.card_guitar
+  if (t.includes("voice") || t.includes("vocal") || t.includes("choir") || t.includes("singing")) return IMG.card_voice
+  if (t.includes("percussion") || t.includes("drum") || t.includes("djembe")) return IMG.card_drums
+  if (t.includes("studio") || t.includes("production") || t.includes("audio") || t.includes("recording") || t.includes("sound engineering")) return IMG.card_studio
   if (t.includes("jazz"))                                                return IMG.card_jazz
   if (t.includes("orchestr") || t.includes("symphon"))                  return IMG.card_orchestra
-  if (t.includes("compos") || t.includes("écrit") || t.includes("harmon") || t.includes("théor")) return IMG.card_theory
-  if (t.includes("afric") || t.includes("tradition") || t.includes("kora") || t.includes("balaf")) return IMG.card_traditional
-  if (t.includes("basse") || t.includes("bass"))                        return IMG.card_bass
-  if (t.includes("pédag") || t.includes("enseign") || t.includes("format"))  return IMG.card_teaching
-  if (t.includes("musicol") || t.includes("patrimoin") || t.includes("manag") || t.includes("ethno")) return IMG.card_culture
+  if (t.includes("compos") || t.includes("writing") || t.includes("harmon") || t.includes("theory")) return IMG.card_theory
+  if (t.includes("african") || t.includes("tradition") || t.includes("kora") || t.includes("balafon")) return IMG.card_traditional
+  if (t.includes("bass"))                                               return IMG.card_bass
+  if (t.includes("pedagog") || t.includes("teach") || t.includes("education")) return IMG.card_teaching
+  if (t.includes("musicolog") || t.includes("heritage") || t.includes("manag") || t.includes("ethno")) return IMG.card_culture
 
   // Fallback cycle
   const fallbacks = [

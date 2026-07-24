@@ -23,6 +23,8 @@ export interface CurriculumSection {
   lessons: (string | CurriculumLesson)[];
 }
 
+export type CourseStatus = 'DRAFT' | 'SUBMITTED' | 'IN_REVIEW' | 'REVISION_NEEDED' | 'PUBLISHED' | 'ARCHIVED';
+
 export interface Course {
   id: string;
   slug: string;
@@ -30,7 +32,7 @@ export interface Course {
   description: string;
   shortDescription: string;
   price: number;
-  level: 'Licence' | 'Master' | 'Doctorat' | 'Certificat' | 'Atelier';
+  level: 'Bachelor\'s' | 'Master\'s' | 'Doctorate' | 'Certificate';
   department: string;
   filiere: string;
   ects: number | null;
@@ -43,7 +45,8 @@ export interface Course {
   skillsJson: string;
   curriculumJson: string;
   debouches: string;
-  published: boolean;
+  status: CourseStatus;
+  reviewComment: string | null;
   sections: Section[];
 }
 

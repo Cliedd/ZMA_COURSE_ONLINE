@@ -27,13 +27,13 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, EBSta
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8 text-center">
-          <h1 className="text-2xl font-bold text-destructive">Une erreur est survenue</h1>
+          <h1 className="text-2xl font-bold text-destructive">Something went wrong</h1>
           <p className="text-muted-foreground text-sm max-w-md">{this.state.message}</p>
           <button
             className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold"
             onClick={() => { this.setState({ hasError: false, message: '' }); window.location.href = '/'; }}
           >
-            Retour à l'accueil
+            Back to home
           </button>
         </div>
       );
