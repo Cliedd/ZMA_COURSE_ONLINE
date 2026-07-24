@@ -39,11 +39,16 @@ public class Course {
     /** CSS gradient class index 0-9 for card thumbnail */
     private Integer gradientIndex;
 
-    /** Email de l'enseignant propriétaire du cours (null = cours officiel ZMA) */
+    /** Email of the owning teacher (null = official ZMA course) */
     private String teacherEmail;
 
-    /** Cours publié et visible dans le catalogue */
-    private Boolean published = true;
+    /** Publication workflow status */
+    @Enumerated(EnumType.STRING)
+    private CourseStatus status = CourseStatus.DRAFT;
+
+    /** Admin's feedback when a course is sent back to REVISION_NEEDED */
+    @Column(columnDefinition = "TEXT")
+    private String reviewComment;
 
     /** Soft-delete timestamp */
     private java.time.Instant deletedAt;
@@ -125,8 +130,11 @@ public class Course {
     public String getTeacherEmail() { return teacherEmail; }
     public void setTeacherEmail(String teacherEmail) { this.teacherEmail = teacherEmail; }
 
-    public Boolean getPublished() { return published; }
-    public void setPublished(Boolean published) { this.published = published; }
+    public CourseStatus getStatus() { return status; }
+    public void setStatus(CourseStatus status) { this.status = status; }
+
+    public String getReviewComment() { return reviewComment; }
+    public void setReviewComment(String reviewComment) { this.reviewComment = reviewComment; }
 
     public java.time.Instant getDeletedAt() { return deletedAt; }
     public void setDeletedAt(java.time.Instant deletedAt) { this.deletedAt = deletedAt; }
