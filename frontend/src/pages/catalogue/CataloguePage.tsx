@@ -77,8 +77,7 @@ export const CataloguePage = () => {
     if (search.trim() || filters.departments.length > 0 || filters.levels.length > 0 || filters.priceRange) return null
     const map: Record<string, Course[]> = {}
     for (const c of filtered) {
-      if (!map[c.department]) map[c.department] = []
-      map[c.department].push(c)
+      (map[c.department] ??= []).push(c)
     }
     return map
   }, [filtered, search, filters])
@@ -203,7 +202,9 @@ export const CataloguePage = () => {
               </div>
             ) : grouped ? (
               <div className="space-y-12">
-                {DEPT_SORT.filter(d => grouped[d]?.length).map(dept => (
+                {DEPT_SORT.filter(d => grouped[d]?.length).map(dept => {
+                  const deptCourses = grouped[dept] ?? []
+                  return (
                   <section key={dept}>
                     <div className="flex items-center gap-4 mb-5 pb-4 border-b border-border">
                       <div className="relative h-12 w-12 rounded-xl overflow-hidden shrink-0">
@@ -215,7 +216,7 @@ export const CataloguePage = () => {
                       </div>
                       <div>
                         <h2 className="text-base font-bold">{DEPT_SHORT[dept] ?? dept}</h2>
-                        <p className="text-xs text-muted-foreground">{dept} · {grouped[dept].length} formation{grouped[dept].length > 1 ? 's' : ''}</p>
+                        <p className="text-xs text-muted-foreground">{dept} · {deptCourses.length} formation{deptCourses.length > 1 ? 's' : ''}</p>
                       </div>
                     </div>
                     <div className={cn(
@@ -223,12 +224,13 @@ export const CataloguePage = () => {
                         ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5'
                         : 'flex flex-col gap-3'
                     )}>
-                      {grouped[dept].map((c, ci) => (
+                      {deptCourses.map((c, ci) => (
                         <CourseCard key={c.id} course={c} view={view} index={ci} />
                       ))}
                     </div>
                   </section>
-                ))}
+                  )
+                })}
               </div>
             ) : (
               <div className={cn(

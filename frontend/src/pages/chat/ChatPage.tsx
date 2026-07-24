@@ -81,7 +81,7 @@ export const ChatPage = () => {
     try {
       await chatApi.sendMessage(room.id, {
         senderEmail: email,
-        senderName: email.split('@')[0],
+        senderName: email.split('@')[0] ?? email,
         content: input.trim(),
       })
       setInput('')

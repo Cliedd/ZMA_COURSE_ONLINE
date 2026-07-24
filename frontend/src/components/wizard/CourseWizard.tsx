@@ -86,10 +86,10 @@ export const CourseWizard = () => {
       <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
 
         <div className="px-8 py-6 border-b border-border bg-muted/20 flex items-center gap-3">
-          {(() => { const s = steps[step - 1]; const Icon = s.icon; return <Icon className="h-4 w-4 text-primary" /> })()}
+          {(() => { const s = steps[step - 1] ?? steps[0]!; const Icon = s.icon; return <Icon className="h-4 w-4 text-primary" /> })()}
           <div>
-            <p className="text-sm font-semibold">{steps[step - 1].label}</p>
-            <p className="text-xs text-muted-foreground">{steps[step - 1].desc}</p>
+            <p className="text-sm font-semibold">{(steps[step - 1] ?? steps[0]!).label}</p>
+            <p className="text-xs text-muted-foreground">{(steps[step - 1] ?? steps[0]!).desc}</p>
           </div>
           <Badge variant="muted" className="ml-auto text-[10px]">Étape {step}/2</Badge>
         </div>

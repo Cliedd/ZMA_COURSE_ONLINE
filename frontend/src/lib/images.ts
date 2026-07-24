@@ -184,5 +184,5 @@ export function getCourseImage(title: string, department: string, index: number)
     IMG.card_voice, IMG.card_guitar, IMG.card_studio,
     IMG.card_traditional, IMG.card_theory,
   ]
-  return fallbacks[index % fallbacks.length]
+  return fallbacks[index % fallbacks.length]!
 }

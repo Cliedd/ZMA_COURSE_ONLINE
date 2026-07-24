@@ -14,7 +14,7 @@ interface AuthState {
 
 function decodeToken(token: string): { email: string; role: UserRole } | null {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split('.')[1] ?? ''));
     return { email: payload.sub, role: payload.role ?? 'STUDENT' };
   } catch {
     return null;
@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>()(
         const { token } = get();
         if (!token) return false;
         try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
+          const payload = JSON.parse(atob(token.split('.')[1] ?? ''));
           return payload.exp * 1000 > Date.now();
         } catch {
           return false;

@@ -56,7 +56,7 @@ export const CoursePlayer = () => {
 
   useEffect(() => {
     if (allLessons.length > 0 && !activeLesson) {
-      setActiveLesson(allLessons[0].id)
+      setActiveLesson(allLessons[0]!.id)
     }
   }, [allLessons.length])
 
@@ -153,7 +153,7 @@ export const CoursePlayer = () => {
   const goNext = () => {
     if (activeLesson) markLessonComplete(activeLesson)
     if (activeIdx < allLessons.length - 1) {
-      setActiveLesson(allLessons[activeIdx + 1].id)
+      setActiveLesson(allLessons[activeIdx + 1]!.id)
       setCurrentTime(0)
       setDuration(0)
       setIsPlaying(false)
