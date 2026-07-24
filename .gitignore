@@ -29,3 +29,6 @@ redis-data/
 # ── Logs ─────────────────────────────────────────────────────────────────────
 *.log
 logs/
+
+# Brainstorming visual companion
+.superpowers/
