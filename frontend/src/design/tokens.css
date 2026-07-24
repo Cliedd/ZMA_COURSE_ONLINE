@@ -1,0 +1,70 @@
+/* Source unique de vérité de la couleur.
+   Vérifié par src/design/tokens.contrast.test.ts — ne pas modifier une
+   valeur sans relancer ce test. */
+
+:root {
+  color-scheme: light;
+
+  --paper: #FAF8F3;
+  --surface: #FFFFFF;
+  --ink: #12243D;
+  --ink-muted: #4A5A70;
+  --ink-faint: #7A8798;
+  --line: #E2DDD2;
+  --blue: #1A3C6E;
+  --gold: #C8960C;
+  --gold-ink: #7A5E10;
+
+  --success: #1F6B4E;
+  --warning: #7A5E10;
+  --danger: #A3281E;
+  --info: #0D6E6E;
+
+  --radius: 2px;
+  --shadow-overlay: 0 8px 24px -8px rgb(18 36 61 / 0.18);
+  --duration: 180ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #0A0E14;
+  --surface: #11161F;
+  --ink: #F2EFE9;
+  --ink-muted: #A8B0BC;
+  --ink-faint: #78828F;
+  --line: #222A36;
+  --blue: #7FA8DC;
+  --gold: #D9AE3E;
+  --gold-ink: #D9AE3E;
+
+  --scene: #0A0E14;
+  --scene-surface: #11161F;
+  --scene-ink: #F2EFE9;
+
+  --success: #4FBF8B;
+  --warning: #D9AE3E;
+  --danger: #E8776A;
+  --info: #4FBDBD;
+
+  --shadow-overlay: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+}
+
+/* Le registre « scène » est aussi disponible en mode clair, pour les
+   surfaces qui sont sombres par nature : hero, lecteur de cours. */
+:root {
+  --scene: #0A0E14;
+  --scene-surface: #11161F;
+  --scene-ink: #F2EFE9;
+  --scene-gold: #D9AE3E;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
