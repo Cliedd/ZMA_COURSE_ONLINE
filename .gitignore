@@ -35,3 +35,6 @@ logs/
 
 # ── TypeScript incremental build cache ───────────────────────────────────────
 frontend/tsconfig.tsbuildinfo
+
+# Local Netlify folder
+.netlify
