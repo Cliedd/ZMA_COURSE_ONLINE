@@ -31,6 +31,10 @@ export function formatDate(iso: string): string {
 }
 
 export function formatDuration(hours: number): string {
+  // Formatage manuel volontaire ici (contrairement à formatPrice/formatDate qui passent
+  // par Intl). Intl.NumberFormat({style:'unit'}) insère une espace fine insécable U+202F
+  // invisible entre le nombre et l'unité — source de bugs de comparaison de chaînes et de
+  // recherche, pour aucun gain sur un simple « 42 h ». On garde une espace ordinaire, stable.
   if (hours < 1) return `${Math.round(hours * 60)} min`
   return `${Math.round(hours)} h`
 }
