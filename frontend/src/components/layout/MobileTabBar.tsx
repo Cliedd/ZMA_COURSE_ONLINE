@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, forwardRef, type ButtonHTMLAttributes } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Home, BookOpen, LayoutDashboard, LogIn, UserPlus, LogOut, ChevronRight } from 'lucide-react'
+import { Home, BookOpen, LayoutDashboard, LogIn, UserPlus, LogOut, ChevronRight, type LucideIcon } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet'
 import { cn } from '../../lib/utils'
 
-const TabLink = ({ to, label, icon: Icon, active }: { to: string; label: string; icon: any; active: boolean }) => (
+type TabIcon = LucideIcon | React.ComponentType<{ className?: string; strokeWidth?: number }>
+
+const TabLink = ({ to, label, icon: Icon, active }: { to: string; label: string; icon: TabIcon; active: boolean }) => (
   <Link
     to={to}
     className={cn(
@@ -19,18 +21,29 @@ const TabLink = ({ to, label, icon: Icon, active }: { to: string; label: string;
   </Link>
 )
 
-const TabButton = ({ label, icon: Icon, active, onClick }: { label: string; icon: any; active: boolean; onClick: () => void }) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      'flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-colors',
-      active ? 'text-primary' : 'text-muted-foreground'
-    )}
-  >
-    <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.4 : 2} />
-    {label}
-  </button>
+interface TabButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  label: string
+  icon: TabIcon
+  active: boolean
+}
+
+const TabButton = forwardRef<HTMLButtonElement, TabButtonProps>(
+  ({ label, icon: Icon, active, className, ...props }, ref) => (
+    <button
+      ref={ref}
+      className={cn(
+        'flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-colors',
+        active ? 'text-primary' : 'text-muted-foreground',
+        className
+      )}
+      {...props}
+    >
+      <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.4 : 2} />
+      {label}
+    </button>
+  )
 )
+TabButton.displayName = 'TabButton'
 
 export const MobileTabBar = () => {
   const location = useLocation()
