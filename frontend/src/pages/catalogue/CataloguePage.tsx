@@ -3,6 +3,8 @@ import { Search, LayoutGrid, List, Loader2, Music2, SlidersHorizontal } from 'lu
 import { CatalogFilter, type FilterState } from '../../components/catalog/CatalogFilter'
 import { CourseCard } from '../../components/catalog/CourseCard'
 import { Badge } from '../../components/ui/badge'
+import { Button } from '../../components/ui/button'
+import { Sheet, SheetContent, SheetTitle } from '../../components/ui/sheet'
 import { useCourses } from '../../hooks/useCourses'
 import { cn } from '../../lib/utils'
 import { IMG } from '../../lib/images'
@@ -93,18 +95,18 @@ export const CataloguePage = () => {
         <img
           src={IMG.heroBg} alt="Catalogue ZMA"
           className="w-full h-full object-cover object-center"
-          onError={(e) => { (e.target as HTMLImageElement).style.background = 'linear-gradient(135deg,#1a3a6e,#06111f)' }}
+          onError={(e) => { (e.target as HTMLImageElement).style.background = 'linear-gradient(135deg,#161320,#0C0A11)' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#06111f]/90 via-[#06111f]/65 to-[#06111f]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#06111f] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zma-ink/90 via-zma-ink/65 to-zma-ink/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zma-ink via-transparent to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full border border-amber-400/30 bg-amber-400/10">
-            <Music2 className="h-3.5 w-3.5 text-amber-400" />
-            <span className="text-amber-300 text-xs font-semibold uppercase tracking-widest">Course Catalog</span>
+          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full border border-zma-g1/30 bg-zma-g1/10">
+            <Music2 className="h-3.5 w-3.5 text-zma-g1" />
+            <span className="text-zma-g1 text-xs font-semibold uppercase tracking-widest">Course Catalog</span>
           </div>
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-3">
             {isLoading ? '…' : (
-              <><span className="text-amber-400">{courseList.length}</span> programs available</>
+              <><span className="text-zma-g1">{courseList.length}</span> programs available</>
             )}
           </h1>
           <p className="text-white/60 text-sm max-w-md">
@@ -117,7 +119,7 @@ export const CataloguePage = () => {
             <input
               type="text"
               placeholder="Search a course, specialization, teacher…"
-              className="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/40 rounded-xl pl-11 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 transition-all"
+              className="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/40 rounded-xl pl-11 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-zma-g1/50 transition-all"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -154,18 +156,23 @@ export const CataloguePage = () => {
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="flex md:hidden items-center gap-2 text-sm border border-border rounded-lg px-3 py-2 hover:bg-muted transition-colors"
-              onClick={() => setMobileFilter(v => !v)}
+              className="flex md:hidden items-center gap-2 text-sm border border-border rounded-lg px-3.5 py-2.5 min-h-[44px] hover:bg-muted transition-colors relative"
+              onClick={() => setMobileFilter(true)}
             >
               <SlidersHorizontal className="h-4 w-4" /> Filters
+              {(filters.departments.length + filters.levels.length + (filters.priceRange ? 1 : 0)) > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">
+                  {filters.departments.length + filters.levels.length + (filters.priceRange ? 1 : 0)}
+                </span>
+              )}
             </button>
             <div className="flex border border-border rounded-xl overflow-hidden">
               <button onClick={() => setView('grid')}
-                className={cn("p-2.5 transition-colors", view === 'grid' ? 'bg-primary text-white' : 'hover:bg-muted text-muted-foreground')}>
+                className={cn("p-3 min-h-[44px] min-w-[44px] transition-colors", view === 'grid' ? 'bg-primary text-white' : 'hover:bg-muted text-muted-foreground')}>
                 <LayoutGrid className="h-4 w-4" />
               </button>
               <button onClick={() => setView('list')}
-                className={cn("p-2.5 transition-colors", view === 'list' ? 'bg-primary text-white' : 'hover:bg-muted text-muted-foreground')}>
+                className={cn("p-3 min-h-[44px] min-w-[44px] transition-colors", view === 'list' ? 'bg-primary text-white' : 'hover:bg-muted text-muted-foreground')}>
                 <List className="h-4 w-4" />
               </button>
             </div>
@@ -173,10 +180,25 @@ export const CataloguePage = () => {
         </div>
 
         <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className={cn("shrink-0", mobileFilter ? "block" : "hidden md:block")}>
+          {/* Sidebar — desktop only, inline */}
+          <div className="hidden md:block shrink-0">
             <CatalogFilter filters={filters} onChange={setFilters} />
           </div>
+
+          {/* Filters — mobile slide-up sheet */}
+          <Sheet open={mobileFilter} onOpenChange={setMobileFilter}>
+            <SheetContent side="bottom" className="flex flex-col p-0 overflow-hidden">
+              <SheetTitle className="sr-only">Filters</SheetTitle>
+              <div className="flex-1 overflow-y-auto px-5 pt-6 pb-4">
+                <CatalogFilter filters={filters} onChange={setFilters} />
+              </div>
+              <div className="p-4 pb-safe border-t border-border bg-background">
+                <Button className="w-full" size="lg" onClick={() => setMobileFilter(false)}>
+                  Show {filtered.length} course{filtered.length === 1 ? '' : 's'}
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           {/* Courses */}
           <div className="flex-1 min-w-0">
@@ -210,7 +232,7 @@ export const CataloguePage = () => {
                         <img
                           src={DEPT_IMGS[dept] ?? IMG.concert} alt={dept}
                           className="w-full h-full object-cover"
-                          onError={(e) => { (e.target as HTMLImageElement).style.background = '#1a3a6e' }}
+                          onError={(e) => { (e.target as HTMLImageElement).style.background = '#161320' }}
                         />
                       </div>
                       <div>

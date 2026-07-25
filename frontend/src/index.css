@@ -11,19 +11,19 @@
     --foreground: 215 35% 10%;
     --card: 0 0% 100%;
     --card-foreground: 215 35% 10%;
-    --primary: 213 76% 42%;
+    --primary: 230 78% 53%;
     --primary-foreground: 0 0% 100%;
     --secondary: 42 86% 48%;
     --secondary-foreground: 42 80% 12%;
-    --muted: 213 20% 96%;
-    --muted-foreground: 213 15% 48%;
-    --accent: 213 60% 94%;
-    --accent-foreground: 213 76% 32%;
+    --muted: 230 20% 96%;
+    --muted-foreground: 230 15% 48%;
+    --accent: 230 60% 95%;
+    --accent-foreground: 230 78% 38%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 213 20% 90%;
-    --input: 213 20% 90%;
-    --ring: 213 76% 42%;
+    --border: 230 20% 90%;
+    --input: 230 20% 90%;
+    --ring: 230 78% 53%;
     --radius: 0.75rem;
     --gold: 42 86% 48%;
     --gold-light: 45 92% 62%;
@@ -153,3 +153,14 @@ html { scroll-behavior: smooth; }
 /* ── Lazy image fade-in ────────────────────────────────────────────────────── */
 img.lazy { opacity: 0; transition: opacity 0.5s ease; }
 img.lazy.loaded { opacity: 1; }
+
+/* ── Mobile app-shell: bottom tab bar + safe-area insets ─────────────────────── */
+:root { --tab-bar-h: 64px; }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+
+/* Hide scrollbar on horizontal snap rows (mobile carousels) while keeping scroll */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.snap-row { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.snap-item { scroll-snap-align: start; }

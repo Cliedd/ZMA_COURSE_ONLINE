@@ -3,7 +3,11 @@ export default {
   darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
-    container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
+    container: {
+      center: true,
+      padding: { DEFAULT: "1.25rem", sm: "1.5rem", lg: "2rem" },
+      screens: { "2xl": "1400px" },
+    },
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],

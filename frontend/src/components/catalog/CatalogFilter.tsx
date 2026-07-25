@@ -64,7 +64,7 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
   const reset = () => onChange({ departments: [], levels: [], priceRange: null })
 
   return (
-    <aside className="w-60 shrink-0 space-y-4">
+    <aside className="w-full md:w-60 shrink-0 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <SlidersHorizontal className="h-4 w-4 text-primary" />
