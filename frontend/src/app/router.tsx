@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NotFound } from './NotFound'
 import { RequireAuth } from './guards'
 import { OAuthTokenCapture } from './OAuthTokenCapture'
@@ -24,6 +24,14 @@ const TeacherDashboard = lazy(() => import('@/pages/teacher/TeacherDashboard').t
 const CourseEditor = lazy(() => import('@/pages/teacher/CourseEditor').then((m) => ({ default: m.CourseEditor })))
 const CourseWizard = lazy(() => import('@/components/wizard/CourseWizard').then((m) => ({ default: m.CourseWizard })))
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })))
+
+/** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
+ *  TeacherDashboard et CourseWizard (hérités, réécrits au chantier 3) pointent encore
+ *  vers /teacher/cours/:courseId. Sans cette redirection, créer ou éditer un cours mène à la 404. */
+export function LegacyEditRedirect() {
+  const { courseId } = useParams()
+  return <Navigate to={`/teacher/courses/${courseId}/edit`} replace />
+}
 
 /** Squelette de route — jamais de spinner bloquant (CDC). */
 function RouteFallback() {
@@ -76,6 +84,7 @@ export function AppRoutes() {
             <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
             {/* Anciens chemins de l'espace enseignant */}
             <Route path="/enseigner/cours/creer" element={<Navigate to="/teacher/courses/new" replace />} />
+            <Route path="/teacher/cours/:courseId" element={<LegacyEditRedirect />} />
           </Route>
 
           <Route element={<ImmersiveLayout />}>

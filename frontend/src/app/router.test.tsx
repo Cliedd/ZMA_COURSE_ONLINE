@@ -4,6 +4,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { axe } from 'jest-axe'
 import { NotFound } from './NotFound'
 import { RequireAuth } from './guards'
+import { LegacyEditRedirect } from './router'
+import { OAuthTokenCapture } from './OAuthTokenCapture'
 import { ThemeProvider } from '@/shell/ThemeProvider'
 import { useAuthStore } from '@/store/authStore'
 
@@ -63,5 +65,50 @@ describe('RequireAuth', () => {
       '/dashboard',
     )
     expect(screen.getByText('Espace privé')).toBeInTheDocument()
+  })
+})
+
+describe('LegacyEditRedirect', () => {
+  it('redirige l\'ancien chemin d\'édition en préservant l\'identifiant du cours', () => {
+    // Un enseignant qui crée un cours (CourseWizard) ou clique « Éditer » (TeacherDashboard)
+    // arrive sur /teacher/cours/:id ; sans redirection il tomberait sur la 404.
+    wrap(
+      <Routes>
+        <Route path="/teacher/cours/:courseId" element={<LegacyEditRedirect />} />
+        <Route path="/teacher/courses/:courseId/edit" element={<p>Éditeur de cours</p>} />
+      </Routes>,
+      '/teacher/cours/abc-123',
+    )
+    expect(screen.getByText('Éditeur de cours')).toBeInTheDocument()
+  })
+})
+
+describe('OAuthTokenCapture', () => {
+  it('capture le ?token= de la redirection Google, le mémorise et nettoie l\'URL', async () => {
+    const exp = Math.floor(Date.now() / 1000) + 3600
+    const token = `h.${btoa(JSON.stringify({ sub: 'e@z.cm', role: 'STUDENT', exp }))}.s`
+
+    wrap(
+      <Routes>
+        <Route path="/dashboard" element={<><OAuthTokenCapture /><p>Tableau de bord</p></>} />
+      </Routes>,
+      `/dashboard?token=${token}`,
+    )
+
+    // Le jeton de la redirection OAuth est enregistré dans le store.
+    expect(await screen.findByText('Tableau de bord')).toBeInTheDocument()
+    expect(useAuthStore.getState().token).toBe(token)
+    expect(useAuthStore.getState().isAuthenticated()).toBe(true)
+  })
+
+  it('ne fait rien quand aucun token n\'est présent', () => {
+    wrap(
+      <Routes>
+        <Route path="/dashboard" element={<><OAuthTokenCapture /><p>Tableau de bord</p></>} />
+      </Routes>,
+      '/dashboard',
+    )
+    expect(screen.getByText('Tableau de bord')).toBeInTheDocument()
+    expect(useAuthStore.getState().token).toBeNull()
   })
 })
