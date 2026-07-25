@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios'
-import type { ZodType } from 'zod'
+import type { ZodType, ZodTypeDef } from 'zod'
 
 /** Forme unique d'erreur dans toute l'application. */
 export class AppError extends Error {
@@ -105,7 +105,7 @@ client.interceptors.response.use(
   },
 )
 
-async function request<T>(config: AxiosRequestConfig, schema?: ZodType<T>): Promise<T> {
+async function request<T>(config: AxiosRequestConfig, schema?: ZodType<T, ZodTypeDef, unknown>): Promise<T> {
   const { data } = await client.request<unknown>(config)
   if (!schema) return data as T
   const parsed = schema.safeParse(data)
@@ -119,17 +119,17 @@ async function request<T>(config: AxiosRequestConfig, schema?: ZodType<T>): Prom
   return parsed.data
 }
 
-export const get = <T>(url: string, config?: AxiosRequestConfig, schema?: ZodType<T>) =>
+export const get = <T>(url: string, config?: AxiosRequestConfig, schema?: ZodType<T, ZodTypeDef, unknown>) =>
   request<T>({ ...config, url, method: 'GET' }, schema)
 
-export const post = <T>(url: string, data?: unknown, schema?: ZodType<T>, config?: AxiosRequestConfig) =>
+export const post = <T>(url: string, data?: unknown, schema?: ZodType<T, ZodTypeDef, unknown>, config?: AxiosRequestConfig) =>
   request<T>({ ...config, url, method: 'POST', data }, schema)
 
-export const put = <T>(url: string, data?: unknown, schema?: ZodType<T>, config?: AxiosRequestConfig) =>
+export const put = <T>(url: string, data?: unknown, schema?: ZodType<T, ZodTypeDef, unknown>, config?: AxiosRequestConfig) =>
   request<T>({ ...config, url, method: 'PUT', data }, schema)
 
-export const patch = <T>(url: string, data?: unknown, schema?: ZodType<T>, config?: AxiosRequestConfig) =>
+export const patch = <T>(url: string, data?: unknown, schema?: ZodType<T, ZodTypeDef, unknown>, config?: AxiosRequestConfig) =>
   request<T>({ ...config, url, method: 'PATCH', data }, schema)
 
-export const del = <T>(url: string, config?: AxiosRequestConfig, schema?: ZodType<T>) =>
+export const del = <T>(url: string, config?: AxiosRequestConfig, schema?: ZodType<T, ZodTypeDef, unknown>) =>
   request<T>({ ...config, url, method: 'DELETE' }, schema)
