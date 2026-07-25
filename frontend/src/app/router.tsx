@@ -11,7 +11,7 @@ import { Skeleton } from '@/shared/ui'
 import { setOnUnauthorized } from '@/shared/api/http'
 
 // Chargement différé : l'espace admin ne pèse plus sur la première visite en 3G.
-const HomePage = lazy(() => import('@/pages/home/HomePage').then((m) => ({ default: m.HomePage })))
+const HomePage = lazy(() => import('@/pages/home').then((m) => ({ default: m.HomePage })))
 const CataloguePage = lazy(() => import('@/pages/catalogue/CataloguePage').then((m) => ({ default: m.CataloguePage })))
 const CourseDetailPage = lazy(() => import('@/pages/course/CourseDetailPage').then((m) => ({ default: m.CourseDetailPage })))
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage').then((m) => ({ default: m.LoginPage })))

@@ -57,5 +57,36 @@
     "Doctorat": "Doctorat",
     "Certificat": "Certificat",
     "Atelier": "Atelier"
+  },
+  "course": {
+    "free": "Gratuit",
+    "freePreview": "Aperçu gratuit",
+    "students": "étudiants",
+    "empty": "Aucune formation ne correspond",
+    "emptyHint": "Essayez d'élargir vos critères."
+  },
+  "home": {
+    "eyebrow": "Établissement d'enseignement supérieur · Afrique",
+    "title1": "Former les musiciens africains de demain,",
+    "titleEm": "sans rien céder",
+    "title2": "sur l'exigence.",
+    "subtitle": "Cinq départements, dix filières, vingt-six parcours du certificat au doctorat. Les méthodes des grandes académies, l'âme du continent.",
+    "explore": "Explorer les formations",
+    "freeLesson": "Première leçon offerte",
+    "stats": {
+      "parcours": "Parcours diplômants",
+      "ects": "Crédits ECTS",
+      "students": "Étudiants"
+    },
+    "departmentsEyebrow": "Nos départements",
+    "departmentsTitle": "Cinq filières d'excellence",
+    "departmentsBody": "Chaque département forme des professionnels de haut niveau et valorise l'identité musicale du continent.",
+    "featuredEyebrow": "À la une",
+    "featuredTitle": "Formations phares",
+    "featuredAll": "Voir tout le catalogue",
+    "whyEyebrow": "Pourquoi ZMA",
+    "whyTitle": "Une académie unique en son genre",
+    "ctaTitle": "Prêt à commencer votre parcours musical ?",
+    "ctaBody": "Rejoignez les musiciens qui se forment aux standards internationaux. Première leçon gratuite, sans carte bancaire."
   }
 }

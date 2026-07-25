@@ -1,12 +1,17 @@
 /* eslint-env node */
 
-// Code hérité, dispensé des règles strictes jusqu'à sa réécriture (chantiers 1 à 4).
-// Ces dossiers ne sont PAS des couches FSD — ils disparaissent au fil des chantiers.
-const LEGACY = ['src/pages/**', 'src/components/**', 'src/hooks/**', 'src/services/**', 'src/types/**', 'src/lib/**']
+// Pages héritées non encore réécrites — listées nommément, retirées une par une
+// au fil des chantiers 1 à 4. Plus le vieux socle hors couches FSD.
+const LEGACY = [
+  'src/pages/admin/**', 'src/pages/auth/**', 'src/pages/catalogue/**', 'src/pages/chat/**',
+  'src/pages/checkout/**', 'src/pages/course/**', 'src/pages/dashboard/**',
+  'src/pages/learning/**', 'src/pages/teacher/**',
+  'src/components/**', 'src/hooks/**', 'src/services/**', 'src/types/**', 'src/lib/**',
+]
 
-// Couches FSD soumises aux règles strictes (le métier neuf). `pages/` en est exclu
-// tant qu'il contient les pages héritées ; il rejoindra le strict à leur réécriture.
-const FSD_STRICT = ['src/app/**/*.{ts,tsx}', 'src/shared/**/*.{ts,tsx}', 'src/entities/**/*.{ts,tsx}', 'src/features/**/*.{ts,tsx}', 'src/widgets/**/*.{ts,tsx}']
+// Couches FSD soumises aux règles strictes. `pages/` y est inclus : les pages
+// héritées ci-dessus sont ré-exemptées par l'override LEGACY, qui a la priorité.
+const FSD_STRICT = ['src/app/**/*.{ts,tsx}', 'src/shared/**/*.{ts,tsx}', 'src/entities/**/*.{ts,tsx}', 'src/features/**/*.{ts,tsx}', 'src/widgets/**/*.{ts,tsx}', 'src/pages/**/*.{ts,tsx}']
 
 module.exports = {
   root: true,
