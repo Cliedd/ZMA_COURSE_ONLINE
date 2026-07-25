@@ -93,13 +93,13 @@
     "shop": "Boutique de cours",
     "title": "Boutique de cours",
     "subtitle": "Choisissez vos cours et progressez à votre rythme. Accès à vie après achat.",
-    "results": "{{count}} formation",
-    "results_other": "{{count}} formations",
     "empty": "Aucune formation ne correspond à ces critères.",
     "emptyAction": "Réinitialiser les filtres",
     "filtersLevel": "Niveau",
     "filtersDept": "Département",
     "search": "Rechercher un cours…",
-    "all": "Tous"
+    "all": "Tous",
+    "results_one": "{{count}} formation",
+    "results_other": "{{count}} formations"
   }
 }
