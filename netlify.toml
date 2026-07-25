@@ -3,6 +3,11 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "20"
+  # Contourne un conflit de peer deps (eslint-import-resolver vs @typescript-eslint@7)
+  NPM_FLAGS = "--legacy-peer-deps"
+
 # SPA : toutes les routes servent index.html (React Router côté client).
 [[redirects]]
   from = "/*"
