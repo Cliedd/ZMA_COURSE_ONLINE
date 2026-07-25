@@ -33,3 +33,5 @@ logs/
 
 # Brainstorming visual companion
 .superpowers/
+frontend/coverage/
+frontend/tsconfig.tsbuildinfo
