@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { z } from 'zod'
 import { mswServer } from '@/test/msw'
 import { AppError, get, post } from './http'
-import { useAuthStore } from '@/entities/session'
+import { useAuthStore, connectSessionToHttp } from '@/entities/session'
 
 const API = 'http://localhost/api/v1'
 
@@ -14,6 +14,8 @@ function fakeJwt(exp = 4102444800): string {
 }
 
 beforeEach(() => {
+  // Rebranche la session réelle au client HTTP (injection de dépendance FSD).
+  connectSessionToHttp()
   useAuthStore.getState().logout()
   localStorage.clear()
 })

@@ -4,6 +4,10 @@ import { I18nextProvider } from 'react-i18next'
 import { ThemeProvider } from '@/shared/theme'
 import { i18n } from '@/shared/config/i18n'
 import { AppError } from '@/shared/api/http'
+import { connectSessionToHttp } from '@/entities/session'
+
+// Branche la session au client HTTP partagé, une fois, au chargement du module app.
+connectSessionToHttp()
 
 const queryClient = new QueryClient({
   defaultOptions: {

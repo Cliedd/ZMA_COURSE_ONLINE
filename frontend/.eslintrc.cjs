@@ -1,5 +1,12 @@
 /* eslint-env node */
-const LEGACY = ['src/pages/**', 'src/components/**', 'src/hooks/**', 'src/services/**', 'src/store/**', 'src/types/**', 'src/lib/images.ts']
+
+// Code hérité, dispensé des règles strictes jusqu'à sa réécriture (chantiers 1 à 4).
+// Ces dossiers ne sont PAS des couches FSD — ils disparaissent au fil des chantiers.
+const LEGACY = ['src/pages/**', 'src/components/**', 'src/hooks/**', 'src/services/**', 'src/types/**', 'src/lib/**']
+
+// Couches FSD soumises aux règles strictes (le métier neuf). `pages/` en est exclu
+// tant qu'il contient les pages héritées ; il rejoindra le strict à leur réécriture.
+const FSD_STRICT = ['src/app/**/*.{ts,tsx}', 'src/shared/**/*.{ts,tsx}', 'src/entities/**/*.{ts,tsx}', 'src/features/**/*.{ts,tsx}', 'src/widgets/**/*.{ts,tsx}']
 
 module.exports = {
   root: true,
@@ -15,35 +22,50 @@ module.exports = {
   settings: {
     'import/resolver': { typescript: { project: './tsconfig.json' } },
   },
-  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs', 'vite.config.ts', 'vitest.config.ts', 'tailwind.config.js', 'postcss.config.js'],
+  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs', 'vite.config.ts', 'vitest.config.ts', 'tailwind.config.js', 'postcss.config.js', 'lighthouserc.cjs'],
   rules: {
     'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     'react-hooks/exhaustive-deps': 'error',
     '@typescript-eslint/no-explicit-any': 'error',
 
-    // Dépendances à sens unique : features → shell → design → lib
+    // Hiérarchie FSD : une couche n'importe que de couches strictement inférieures.
+    // Ordre décroissant : app > pages > widgets > features > entities > shared.
     'import/no-restricted-paths': ['error', {
       zones: [
-        { target: './src/lib', from: './src/design', message: 'lib ne peut pas dépendre de design.' },
-        { target: './src/lib', from: './src/shell', message: 'lib ne peut pas dépendre de shell.' },
-        { target: './src/lib', from: './src/features', message: 'lib ne peut pas dépendre de features.' },
-        { target: './src/design', from: './src/shell', message: 'design ne peut pas dépendre de shell.' },
-        { target: './src/design', from: './src/features', message: 'design ne peut pas dépendre de features. Une primitive ne connaît pas le métier.' },
-        { target: './src/shell', from: './src/features', message: 'shell ne peut pas dépendre de features.' },
+        // shared ne connaît rien du reste.
+        { target: './src/shared', from: './src/entities', message: 'FSD : shared ne peut pas importer entities.' },
+        { target: './src/shared', from: './src/features', message: 'FSD : shared ne peut pas importer features.' },
+        { target: './src/shared', from: './src/widgets', message: 'FSD : shared ne peut pas importer widgets.' },
+        { target: './src/shared', from: './src/pages', message: 'FSD : shared ne peut pas importer pages.' },
+        { target: './src/shared', from: './src/app', message: 'FSD : shared ne peut pas importer app.' },
+        // entities ne connaît que shared.
+        { target: './src/entities', from: './src/features', message: 'FSD : entities ne peut pas importer features.' },
+        { target: './src/entities', from: './src/widgets', message: 'FSD : entities ne peut pas importer widgets.' },
+        { target: './src/entities', from: './src/pages', message: 'FSD : entities ne peut pas importer pages.' },
+        { target: './src/entities', from: './src/app', message: 'FSD : entities ne peut pas importer app.' },
+        // features ne connaît qu'entities et shared.
+        { target: './src/features', from: './src/widgets', message: 'FSD : features ne peut pas importer widgets.' },
+        { target: './src/features', from: './src/pages', message: 'FSD : features ne peut pas importer pages.' },
+        { target: './src/features', from: './src/app', message: 'FSD : features ne peut pas importer app.' },
+        // widgets ne connaît que features, entities, shared.
+        { target: './src/widgets', from: './src/pages', message: 'FSD : widgets ne peut pas importer pages.' },
+        { target: './src/widgets', from: './src/app', message: 'FSD : widgets ne peut pas importer app.' },
+        // pages ne connaît pas app.
+        { target: './src/pages', from: './src/app', message: 'FSD : pages ne peut pas importer app.' },
       ],
     }],
   },
   overrides: [
     {
-      // Code neuf : règles strictes
-      files: ['src/app/**/*.{ts,tsx}', 'src/design/**/*.{ts,tsx}', 'src/shell/**/*.{ts,tsx}', 'src/lib/**/*.{ts,tsx}', 'src/features/**/*.{ts,tsx}'],
+      // Couches FSD neuves : règles strictes.
+      files: FSD_STRICT,
       rules: {
         'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
         'no-restricted-syntax': [
           'error',
           {
             selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/]",
-            message: 'Couleur en dur interdite. Utiliser un jeton sémantique de src/design/tokens.css.',
+            message: 'Couleur en dur interdite. Utiliser un jeton sémantique de src/app/styles/tokens.css.',
           },
           {
             selector: "Literal[value=/\\b(?:amber|purple|rose|emerald|violet|pink|orange|indigo|sky|cyan|lime|fuchsia)-\\d{2,3}\\b/]",
@@ -57,7 +79,7 @@ module.exports = {
       },
     },
     {
-      // Code hérité : dispensé jusqu'à la réécriture de sa page (chantiers 1 à 4)
+      // Code hérité : dispensé jusqu'à la réécriture de sa page (chantiers 1 à 4).
       files: LEGACY,
       rules: {
         'max-lines': 'off',
@@ -67,8 +89,11 @@ module.exports = {
       },
     },
     {
+      // Les tests composent à travers les couches pour les scénarios d'intégration
+      // (ex. brancher session + http). La frontière FSD protège le code de
+      // production, pas le câblage de test.
       files: ['**/*.test.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
-      rules: { 'max-lines': 'off', 'no-restricted-syntax': 'off' },
+      rules: { 'max-lines': 'off', 'no-restricted-syntax': 'off', 'import/no-restricted-paths': 'off' },
     },
     {
       // Bugs réels préexistants : hooks appelés après un retour conditionnel.

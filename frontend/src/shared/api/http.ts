@@ -1,8 +1,6 @@
 import axios from 'axios'
 import type { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios'
 import type { ZodType } from 'zod'
-import { useAuthStore } from '@/entities/session'
-import type { AuthResponse } from '@/entities/session'
 
 /** Forme unique d'erreur dans toute l'application. */
 export class AppError extends Error {
@@ -23,9 +21,34 @@ let onUnauthorized: UnauthorizedHandler = ({ returnTo }) => {
   window.location.assign(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`)
 }
 
-/** Permet au routeur (tâche 12) de rediriger sans rechargement complet. */
+/** Permet au routeur de rediriger sans rechargement complet. */
 export function setOnUnauthorized(handler: UnauthorizedHandler): void {
   onUnauthorized = handler
+}
+
+/**
+ * Pont vers la session. FSD : la couche `shared` ne connaît pas l'entité
+ * `session` — c'est la session qui se branche ici au démarrage (voir
+ * entities/session/model/connectHttp). Par défaut, aucune session : le client
+ * fonctionne, sans jeton ni rafraîchissement, ce qui le rend testable seul.
+ */
+export interface SessionBridge {
+  /** Jeton courant à joindre en Bearer, ou null. */
+  getToken: () => string | null
+  /** Tente un rafraîchissement ; renvoie true si un nouveau jeton a été obtenu. */
+  refresh: () => Promise<boolean>
+  /** Termine la session (déconnexion). */
+  clearSession: () => void
+}
+
+let session: SessionBridge = {
+  getToken: () => null,
+  refresh: async () => false,
+  clearSession: () => {},
+}
+
+export function configureHttpSession(bridge: SessionBridge): void {
+  session = bridge
 }
 
 interface RetriableConfig extends AxiosRequestConfig {
@@ -38,7 +61,7 @@ const client: AxiosInstance = axios.create({
 })
 
 client.interceptors.request.use((config) => {
-  const { token } = useAuthStore.getState()
+  const token = session.getToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
@@ -62,19 +85,6 @@ function toAppError(error: AxiosError<ErrorBody>): AppError {
   )
 }
 
-/** Rafraîchit la session. Renvoie true si un nouveau jeton a été obtenu. */
-async function refreshSession(): Promise<boolean> {
-  const { refreshToken, setSession } = useAuthStore.getState()
-  if (!refreshToken) return false
-  try {
-    const { data } = await axios.post<AuthResponse>('/api/v1/auth/refresh', { refreshToken })
-    setSession(data)
-    return true
-  } catch {
-    return false
-  }
-}
-
 client.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ErrorBody>) => {
@@ -83,11 +93,11 @@ client.interceptors.response.use(
 
     if (error.response?.status === 401 && config && !config._retried && !isRefreshCall) {
       config._retried = true
-      if (await refreshSession()) return client(config)
+      if (await session.refresh()) return client(config)
 
       // Le rafraîchissement a échoué : on sort proprement en mémorisant la page.
-      if (useAuthStore.getState().token) {
-        useAuthStore.getState().logout()
+      if (session.getToken()) {
+        session.clearSession()
         onUnauthorized({ returnTo: window.location.pathname })
       }
     }

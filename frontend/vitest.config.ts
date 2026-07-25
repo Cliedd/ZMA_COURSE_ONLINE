@@ -17,7 +17,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/app/**', 'src/design/**', 'src/shell/**', 'src/lib/**', 'src/features/**'],
+      // Couches FSD neuves (pages/ reste hérité, hors mesure jusqu'à réécriture).
+      include: ['src/app/**', 'src/shared/**', 'src/entities/**', 'src/features/**', 'src/widgets/**'],
       exclude: [
         '**/*.test.{ts,tsx}',
         'src/test/**',
@@ -25,9 +26,6 @@ export default defineConfig({
         'src/main.tsx',
         'src/App.tsx',
         'src/app/providers.tsx',
-        // Fichiers hérités encore dans lib/, supprimés aux chantiers 1-4 (voir progress.md).
-        'src/lib/images.ts',
-        'src/lib/utils.ts',
       ],
       thresholds: { lines: 75, functions: 75, branches: 70, statements: 75 },
     },
