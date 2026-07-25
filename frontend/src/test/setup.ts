@@ -3,6 +3,9 @@ import { cleanup } from '@testing-library/react'
 import { afterEach, beforeAll, afterAll, expect } from 'vitest'
 import { toHaveNoViolations } from 'jest-axe'
 import { mswServer } from './msw'
+// Initialise i18next (effet de bord du module) : requis par tout composant
+// utilisant useTranslation(), Vitest isolant le registre de modules par fichier de test.
+import '@/i18n'
 
 expect.extend(toHaveNoViolations)
 
