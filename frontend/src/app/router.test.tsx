@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { axe } from 'jest-axe'
 import { NotFound } from './NotFound'
-import { RequireAuth } from './guards'
+import { RequireAuth, RequireRole } from './guards'
 import { LegacyEditRedirect } from './router'
 import { OAuthTokenCapture } from './OAuthTokenCapture'
 import { ThemeProvider } from '@/shell/ThemeProvider'
@@ -65,6 +65,49 @@ describe('RequireAuth', () => {
       '/dashboard',
     )
     expect(screen.getByText('Espace privé')).toBeInTheDocument()
+  })
+})
+
+describe('RequireRole', () => {
+  function loginAs(role: 'STUDENT' | 'TEACHER' | 'ADMIN') {
+    const exp = Math.floor(Date.now() / 1000) + 3600
+    const token = `h.${btoa(JSON.stringify({ sub: 'e@z.cm', role, exp }))}.s`
+    useAuthStore.getState().setSession({ token, refreshToken: 'r', email: 'e@z.cm', role, id: '1', expiresIn: 3600 })
+  }
+
+  it('laisse passer le bon rôle', () => {
+    loginAs('TEACHER')
+    wrap(
+      <Routes>
+        <Route path="/teacher" element={<RequireRole role="TEACHER"><p>Espace enseignant</p></RequireRole>} />
+      </Routes>,
+      '/teacher',
+    )
+    expect(screen.getByText('Espace enseignant')).toBeInTheDocument()
+  })
+
+  it('renvoie un rôle non autorisé vers le tableau de bord', () => {
+    loginAs('STUDENT')
+    wrap(
+      <Routes>
+        <Route path="/teacher" element={<RequireRole role="TEACHER"><p>Espace enseignant</p></RequireRole>} />
+        <Route path="/dashboard" element={<p>Tableau de bord étudiant</p>} />
+      </Routes>,
+      '/teacher',
+    )
+    expect(screen.getByText('Tableau de bord étudiant')).toBeInTheDocument()
+    expect(screen.queryByText('Espace enseignant')).not.toBeInTheDocument()
+  })
+
+  it('redirige un visiteur vers la connexion', () => {
+    wrap(
+      <Routes>
+        <Route path="/teacher" element={<RequireRole role="TEACHER"><p>Espace enseignant</p></RequireRole>} />
+        <Route path="/auth/login" element={<p>Page de connexion</p>} />
+      </Routes>,
+      '/teacher',
+    )
+    expect(screen.getByText('Page de connexion')).toBeInTheDocument()
   })
 })
 
