@@ -35,3 +35,6 @@ logs/
 .superpowers/
 frontend/coverage/
 frontend/tsconfig.tsbuildinfo
+
+# Captures d écran temporaires
+frontend/.*.png
