@@ -12,8 +12,10 @@ import { setOnUnauthorized } from '@/shared/api/http'
 
 // Chargement différé : l'espace admin ne pèse plus sur la première visite en 3G.
 const HomePage = lazy(() => import('@/pages/home').then((m) => ({ default: m.HomePage })))
-const CataloguePage = lazy(() => import('@/pages/catalogue/CataloguePage').then((m) => ({ default: m.CataloguePage })))
-const CourseDetailPage = lazy(() => import('@/pages/course/CourseDetailPage').then((m) => ({ default: m.CourseDetailPage })))
+const CataloguePage = lazy(() => import('@/pages/catalogue').then((m) => ({ default: m.CataloguePage })))
+const CourseDetailPage = lazy(() => import('@/pages/course-detail').then((m) => ({ default: m.CourseDetailPage })))
+const TeachersPage = lazy(() => import('@/pages/teachers').then((m) => ({ default: m.TeachersPage })))
+const TeacherProfilePage = lazy(() => import('@/pages/teacher-profile').then((m) => ({ default: m.TeacherProfilePage })))
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage').then((m) => ({ default: m.LoginPage })))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })))
 const StudentDashboard = lazy(() => import('@/pages/dashboard/StudentDashboard').then((m) => ({ default: m.StudentDashboard })))
@@ -63,6 +65,8 @@ export function AppRoutes() {
             <Route index path="/" element={<HomePage />} />
             <Route path="/catalogue" element={<CataloguePage />} />
             <Route path="/course/:slug" element={<CourseDetailPage />} />
+            <Route path="/teachers" element={<TeachersPage />} />
+            <Route path="/teachers/:username" element={<TeacherProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 
