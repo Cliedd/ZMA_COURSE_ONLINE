@@ -32,12 +32,12 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
   if (view === 'list') {
     return (
       <Link to={`/course/${slug}`} className="block group">
-        <div className="flex flex-row overflow-hidden rounded-2xl border border-border bg-card hover:shadow-lg hover:border-amber-300/50 transition-all duration-300">
+        <div className="flex flex-row overflow-hidden rounded-2xl border border-border bg-card hover:shadow-lg hover:border-zma-g1/50 transition-all duration-300">
           <div className="relative w-32 sm:w-40 shrink-0 overflow-hidden">
             <img
               src={imgSrc} alt={course.title} loading="lazy"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              onError={(e) => { (e.target as HTMLImageElement).style.background = 'linear-gradient(135deg,#1a3a6e,#06111f)' }}
+              onError={(e) => { (e.target as HTMLImageElement).style.background = 'linear-gradient(135deg,#161320,#0C0A11)' }}
             />
           </div>
           <div className="flex flex-1 items-center gap-4 p-4">
@@ -87,8 +87,8 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
       <div className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
         {/* Bestseller badge */}
         {(course.rating ?? 0) >= 4.9 && (
-          <div className="absolute top-3 left-3 z-10 bg-amber-400 text-amber-900 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <Star className="h-2.5 w-2.5 fill-amber-900" /> Bestseller
+          <div className="absolute top-3 left-3 z-10 bg-zma-g1 text-zma-ink text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+            <Star className="h-2.5 w-2.5 fill-zma-ink" /> Bestseller
           </div>
         )}
 
@@ -97,7 +97,7 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
           <img
             src={imgSrc} alt={course.title} loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            onError={(e) => { (e.target as HTMLImageElement).style.background = 'linear-gradient(135deg,#1a3a6e,#06111f)' }}
+            onError={(e) => { (e.target as HTMLImageElement).style.background = 'linear-gradient(135deg,#161320,#0C0A11)' }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
           <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-lg border border-white/10">

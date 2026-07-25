@@ -99,7 +99,7 @@ export const CourseDetailPage = () => {
               <Badge className="bg-white/15 text-white border-white/20 text-xs">{course.ects} ECTS</Badge>
             )}
             {course.rating >= 4.9 && (
-              <Badge className="bg-amber-400 text-amber-900 border-0 text-xs font-bold">Bestseller</Badge>
+              <Badge className="bg-zma-g1 text-zma-ink border-0 text-xs font-bold">Bestseller</Badge>
             )}
             {isEnrolled && (
               <Badge className="bg-emerald-500 text-white border-0 text-xs font-bold">Enrolled</Badge>

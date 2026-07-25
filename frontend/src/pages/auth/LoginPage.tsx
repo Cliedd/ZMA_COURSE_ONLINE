@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Music, Chrome, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Chrome, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
@@ -41,9 +41,7 @@ export const LoginPage = () => {
 
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl gradient-hero mb-4">
-              <Music className="h-6 w-6 text-white" />
-            </div>
+            <img src="/images/ztf/logo.png" alt="ZTF Music Academy" className="mx-auto h-14 w-auto object-contain mb-4" />
             <h1 className="text-2xl font-bold">Welcome back</h1>
             <p className="text-sm text-muted-foreground">
               Log in to continue your learning journey

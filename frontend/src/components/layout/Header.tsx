@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Bell, Music, LogOut, BookOpen, User, ChevronDown, LayoutDashboard, CheckCheck, Loader2 } from 'lucide-react'
+import { Bell, LogOut, BookOpen, User, ChevronDown, LayoutDashboard, CheckCheck, Loader2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '../ui/button'
 import { Avatar, AvatarFallback } from '../ui/avatar'
@@ -81,16 +81,8 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between gap-6">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-hero shadow-md shadow-primary/30">
-            <Music className="h-4 w-4 text-white" />
-          </div>
-          <div className="hidden sm:flex flex-col leading-none">
-            <span className="text-base font-black text-foreground tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-              ZTF <span className="text-primary">Music</span>
-            </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Academy</span>
-          </div>
+        <Link to="/" className="flex items-center shrink-0 group">
+          <img src="/images/ztf/logo.png" alt="ZTF Music Academy" className="h-11 w-auto object-contain" />
         </Link>
 
         {/* Nav */}
@@ -134,7 +126,7 @@ export const Header = () => {
                 </button>
 
                 {notifOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border bg-white dark:bg-card shadow-xl overflow-hidden z-50">
+                  <div className="fixed inset-x-4 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full w-auto sm:w-80 sm:mt-2 rounded-2xl border border-border bg-white dark:bg-card shadow-xl overflow-hidden z-50">
                     <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30">
                       <p className="text-xs font-semibold">Notifications</p>
                       {notifs.some(n => !n.read) && (
@@ -179,8 +171,8 @@ export const Header = () => {
                 )}
               </div>
 
-              {/* User dropdown */}
-              <div className="relative" ref={menuRef}>
+              {/* User dropdown — desktop only; mobile uses the bottom tab bar's Account sheet */}
+              <div className="relative hidden md:block" ref={menuRef}>
                 <button
                   onClick={() => setUserMenu(v => !v)}
                   className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 hover:bg-muted transition-colors"
@@ -225,7 +217,7 @@ export const Header = () => {
               </div>
             </>
           ) : (
-            <>
+            <div className="hidden md:flex items-center gap-2">
               <Link to="/auth/connexion">
                 <Button variant="ghost" size="sm" className="text-sm font-medium">Log in</Button>
               </Link>
@@ -234,7 +226,7 @@ export const Header = () => {
                   <User className="h-3.5 w-3.5" /> Get Started
                 </Button>
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>

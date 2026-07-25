@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, Menu } from 'lucide-react'
 import { BlurFade } from '../../components/magicui/blur-fade'
 import { Marquee } from '../../components/magicui/marquee'
+import { MobileTabBar } from '../../components/layout/MobileTabBar'
+import { Sheet, SheetContent, SheetClose, SheetTitle } from '../../components/ui/sheet'
 import { cn } from '../../lib/utils'
 
 // ─── Sprite host — exact defs from the reference file (gradients, grain filter, 8 motif symbols) ──
@@ -57,8 +59,8 @@ function Logo({ className = '' }: { className?: string }) {
 
 // ─── Btn — pill CTA with lift, shadow and a diagonal shine sweep on hover ──
 
-function Btn({ children, href = '#', to, variant = 'solid', color = '#E0A012', textColor, hoverText = '#ffffff', size = 'md', className = '' }: {
-  children: React.ReactNode; href?: string; to?: string; variant?: 'solid' | 'outline'; color?: string; textColor?: string; hoverText?: string; size?: 'md' | 'lg'; className?: string
+function Btn({ children, href = '#', to, variant = 'solid', color = '#E0A012', textColor, hoverText = '#ffffff', size = 'md', className = '', onClick }: {
+  children: React.ReactNode; href?: string; to?: string; variant?: 'solid' | 'outline'; color?: string; textColor?: string; hoverText?: string; size?: 'md' | 'lg'; className?: string; onClick?: () => void
 }) {
   const outline = variant === 'outline'
   const cls = cn(
@@ -81,8 +83,8 @@ function Btn({ children, href = '#', to, variant = 'solid', color = '#E0A012', t
       />
     </>
   )
-  if (to) return <Link to={to} className={cls} style={style}>{content}</Link>
-  return <a href={href} className={cls} style={style}>{content}</a>
+  if (to) return <Link to={to} onClick={onClick} className={cls} style={style}>{content}</Link>
+  return <a href={href} onClick={onClick} className={cls} style={style}>{content}</a>
 }
 
 // ─── Data ───────────────────────────────────────────────────────────────────
@@ -252,6 +254,7 @@ const Icon24 = ({ children, className = '', strokeWidth = 2 }: { children: React
 
 export const HomePage = () => {
   const [stuck, setStuck] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setStuck(window.scrollY > 60)
@@ -284,12 +287,50 @@ export const HomePage = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 shrink-0">
-            <Link to="/auth/connexion" className="hidden sm:inline-block font-sans font-bold text-sm text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.6)] hover:text-zma-g1 transition-colors">Sign in</Link>
-            <Btn to="/auth/inscription" color={ACCENT_HEX.f2}>Register</Btn>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="hidden md:flex items-center gap-4">
+              <Link to="/auth/connexion" className="font-sans font-bold text-sm text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.6)] hover:text-zma-g1 transition-colors">Sign in</Link>
+              <Btn to="/auth/inscription" color={ACCENT_HEX.f2}>Register</Btn>
+            </div>
+            <button
+              aria-label="Open menu"
+              onClick={() => setMenuOpen(true)}
+              className="md:hidden relative flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 backdrop-blur-xl text-white active:scale-95 transition-transform"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* ── MOBILE MENU — full sections list + auth actions ── */}
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent side="left" className="bg-zma-ink border-white/10 text-white p-0 flex flex-col" showClose={false}>
+          <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+          <div className="flex items-center justify-between px-6 pt-6 pb-4">
+            <Logo className="h-10" />
+            <SheetClose className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/70 hover:text-white transition-colors">
+              <span className="text-xl leading-none">&times;</span>
+            </SheetClose>
+          </div>
+          <nav className="flex flex-col px-3 py-2">
+            {NAV_LINKS.map(({ id, label }) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                onClick={() => setMenuOpen(false)}
+                className="px-4 py-3.5 rounded-xl text-base font-semibold text-white/80 hover:text-white hover:bg-white/[0.06] transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className="mt-auto p-5 pt-6 border-t border-white/10 space-y-3">
+            <Btn to="/auth/connexion" onClick={() => setMenuOpen(false)} variant="outline" color="#ffffff" hoverText="#0C0A11" className="w-full justify-center">Sign in</Btn>
+            <Btn to="/auth/inscription" onClick={() => setMenuOpen(false)} color={ACCENT_HEX.f2} className="w-full justify-center">Register</Btn>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* ── HERO — cinematic full-bleed photo, glass panel, ambient glow, film grain ── */}
       <header className="relative overflow-hidden bg-zma-ink min-h-[100svh] flex items-center">
@@ -355,7 +396,7 @@ export const HomePage = () => {
       </div>
 
       {/* ── ABOUT ── */}
-      <section id="about" className="py-24 px-8">
+      <section id="about" className="py-14 sm:py-20 md:py-24 px-5 sm:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           <BlurFade inView className="relative pb-14 pr-12">
             <Photo src={IMG.aboutLarge} alt="ZTF Music Academy classroom" className="rounded-sm aspect-[4/5]" />
@@ -397,7 +438,7 @@ export const HomePage = () => {
 
       {/* ── STATS ── */}
       <div className="border-y border-zma-line bg-zma-sand">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 divide-x divide-zma-line px-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 divide-x divide-zma-line px-5 sm:px-8">
           {STATS.map((s, i) => (
             <BlurFade key={s.label} inView delay={i * 0.06} className="py-10 px-6 text-center">
               <div className="font-sans font-extrabold text-4xl md:text-5xl tracking-tight" style={{ color: ACCENT_HEX[s.accent] }}>{s.value}</div>
@@ -408,7 +449,7 @@ export const HomePage = () => {
       </div>
 
       {/* ── LEVELS ── */}
-      <section id="levels" className="py-24 px-8 bg-zma-sand">
+      <section id="levels" className="py-14 sm:py-20 md:py-24 px-5 sm:px-8 bg-zma-sand">
         <div className="max-w-6xl mx-auto">
           <BlurFade inView className="max-w-2xl mb-12">
             <Eyebrow accent="#E8371C">Our programme</Eyebrow>
@@ -420,9 +461,9 @@ export const HomePage = () => {
               development, building solid technique, creativity and confidence in performance.
             </p>
           </BlurFade>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="flex gap-4 overflow-x-auto snap-row no-scrollbar -mx-5 px-5 pb-2 sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-3 sm:gap-6">
             {LEVELS.map((lv, i) => (
-              <BlurFade key={lv.n} inView delay={i * 0.08}>
+              <BlurFade key={lv.n} inView delay={i * 0.08} className="shrink-0 w-[78%] snap-item sm:w-auto">
                 <article className="bg-white rounded-sm overflow-hidden h-full flex flex-col hover:-translate-y-1.5 transition-transform duration-300 shadow-sm hover:shadow-xl">
                   <Photo src={lv.img} alt={lv.name} className="aspect-[16/10]" />
                   <div className="h-1.5" style={{ background: ACCENT_HEX[lv.accent] }} />
@@ -442,7 +483,7 @@ export const HomePage = () => {
       </section>
 
       {/* ── FACULTIES ── */}
-      <section id="faculties" className="py-24 px-8">
+      <section id="faculties" className="py-14 sm:py-20 md:py-24 px-5 sm:px-8">
         <div className="max-w-6xl mx-auto">
           <BlurFade inView className="max-w-2xl mb-9">
             <Eyebrow accent="#C42E86">Our courses</Eyebrow>
@@ -480,7 +521,7 @@ export const HomePage = () => {
       </section>
 
       {/* ── COURSES ── */}
-      <section id="courses" className="py-24 px-8 bg-zma-sand">
+      <section id="courses" className="py-14 sm:py-20 md:py-24 px-5 sm:px-8 bg-zma-sand">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-end justify-between gap-6 flex-wrap mb-10">
             <BlurFade inView>
@@ -489,11 +530,11 @@ export const HomePage = () => {
             </BlurFade>
             <Btn href="#" variant="outline" color="#0C0A11">See the full catalogue</Btn>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex gap-4 overflow-x-auto snap-row no-scrollbar -mx-5 px-5 pb-2 sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
             {COURSES.map((c, i) => {
               const accent = ACCENT_HEX[c.accent]
               return (
-                <BlurFade key={c.title} inView delay={i * 0.08}>
+                <BlurFade key={c.title} inView delay={i * 0.08} className="shrink-0 w-[70%] snap-item sm:w-auto">
                   <article className="bg-white rounded-sm overflow-hidden h-full flex flex-col hover:-translate-y-1 transition-transform duration-300 shadow-sm hover:shadow-xl">
                     <div className="relative">
                       <Photo src={c.img} alt={c.title} className="aspect-[4/3]" />
@@ -520,9 +561,9 @@ export const HomePage = () => {
       </section>
 
       {/* ── AUDIENCES ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="flex overflow-x-auto snap-row no-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {AUDIENCES.map(({ img, accent, title, desc }) => (
-          <div key={title} className="group relative overflow-hidden min-h-[320px] flex flex-col justify-end p-8 text-white">
+          <div key={title} className="group relative overflow-hidden min-h-[280px] sm:min-h-[320px] flex flex-col justify-end p-6 sm:p-8 text-white shrink-0 w-[80%] snap-item sm:w-auto">
             <Photo src={img} alt={title} className="absolute inset-0 transition-transform duration-500 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
             <div className="absolute inset-0" style={{ background: ACCENT_HEX[accent], opacity: 0.14, mixBlendMode: 'multiply' }} />
@@ -534,7 +575,7 @@ export const HomePage = () => {
       </div>
 
       {/* ── INSTRUMENTS ── */}
-      <section className="py-20 px-8">
+      <section className="py-14 sm:py-16 md:py-20 px-5 sm:px-8">
         <div className="max-w-6xl mx-auto">
           <BlurFade inView className="mb-8">
             <Eyebrow accent="#2647E8">What you can study</Eyebrow>
@@ -561,7 +602,7 @@ export const HomePage = () => {
       </section>
 
       {/* ── FACILITIES ── */}
-      <section className="relative overflow-hidden bg-zma-ink text-white py-24 px-8">
+      <section className="relative overflow-hidden bg-zma-ink text-white py-14 sm:py-20 md:py-24 px-5 sm:px-8">
         <Photo src={IMG.whyChooseUs} alt="" className="absolute inset-0 opacity-[.55]" />
         <div className="absolute inset-0 z-[2]" style={{ background: 'linear-gradient(100deg, rgba(12,10,17,.94) 10%, rgba(12,10,17,.7))' }} />
         <div className="relative z-[4] max-w-6xl mx-auto">
@@ -573,7 +614,7 @@ export const HomePage = () => {
           </BlurFade>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/15">
             {FACILITIES.map(({ icon, title, desc, accent }, i) => (
-              <BlurFade key={title} inView delay={i * 0.08} className="bg-zma-ink p-8">
+              <BlurFade key={title} inView delay={i * 0.08} className="bg-zma-ink p-6 sm:p-8">
                 <div className="w-[38px] h-[38px] rounded-sm grid place-items-center mb-4" style={{ background: `rgba(${ACCENT_RGB[accent]},.22)`, color: ACCENT_HEX[accent] }}>
                   <Icon24 className="h-[19px] w-[19px]">{icon}</Icon24>
                 </div>
@@ -586,7 +627,7 @@ export const HomePage = () => {
       </section>
 
       {/* ── TEACHERS ── */}
-      <section id="teachers" className="py-24 px-8 bg-zma-sand">
+      <section id="teachers" className="py-14 sm:py-20 md:py-24 px-5 sm:px-8 bg-zma-sand">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 items-end mb-10">
             <BlurFade inView>
@@ -602,9 +643,9 @@ export const HomePage = () => {
               </p>
             </BlurFade>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="flex gap-4 overflow-x-auto snap-row no-scrollbar -mx-5 px-5 pb-2 sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-5">
             {TEACHERS.map((t, i) => (
-              <BlurFade key={t.name} inView delay={i * 0.08}>
+              <BlurFade key={t.name} inView delay={i * 0.08} className="shrink-0 w-[52%] snap-item sm:w-auto">
                 <article className="bg-white rounded-sm overflow-hidden hover:-translate-y-1 transition-transform duration-300 shadow-sm hover:shadow-xl">
                   <Art gradient={t.gradient} motif="m-portrait" className="aspect-square" />
                   <div className="h-[5px]" style={{ background: ACCENT_HEX[t.accent] }} />
@@ -623,7 +664,7 @@ export const HomePage = () => {
       <section className="relative min-h-[500px] flex items-center overflow-hidden bg-zma-ink">
         <Photo src={IMG.feature2} alt="" className="absolute inset-0" />
         <div className="absolute inset-0 z-[2]" style={{ background: 'linear-gradient(100deg, rgba(12,10,17,.95) 8%, rgba(12,10,17,.66) 52%, rgba(12,10,17,.3))' }} />
-        <div className="relative z-[5] max-w-3xl px-8 py-20 text-white">
+        <div className="relative z-[5] max-w-3xl px-5 sm:px-8 py-14 sm:py-20 text-white">
           <span className="block font-serif italic leading-[0.55] mb-3.5" style={{ fontSize: '5rem', color: '#E0A012' }}>&#8220;</span>
           <p className="font-sans font-bold text-2xl md:text-3xl leading-snug tracking-tight mb-6">
             In every performance, our students echo a heritage of passion, unity and musical
@@ -644,7 +685,7 @@ export const HomePage = () => {
       </div>
 
       {/* ── FAQ ── */}
-      <section id="faq" className="py-24 px-8 bg-zma-sand">
+      <section id="faq" className="py-14 sm:py-20 md:py-24 px-5 sm:px-8 bg-zma-sand">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-12 items-start">
           <BlurFade inView>
             <Eyebrow accent="#2647E8">Before you ask</Eyebrow>
@@ -672,7 +713,7 @@ export const HomePage = () => {
         <Photo src={IMG.aboutLarge} alt="" className="absolute inset-0" />
         <div className="absolute inset-0 z-[2] bg-zma-ink/80" />
         <div className="absolute inset-0 z-[3]" style={{ background: 'radial-gradient(46% 52% at 16% 26%, rgba(224,160,18,.36), transparent 62%), radial-gradient(46% 52% at 84% 74%, rgba(38,71,232,.36), transparent 62%)' }} />
-        <div className="relative z-[5] w-full px-8 py-20 text-white">
+        <div className="relative z-[5] w-full px-5 sm:px-8 py-14 sm:py-20 text-white">
           <div className="max-w-2xl mx-auto">
             <Eyebrow accent="#E8371C" className="text-white" center>Join the programme</Eyebrow>
             <h2 className={cn(H_LG, 'mb-4')}>
@@ -694,7 +735,7 @@ export const HomePage = () => {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-zma-coal text-white/[.64] pt-[68px] pb-8 px-8">
+      <footer className="bg-zma-coal text-white/[.64] pt-[68px] pb-[calc(var(--tab-bar-h)+env(safe-area-inset-bottom,0px)+2rem)] md:pb-8 px-5 sm:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1.1fr] gap-10 pb-9 border-b border-white/[.13]">
             <div>
@@ -746,6 +787,7 @@ export const HomePage = () => {
         </div>
       </footer>
 
+      <MobileTabBar />
     </div>
   )
 }
