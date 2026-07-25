@@ -35,6 +35,9 @@ export const DialogContent = forwardRef<ElementRef<typeof RadixDialog.Content>, 
         ref={ref}
         className={cn('fixed inset-0 z-50 flex flex-col bg-paper shadow-overlay', className)}
         {...props}
+        // Ces dialogues n'ont pas de description : on le déclare explicitement à Radix,
+        // qui sinon référence un id de description inexistant et avertit en console.
+        aria-describedby={undefined}
       >
         <div className="flex items-center justify-between border-b border-line p-3">
           <RadixDialog.Title className={cn('font-serif text-h3 text-ink', hideTitle && 'sr-only')}>
