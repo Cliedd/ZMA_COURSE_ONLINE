@@ -63,7 +63,20 @@
     "freePreview": "Aperçu gratuit",
     "students": "étudiants",
     "empty": "Aucune formation ne correspond",
-    "emptyHint": "Essayez d'élargir vos critères."
+    "emptyHint": "Essayez d'élargir vos critères.",
+    "learn": "Ce que vous apprendrez",
+    "syllabus": "Programme",
+    "reviews": "Avis",
+    "buy": "Acheter ce cours",
+    "lifetime": "Accès à vie après achat",
+    "by": "Par",
+    "lessons_one": "{{count}} leçon",
+    "lessons_other": "{{count}} leçons",
+    "hours": "{{count}} h",
+    "notFound": "Ce cours est introuvable",
+    "backCatalogue": "Retour à la boutique",
+    "noReviews": "Aucun avis pour l'instant.",
+    "outcomes": "Débouchés"
   },
   "home": {
     "eyebrow": "Établissement d'enseignement supérieur",
@@ -101,5 +114,14 @@
     "all": "Tous",
     "results_one": "{{count}} formation",
     "results_other": "{{count}} formations"
+  },
+  "teachers": {
+    "title": "Nos enseignants",
+    "subtitle": "Des professionnels de haut niveau, engagés pour la mission de l'académie.",
+    "courses_one": "{{count}} cours",
+    "courses_other": "{{count}} cours",
+    "empty": "Les enseignants seront présentés prochainement.",
+    "backList": "Tous les enseignants",
+    "profileCourses": "Ses formations"
   }
 }
