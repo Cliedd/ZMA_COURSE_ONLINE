@@ -43,8 +43,8 @@ export function Header() {
       </a>
 
       <div className="container flex min-h-touch items-center gap-5 py-2">
-        <Link to="/" className="shrink-0 font-serif text-h3 leading-none text-ink">
-          {t('brand.name')}
+        <Link to="/" className="shrink-0" aria-label={t('brand.name')}>
+          <img src="/brand/ztf-logo.png" alt={t('brand.name')} width={132} height={44} className="h-11 w-auto" />
         </Link>
 
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">

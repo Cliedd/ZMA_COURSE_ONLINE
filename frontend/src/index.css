@@ -20,16 +20,16 @@
 
   /* Focus visible sur les deux registres — jamais d'outline:none sans remplacement */
   :focus-visible {
-    outline: 2px solid var(--gold-ink);
+    outline: 2px solid var(--accent-ink);
     outline-offset: 2px;
   }
 }
 
 @layer components {
   .eyebrow {
-    @apply font-sans text-eyebrow font-bold uppercase text-gold-ink;
+    @apply font-sans text-eyebrow font-bold uppercase text-accent-ink;
   }
   .rule {
-    @apply h-px w-11 bg-gold;
+    @apply h-px w-11 bg-accent;
   }
 }

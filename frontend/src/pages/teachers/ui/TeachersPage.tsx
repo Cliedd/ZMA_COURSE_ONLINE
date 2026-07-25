@@ -15,7 +15,7 @@ export function TeachersPage() {
     <div>
       <Breadcrumb items={[{ label: t('nav.teachers') }]} />
       <div className="container py-10">
-        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-gold-ink">{t('nav.teachers')}</p>
+        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent-ink">{t('nav.teachers')}</p>
         <h1 className="mt-3 font-serif text-h1 text-ink">{t('teachers.title')}</h1>
         <p className="mt-3 max-w-2xl font-sans text-body leading-relaxed text-ink-muted">{t('teachers.subtitle')}</p>
 
@@ -54,7 +54,7 @@ function TeacherCard({ teacher }: { teacher: Teacher }) {
       </div>
       <div className="flex items-center gap-4 font-sans text-sm text-ink-muted">
         {teacher.avgRating != null && (
-          <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-gold text-gold" aria-hidden /> {teacher.avgRating.toFixed(1)}</span>
+          <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden /> {teacher.avgRating.toFixed(1)}</span>
         )}
         {teacher.departments[0] && <span className="text-ink-faint">{teacher.departments[0]}</span>}
       </div>

@@ -9,10 +9,10 @@ export function DepartmentsSection() {
   return (
     <section className="container py-20">
       <div className="max-w-2xl">
-        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-gold-ink">
+        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent-ink">
           {t('home.departmentsEyebrow')}
         </p>
-        <div className="mt-3 h-px w-11 bg-gold" />
+        <div className="mt-3 h-px w-11 bg-accent" />
         <h2 className="mt-5 font-serif text-h1 text-ink">{t('home.departmentsTitle')}</h2>
         <p className="mt-4 font-sans text-body leading-relaxed text-ink-muted">{t('home.departmentsBody')}</p>
       </div>

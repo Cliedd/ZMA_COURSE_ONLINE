@@ -35,7 +35,7 @@ export function TeacherProfilePage() {
             <h1 className="font-serif text-h1 text-ink">{teacher.name}</h1>
             <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 font-sans text-sm text-ink-muted">
               <span>{t('teachers.courses', { count: teacher.courseCount })}</span>
-              {teacher.avgRating != null && <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-gold text-gold" aria-hidden /> {teacher.avgRating.toFixed(1)}</span>}
+              {teacher.avgRating != null && <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden /> {teacher.avgRating.toFixed(1)}</span>}
               {teacher.departments.length > 0 && <span className="text-ink-faint">{teacher.departments.join(' · ')}</span>}
             </div>
           </div>

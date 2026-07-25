@@ -32,12 +32,12 @@ export function HomePage() {
       {/* Pourquoi ZMA */}
       <section className="container grid gap-12 py-20 lg:grid-cols-2 lg:items-center">
         <div>
-          <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-gold-ink">{t('home.whyEyebrow')}</p>
+          <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent-ink">{t('home.whyEyebrow')}</p>
           <h2 className="mt-3 font-serif text-h1 text-ink">{t('home.whyTitle')}</h2>
           <ul className="mt-8 space-y-6">
             {WHY.map(({ icon: Icon, n, titleKey, bodyKey }) => (
               <li key={n} className="flex items-start gap-4">
-                <span className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded border border-line text-gold-ink">
+                <span className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded border border-line text-accent-ink">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <div>

@@ -8,8 +8,8 @@ const badge = cva('inline-flex items-center font-sans text-eyebrow font-bold upp
   variants: {
     tone: {
       default: 'text-ink-muted',
-      // --gold mesure 2,53:1 sur fond clair : jamais pour du texte (spec § 5.1)
-      gold: 'text-gold-ink',
+      // --accent mesure 2,53:1 sur fond clair : jamais pour du texte (spec § 5.1)
+      accent: 'text-accent-ink',
       success: 'text-success',
       warning: 'text-warning',
       danger: 'text-danger',

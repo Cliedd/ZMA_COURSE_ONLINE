@@ -20,16 +20,16 @@ export function CourseCard({ course }: { course: Course }) {
 
   return (
     <Link to={`/course/${course.slug}`} className="group block focus-visible:outline-none">
-      <Card className="h-full transition-colors duration-brand ease-brand group-hover:border-gold-ink/40">
+      <Card className="h-full transition-colors duration-brand ease-brand group-hover:border-accent-ink/40">
         <CardMedia>
           <Picture image={image} alt="" sizes="(min-width: 768px) 400px, 100vw" className="aspect-[16/10] w-full transition-transform duration-brand ease-brand group-hover:scale-[1.02]" />
         </CardMedia>
         <CardBody className="flex flex-col gap-2">
-          <span className="font-sans text-eyebrow font-bold uppercase text-gold-ink">
+          <span className="font-sans text-eyebrow font-bold uppercase text-accent-ink">
             {t(`level.${course.level}`, course.level)}
             {course.department ? ` · ${course.department}` : ''}
           </span>
-          <h3 className="font-serif text-h3 leading-tight text-ink group-hover:underline decoration-gold-ink/40 underline-offset-4">
+          <h3 className="font-serif text-h3 leading-tight text-ink group-hover:underline decoration-accent-ink/40 underline-offset-4">
             {course.title}
           </h3>
           {meta && <p className="font-sans text-sm text-ink-muted">{meta}</p>}
@@ -40,7 +40,7 @@ export function CourseCard({ course }: { course: Course }) {
           </span>
           {course.rating != null ? (
             <span className="flex items-center gap-1 font-sans text-sm text-ink-muted">
-              <Star className="h-3.5 w-3.5 fill-gold text-gold" aria-hidden />
+              <Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden />
               {course.rating.toFixed(1)}
               {course.studentsCount > 0 && <span className="text-ink-faint"> · {course.studentsCount}</span>}
             </span>

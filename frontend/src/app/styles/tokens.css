@@ -1,5 +1,5 @@
-/* Source unique de vérité de la couleur.
-   Vérifié par src/design/tokens.contrast.test.ts — ne pas modifier une
+/* Source unique de vérité de la couleur — palette de MARQUE ZTF (bleu + orange
+   du logo officiel). Vérifié par tokens.contrast.test.ts — ne pas modifier une
    valeur sans relancer ce test. */
 
 :root {
@@ -7,18 +7,18 @@
 
   --paper: #FAF8F3;
   --surface: #FFFFFF;
-  --ink: #12243D;
-  --ink-muted: #4A5A70;
-  --ink-faint: #7A8798;
-  --line: #E2DDD2;
-  --blue: #1A3C6E;
-  --gold: #C8960C;
-  --gold-ink: #7A5E10;
+  --ink: #0A2540;          /* bleu profond de marque — texte principal */
+  --ink-muted: #3E5878;
+  --ink-faint: #7487A0;    /* gros texte uniquement */
+  --line: #E3E0D8;
+  --blue: #0050A0;         /* bleu du logo — liens, éléments interactifs */
+  --accent: #E07000;       /* orange du logo — décoratif, filets, gros */
+  --accent-ink: #964900;   /* orange lisible en texte/icônes */
 
   --success: #1F6B4E;
-  --warning: #7A5E10;
+  --warning: #964900;
   --danger: #A3281E;
-  --info: #0D6E6E;
+  --info: #0050A0;
 
   --radius: 2px;
   --shadow-overlay: 0 8px 24px -8px rgb(18 36 61 / 0.18);
@@ -29,24 +29,24 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --paper: #0A0E14;
-  --surface: #11161F;
+  --paper: #0A1526;
+  --surface: #12233B;
   --ink: #F2EFE9;
-  --ink-muted: #A8B0BC;
-  --ink-faint: #78828F;
-  --line: #222A36;
-  --blue: #7FA8DC;
-  --gold: #D9AE3E;
-  --gold-ink: #D9AE3E;
+  --ink-muted: #AAB6C6;
+  --ink-faint: #78889C;
+  --line: #22344B;
+  --blue: #4DA3E0;
+  --accent: #F09010;       /* orange vif sur fond sombre */
+  --accent-ink: #F09010;
 
-  --scene: #0A0E14;
-  --scene-surface: #11161F;
+  --scene: #0A1526;
+  --scene-surface: #12233B;
   --scene-ink: #F2EFE9;
 
   --success: #4FBF8B;
-  --warning: #D9AE3E;
+  --warning: #F09010;
   --danger: #E8776A;
-  --info: #4FBDBD;
+  --info: #4DA3E0;
 
   --shadow-overlay: 0 8px 24px -8px rgb(0 0 0 / 0.6);
 }
@@ -54,10 +54,10 @@
 /* Le registre « scène » est aussi disponible en mode clair, pour les
    surfaces qui sont sombres par nature : hero, lecteur de cours. */
 :root {
-  --scene: #0A0E14;
-  --scene-surface: #11161F;
+  --scene: #0A1526;
+  --scene-surface: #12233B;
   --scene-ink: #F2EFE9;
-  --scene-gold: #D9AE3E;
+  --scene-accent: #F09010;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -42,16 +42,16 @@ describe('Button', () => {
 
 describe('Badge', () => {
   it('affiche son contenu', () => {
-    render(<Badge tone="gold">Licence · Semestre 3</Badge>)
+    render(<Badge tone="accent">Licence · Semestre 3</Badge>)
     expect(screen.getByText('Licence · Semestre 3')).toBeInTheDocument()
   })
 
-  it('utilise --gold-ink et jamais --gold pour du texte', () => {
-    render(<Badge tone="gold">Licence</Badge>)
+  it('utilise --accent-ink et jamais --accent pour du texte', () => {
+    render(<Badge tone="accent">Licence</Badge>)
     const el = screen.getByText('Licence')
     const classNames = el.className.split(' ')
-    expect(classNames).toContain('text-gold-ink')
-    expect(classNames).not.toContain('text-gold')
+    expect(classNames).toContain('text-accent-ink')
+    expect(classNames).not.toContain('text-accent')
   })
 })
 

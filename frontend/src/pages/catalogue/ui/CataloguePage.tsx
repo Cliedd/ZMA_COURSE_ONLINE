@@ -20,7 +20,7 @@ export function CataloguePage() {
       <Breadcrumb items={[{ label: t('catalogue.shop') }]} />
 
       <div className="container py-10">
-        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-gold-ink">{t('catalogue.shop')}</p>
+        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent-ink">{t('catalogue.shop')}</p>
         <h1 className="mt-3 font-serif text-h1 text-ink">{t('catalogue.title')}</h1>
         <p className="mt-3 max-w-2xl font-sans text-body leading-relaxed text-ink-muted">{t('catalogue.subtitle')}</p>
 

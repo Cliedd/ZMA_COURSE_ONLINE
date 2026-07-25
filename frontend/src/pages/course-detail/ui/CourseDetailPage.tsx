@@ -32,16 +32,16 @@ export function CourseDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/85 to-scene/40" />
         </div>
         <div className="container max-w-3xl py-16">
-          <span className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-gold">
+          <span className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">
             {t(`level.${course.level}`, course.level)}{course.department ? ` · ${course.department}` : ''}
           </span>
           <h1 className="mt-4 font-serif text-h1 leading-tight text-scene-ink">{course.title}</h1>
           {course.shortDescription && <p className="mt-4 max-w-2xl font-sans text-body leading-relaxed text-scene-ink/70">{course.shortDescription}</p>}
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-sm text-scene-ink/70">
             {course.teacherName && (
-              <span>{t('course.by')} <Link to={`/teachers/${slugify(course.teacherName)}`} className="text-gold hover:underline">{course.teacherName}</Link></span>
+              <span>{t('course.by')} <Link to={`/teachers/${slugify(course.teacherName)}`} className="text-accent hover:underline">{course.teacherName}</Link></span>
             )}
-            {course.rating != null && <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-gold text-gold" aria-hidden /> {course.rating.toFixed(1)}</span>}
+            {course.rating != null && <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden /> {course.rating.toFixed(1)}</span>}
             {lessonTotal > 0 && <span>{t('course.lessons', { count: lessonTotal })}</span>}
             {course.durationHours > 0 && <span>{formatDuration(course.durationHours)}</span>}
             {course.ects && <span>{course.ects} ECTS</span>}
@@ -57,7 +57,7 @@ export function CourseDetailPage() {
               <ul className="mt-5 grid gap-3 sm:grid-cols-2">
                 {skills.map((skill) => (
                   <li key={skill} className="flex items-start gap-2 font-sans text-sm text-ink-muted">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold-ink" aria-hidden /> {skill}
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-ink" aria-hidden /> {skill}
                   </li>
                 ))}
               </ul>

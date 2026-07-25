@@ -29,7 +29,7 @@ describe('jetons du registre clair', () => {
   const t = readTokens(':root')
 
   it('définit tous les jetons attendus', () => {
-    for (const name of ['paper', 'surface', 'ink', 'ink-muted', 'ink-faint', 'line', 'blue', 'gold', 'gold-ink', 'success', 'warning', 'danger', 'info']) {
+    for (const name of ['paper', 'surface', 'ink', 'ink-muted', 'ink-faint', 'line', 'blue', 'accent', 'accent-ink', 'success', 'warning', 'danger', 'info']) {
       expect(t[name], `jeton --${name} manquant`).toBeDefined()
     }
   })
@@ -38,7 +38,7 @@ describe('jetons du registre clair', () => {
     ['ink', 4.5],
     ['ink-muted', 4.5],
     ['blue', 4.5],
-    ['gold-ink', 4.5],
+    ['accent-ink', 4.5],
     ['success', 4.5],
     ['warning', 4.5],
     ['danger', 4.5],
@@ -53,14 +53,16 @@ describe('jetons du registre clair', () => {
     expect(ratio).toBeLessThan(4.5)
   })
 
-  it('--gold est décoratif : il échoue le seuil de 3:1 sur fond clair', () => {
-    // Documente la contrainte du spec § 5.1 : sur fond clair l'or de marque
-    // ne peut porter ni texte ni icône porteuse de sens.
-    expect(contrastRatio(t['gold']!, t['paper']!)).toBeLessThan(3)
+  it('--accent (orange de marque) est réservé au décor et au gros texte, pas au corps', () => {
+    // L'orange #E07000 passe le seuil des éléments non textuels / gros texte (3:1)
+    // mais PAS celui du texte normal (4,5:1) : pour du texte, utiliser --accent-ink.
+    const ratio = contrastRatio(t['accent']!, t['paper']!)
+    expect(ratio).toBeGreaterThanOrEqual(3)
+    expect(ratio).toBeLessThan(4.5)
   })
 
-  it('--gold-ink reste lisible aussi sur --surface (blanc)', () => {
-    expect(contrastRatio(t['gold-ink']!, t['surface']!)).toBeGreaterThanOrEqual(4.5)
+  it('--accent-ink reste lisible aussi sur --surface (blanc)', () => {
+    expect(contrastRatio(t['accent-ink']!, t['surface']!)).toBeGreaterThanOrEqual(4.5)
   })
 })
 
@@ -69,7 +71,7 @@ describe('jetons du registre sombre', () => {
 
   it.each([
     ['scene-ink', 4.5],
-    ['gold', 4.5],
+    ['accent', 4.5],
   ])('--%s atteint le seuil AA (%s:1) sur --scene', (name, min) => {
     expect(contrastRatio(t[name]!, t['scene']!)).toBeGreaterThanOrEqual(min)
   })

@@ -23,18 +23,18 @@ export function HomeHero() {
       </div>
 
       <div className="container flex min-h-[74vh] max-w-4xl flex-col justify-center py-20">
-        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-gold">
+        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">
           {t('home.eyebrow')}
         </p>
         <h1 className="mt-5 font-serif text-display leading-[1.05] text-scene-ink">
-          {t('home.title1')} <em className="not-italic text-gold">{t('home.titleEm')}</em> {t('home.title2')}
+          {t('home.title1')} <em className="not-italic text-accent">{t('home.titleEm')}</em> {t('home.title2')}
         </h1>
         <p className="mt-6 max-w-xl font-sans text-body leading-relaxed text-scene-ink/70">
           {t('home.subtitle')}
         </p>
 
         <div className="mt-9 flex flex-wrap gap-3">
-          <Link to="/catalogue" className="inline-flex min-h-touch items-center gap-2 rounded bg-gold px-6 font-sans text-sm font-semibold text-scene">
+          <Link to="/catalogue" className="inline-flex min-h-touch items-center gap-2 rounded bg-accent px-6 font-sans text-sm font-semibold text-scene">
             {t('home.explore')} <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
           <Link to="/auth/register" className="inline-flex min-h-touch items-center rounded border border-scene-ink/25 px-6 font-sans text-sm font-semibold text-scene-ink hover:bg-scene-ink/10">
