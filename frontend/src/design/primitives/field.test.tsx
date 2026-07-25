@@ -30,6 +30,17 @@ describe('Field', () => {
     expect(screen.getByLabelText('Mot de passe')).toHaveAccessibleDescription('Au moins 8 caractères')
   })
 
+  it('fait primer l\'erreur sur l\'indication quand les deux sont fournies', () => {
+    render(
+      <Field name="password" label="Mot de passe" hint="Au moins 8 caractères" error="Mot de passe trop court">
+        <Input type="password" />
+      </Field>,
+    )
+    // La description accessible doit être l'erreur, pas l'indication, et l'indication ne doit plus être rendue.
+    expect(screen.getByLabelText('Mot de passe')).toHaveAccessibleDescription('Mot de passe trop court')
+    expect(screen.queryByText('Au moins 8 caractères')).not.toBeInTheDocument()
+  })
+
   it('signale un champ obligatoire au clavier comme à l\'écran', () => {
     render(<Field name="email" label="Courriel" required><Input /></Field>)
     expect(screen.getByLabelText(/Courriel/)).toBeRequired()
