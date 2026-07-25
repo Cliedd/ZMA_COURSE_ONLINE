@@ -5,7 +5,7 @@ import { axe } from 'jest-axe'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { Header } from './Header'
 import { ThemeProvider } from '@/shared/theme'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
 
 function renderHeader() {
   return render(

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enrollmentApi } from '../services/api';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '@/entities/session';
 import type { EnrollRequest } from '../types';
 
 export function useMyEnrollments() {

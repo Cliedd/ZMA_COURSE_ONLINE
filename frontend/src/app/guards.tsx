@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
 import type { UserRole } from '@/types'
 
 export function RequireAuth({ children }: { children: ReactNode }) {

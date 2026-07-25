@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationApi } from '../services/api';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '@/entities/session';
 
 export function useNotifications() {
   const isLoggedIn = useAuthStore(s => !!s.token);

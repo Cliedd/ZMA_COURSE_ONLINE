@@ -5,7 +5,7 @@ import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/shared/ui'
 import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 import { MobileNav } from './MobileNav'
 import { ThemeToggle } from '@/shared/theme'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
 
 function TrainingsMenu() {
   const { t } = useTranslation()

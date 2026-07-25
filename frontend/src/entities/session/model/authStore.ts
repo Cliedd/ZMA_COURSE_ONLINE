@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { UserRole } from '../types'
+import type { UserRole } from '@/types'
 
 /** Forme renvoyée par POST /auth/login et POST /auth/refresh (AuthResponse.java). */
 export interface AuthResponse {

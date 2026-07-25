@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
 
 /**
  * OAuth2SuccessHandler.java:66 redirige vers /dashboard?token=<jwt>.

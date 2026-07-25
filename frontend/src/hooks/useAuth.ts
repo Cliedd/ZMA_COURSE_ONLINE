@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '@/entities/session';
 import { authApi } from '../services/api';
 import type { LoginRequest, RegisterRequest } from '../types';
 

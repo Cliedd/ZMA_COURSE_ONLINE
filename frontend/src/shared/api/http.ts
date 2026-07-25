@@ -1,8 +1,8 @@
 import axios from 'axios'
 import type { AxiosError, AxiosRequestConfig, AxiosInstance } from 'axios'
 import type { ZodType } from 'zod'
-import { useAuthStore } from '@/store/authStore'
-import type { AuthResponse } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
+import type { AuthResponse } from '@/entities/session'
 
 /** Forme unique d'erreur dans toute l'application. */
 export class AppError extends Error {

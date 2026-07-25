@@ -7,7 +7,7 @@ import { RequireAuth, RequireRole } from './guards'
 import { LegacyEditRedirect } from './router'
 import { OAuthTokenCapture } from './OAuthTokenCapture'
 import { ThemeProvider } from '@/shared/theme'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
 
 function wrap(ui: React.ReactNode, initial = '/') {
   return render(

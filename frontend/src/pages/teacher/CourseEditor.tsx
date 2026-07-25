@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore'
+import { useAuthStore } from '@/entities/session'
 import { useCourse } from '../../hooks/useCourses'
 import { courseApi, mediaApi } from '../../services/api'
 import { useQueryClient } from '@tanstack/react-query'

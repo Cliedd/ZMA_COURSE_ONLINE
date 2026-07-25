@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Avatar, AvatarFallback } from '../../components/ui/avatar'
 import { useCourseBySlug } from '../../hooks/useCourses'
 import { useIsEnrolled } from '../../hooks/useEnrollment'
-import { useAuthStore } from '../../store/authStore'
+import { useAuthStore } from '@/entities/session'
 import type { CurriculumSection } from '../../types'
 
 const GRADIENTS = [

@@ -10,7 +10,7 @@ import { Separator } from '../../components/ui/separator'
 import { cn } from '../../lib/utils'
 import { useCourse } from '../../hooks/useCourses'
 import { useIsEnrolled } from '../../hooks/useEnrollment'
-import { useAuthStore } from '../../store/authStore'
+import { useAuthStore } from '@/entities/session'
 import { enrollmentApi } from '../../services/api'
 import type { CurriculumSection, CurriculumLesson } from '../../types'
 

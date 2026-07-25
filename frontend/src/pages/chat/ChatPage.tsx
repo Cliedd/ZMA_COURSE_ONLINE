@@ -9,7 +9,7 @@ import { cn } from '../../lib/utils'
 import { useCourse } from '../../hooks/useCourses'
 import { useIsEnrolled } from '../../hooks/useEnrollment'
 import { useChatRoom, useChatMessages, useCreateOrGetRoom } from '../../hooks/useChat'
-import { useAuthStore } from '../../store/authStore'
+import { useAuthStore } from '@/entities/session'
 import { chatApi } from '../../services/api'
 import type { ChatMessage } from '../../types'
 

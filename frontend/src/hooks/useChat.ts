@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../services/api';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '@/entities/session';
 import type { ChatRoomRequest, ChatMessageRequest } from '../types';
 
 export function useChatRoom(courseId: string) {

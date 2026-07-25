@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { z } from 'zod'
 import { mswServer } from '@/test/msw'
 import { AppError, get, post } from './http'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore } from '@/entities/session'
 
 const API = 'http://localhost/api/v1'
 
