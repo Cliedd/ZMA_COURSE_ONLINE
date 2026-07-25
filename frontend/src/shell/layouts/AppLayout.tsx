@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { Header } from '../Header'
+import { Header } from '@/widgets/header'
 
 /** Dense, sans pied de page marketing : on ne vend rien à quelqu'un déjà inscrit. */
 export function AppLayout() {
