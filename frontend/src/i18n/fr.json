@@ -1,0 +1,61 @@
+{
+  "brand": {
+    "name": "ZTF Music Académie",
+    "tagline": "Établissement d'enseignement supérieur"
+  },
+  "nav": {
+    "catalogue": "Formations",
+    "academy": "L'Académie",
+    "diplomas": "Diplômes",
+    "teachers": "Enseignants",
+    "search": "Rechercher un cours, un enseignant…",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "mySpace": "Mon espace",
+    "openMenu": "Ouvrir le menu",
+    "menu": "Navigation",
+    "skipToContent": "Aller au contenu",
+    "mobile": {
+      "home": "Accueil",
+      "explore": "Explorer",
+      "myCourses": "Mes cours",
+      "profile": "Profil"
+    }
+  },
+  "breadcrumb": {
+    "label": "Fil d'Ariane",
+    "home": "Accueil"
+  },
+  "theme": {
+    "toDark": "Activer le thème sombre",
+    "toLight": "Activer le thème clair"
+  },
+  "notFound": {
+    "title": "Cette page est introuvable",
+    "body": "Le lien que vous avez suivi n'existe plus, ou il a été déplacé. Voici par où reprendre.",
+    "backHome": "Retour à l'accueil",
+    "browseCatalogue": "Parcourir les formations"
+  },
+  "error": {
+    "title": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "network": "Connexion impossible. Vérifiez votre réseau et réessayez."
+  },
+  "footer": {
+    "trainings": "Formations",
+    "academy": "Académie",
+    "student": "Étudiant",
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "Conditions générales",
+    "rights": "Tous droits réservés"
+  },
+  "level": {
+    "Licence": "Licence",
+    "Master": "Master",
+    "Doctorat": "Doctorat",
+    "Certificat": "Certificat",
+    "Atelier": "Atelier"
+  }
+}
