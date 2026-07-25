@@ -66,11 +66,11 @@
     "emptyHint": "Essayez d'élargir vos critères."
   },
   "home": {
-    "eyebrow": "Établissement d'enseignement supérieur · Afrique",
-    "title1": "Former les musiciens africains de demain,",
+    "eyebrow": "Établissement d'enseignement supérieur",
+    "title1": "Former les musiciens d'excellence de demain,",
     "titleEm": "sans rien céder",
     "title2": "sur l'exigence.",
-    "subtitle": "Cinq départements, dix filières, vingt-six parcours du certificat au doctorat. Les méthodes des grandes académies, l'âme du continent.",
+    "subtitle": "Cinq départements, dix filières, vingt-six parcours du certificat au doctorat. Les méthodes des grandes académies, l'exigence pour seule boussole.",
     "explore": "Explorer les formations",
     "freeLesson": "Première leçon offerte",
     "stats": {
@@ -80,7 +80,7 @@
     },
     "departmentsEyebrow": "Nos départements",
     "departmentsTitle": "Cinq filières d'excellence",
-    "departmentsBody": "Chaque département forme des professionnels de haut niveau et valorise l'identité musicale du continent.",
+    "departmentsBody": "Chaque département forme des professionnels de haut niveau et cultive une identité musicale forte.",
     "featuredEyebrow": "À la une",
     "featuredTitle": "Formations phares",
     "featuredAll": "Voir tout le catalogue",
@@ -88,5 +88,18 @@
     "whyTitle": "Une académie unique en son genre",
     "ctaTitle": "Prêt à commencer votre parcours musical ?",
     "ctaBody": "Rejoignez les musiciens qui se forment aux standards internationaux. Première leçon gratuite, sans carte bancaire."
+  },
+  "catalogue": {
+    "shop": "Boutique de cours",
+    "title": "Boutique de cours",
+    "subtitle": "Choisissez vos cours et progressez à votre rythme. Accès à vie après achat.",
+    "results": "{{count}} formation",
+    "results_other": "{{count}} formations",
+    "empty": "Aucune formation ne correspond à ces critères.",
+    "emptyAction": "Réinitialiser les filtres",
+    "filtersLevel": "Niveau",
+    "filtersDept": "Département",
+    "search": "Rechercher un cours…",
+    "all": "Tous"
   }
 }

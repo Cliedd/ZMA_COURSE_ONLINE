@@ -26,7 +26,7 @@ export function FeaturedCourses() {
             </p>
             <h2 className="mt-3 font-serif text-h1 text-ink">{t('home.featuredTitle')}</h2>
           </div>
-          <Link to="/catalogue" className="hidden min-h-touch items-center gap-2 font-sans text-sm font-semibold text-blue hover:underline md:inline-flex">
+          <Link to="/catalogue" className="hidden min-h-touch items-center gap-2 font-sans text-sm font-semibold text-gold-ink hover:underline md:inline-flex">
             {t('home.featuredAll')} <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
