@@ -70,5 +70,10 @@ module.exports = {
       files: ['**/*.test.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
       rules: { 'max-lines': 'off', 'no-restricted-syntax': 'off' },
     },
+    {
+      // Scripts Node exécutés hors navigateur (pipeline d'encodage des images).
+      files: ['scripts/**/*.mjs'],
+      env: { node: true, browser: false },
+    },
   ],
 }
