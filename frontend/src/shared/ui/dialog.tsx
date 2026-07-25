@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import type { ComponentPropsWithoutRef, ElementRef, ReactNode } from 'react'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { cn } from '@/lib/cn'
+import { cn } from '@/shared/lib/cn'
 
 export const Dialog = RadixDialog.Root
 export const DialogClose = RadixDialog.Close

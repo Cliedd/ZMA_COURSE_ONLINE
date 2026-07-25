@@ -1,6 +1,6 @@
 import { cloneElement, useId } from 'react'
 import type { ReactElement } from 'react'
-import { cn } from '@/lib/cn'
+import { cn } from '@/shared/lib/cn'
 
 export interface FieldProps {
   name: string

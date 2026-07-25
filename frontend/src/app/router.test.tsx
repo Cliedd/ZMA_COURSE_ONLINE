@@ -6,7 +6,7 @@ import { NotFound } from './NotFound'
 import { RequireAuth, RequireRole } from './guards'
 import { LegacyEditRedirect } from './router'
 import { OAuthTokenCapture } from './OAuthTokenCapture'
-import { ThemeProvider } from '@/shell/ThemeProvider'
+import { ThemeProvider } from '@/shared/theme'
 import { useAuthStore } from '@/store/authStore'
 
 function wrap(ui: React.ReactNode, initial = '/') {

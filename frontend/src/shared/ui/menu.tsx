@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import type { ComponentPropsWithoutRef, ElementRef } from 'react'
 import * as RadixMenu from '@radix-ui/react-dropdown-menu'
-import { cn } from '@/lib/cn'
+import { cn } from '@/shared/lib/cn'
 
 export const Menu = RadixMenu.Root
 

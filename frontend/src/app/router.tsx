@@ -7,8 +7,8 @@ import { PublicLayout } from '@/shell/layouts/PublicLayout'
 import { AppLayout } from '@/shell/layouts/AppLayout'
 import { AuthLayout } from '@/shell/layouts/AuthLayout'
 import { ImmersiveLayout } from '@/shell/layouts/ImmersiveLayout'
-import { Skeleton } from '@/design/primitives'
-import { setOnUnauthorized } from '@/lib/http'
+import { Skeleton } from '@/shared/ui'
+import { setOnUnauthorized } from '@/shared/api/http'
 
 // Chargement différé : l'espace admin ne pèse plus sur la première visite en 3G.
 const HomePage = lazy(() => import('@/pages/home/HomePage').then((m) => ({ default: m.HomePage })))

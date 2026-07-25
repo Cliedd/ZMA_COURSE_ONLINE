@@ -5,7 +5,7 @@ import { PublicLayout } from './PublicLayout'
 import { AppLayout } from './AppLayout'
 import { AuthLayout } from './AuthLayout'
 import { ImmersiveLayout } from './ImmersiveLayout'
-import { ThemeProvider } from '../ThemeProvider'
+import { ThemeProvider } from '@/shared/theme'
 
 /** Monte un gabarit avec une route enfant qui rend un contenu témoin. */
 function renderLayout(layout: React.ReactElement, initial = '/') {

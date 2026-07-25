@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { DEPARTMENTS, LEVELS } from './navigation'
+import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 
 export function Footer() {
   const { t } = useTranslation()

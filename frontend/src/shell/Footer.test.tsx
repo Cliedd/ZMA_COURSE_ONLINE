@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { axe } from 'jest-axe'
 import { describe, it, expect } from 'vitest'
 import { Footer } from './Footer'
-import { DEPARTMENTS } from './navigation'
+import { DEPARTMENTS } from '@/shared/config/navigation'
 
 function renderFooter() {
   return render(

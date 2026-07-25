@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { Picture } from './index'
-import { IMAGES } from '@/design/images/manifest'
+import { IMAGES } from '@/shared/config/images/manifest'
 
 describe('Picture', () => {
   it('déclare les dimensions, ce qui met le CLS à zéro', () => {

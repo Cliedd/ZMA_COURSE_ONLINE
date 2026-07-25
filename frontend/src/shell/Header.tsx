@@ -1,10 +1,10 @@
 import { ChevronDown } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/design/primitives'
-import { DEPARTMENTS, LEVELS } from './navigation'
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/shared/ui'
+import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 import { MobileNav } from './MobileNav'
-import { ThemeToggle } from './ThemeToggle'
+import { ThemeToggle } from '@/shared/theme'
 import { useAuthStore } from '@/store/authStore'
 
 function TrainingsMenu() {

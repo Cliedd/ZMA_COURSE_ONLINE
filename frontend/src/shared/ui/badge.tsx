@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import type { HTMLAttributes } from 'react'
 import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
-import { cn } from '@/lib/cn'
+import { cn } from '@/shared/lib/cn'
 
 const badge = cva('inline-flex items-center font-sans text-eyebrow font-bold uppercase', {
   variants: {

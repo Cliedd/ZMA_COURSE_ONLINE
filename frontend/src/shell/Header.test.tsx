@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { axe } from 'jest-axe'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { Header } from './Header'
-import { ThemeProvider } from './ThemeProvider'
+import { ThemeProvider } from '@/shared/theme'
 import { useAuthStore } from '@/store/authStore'
 
 function renderHeader() {

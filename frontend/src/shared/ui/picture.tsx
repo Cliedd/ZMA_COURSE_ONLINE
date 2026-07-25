@@ -1,6 +1,6 @@
-import { IMAGE_WIDTHS } from '@/design/images/manifest'
-import type { ImageEntry } from '@/design/images/manifest'
-import { cn } from '@/lib/cn'
+import { IMAGE_WIDTHS } from '@/shared/config/images/manifest'
+import type { ImageEntry } from '@/shared/config/images/manifest'
+import { cn } from '@/shared/lib/cn'
 
 export interface PictureProps {
   image: ImageEntry

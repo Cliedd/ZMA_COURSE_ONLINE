@@ -5,7 +5,7 @@ import { toHaveNoViolations } from 'jest-axe'
 import { mswServer } from './msw'
 // Initialise i18next (effet de bord du module) : requis par tout composant
 // utilisant useTranslation(), Vitest isolant le registre de modules par fichier de test.
-import '@/i18n'
+import '@/shared/config/i18n'
 
 expect.extend(toHaveNoViolations)
 

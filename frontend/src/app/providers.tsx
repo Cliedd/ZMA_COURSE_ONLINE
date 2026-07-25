@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { I18nextProvider } from 'react-i18next'
-import { ThemeProvider } from '@/shell/ThemeProvider'
-import { i18n } from '@/i18n'
-import { AppError } from '@/lib/http'
+import { ThemeProvider } from '@/shared/theme'
+import { i18n } from '@/shared/config/i18n'
+import { AppError } from '@/shared/api/http'
 
 const queryClient = new QueryClient({
   defaultOptions: {

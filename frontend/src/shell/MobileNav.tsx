@@ -1,8 +1,8 @@
 import { Menu as MenuIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/design/primitives'
-import { DEPARTMENTS, LEVELS } from './navigation'
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/shared/ui'
+import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 import { useAuthStore } from '@/store/authStore'
 
 /** Le tiroir que le frontend actuel n'a jamais eu : sur mobile, aucune navigation n'existait. */

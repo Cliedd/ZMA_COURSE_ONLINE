@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
-import { cn } from '@/lib/cn'
+import { cn } from '@/shared/lib/cn'
 
 const button = cva(
   'inline-flex items-center justify-center gap-2 rounded font-sans font-semibold transition-colors duration-brand ease-brand disabled:pointer-events-none disabled:opacity-50',
