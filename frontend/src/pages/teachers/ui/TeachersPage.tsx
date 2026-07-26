@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Star } from 'lucide-react'
-import { Skeleton } from '@/shared/ui'
+import { Skeleton, Picture } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
+import { IMAGES } from '@/shared/config/images/manifest'
 import { useTeachers } from '@/entities/teacher'
 import type { Teacher } from '@/entities/teacher'
 
@@ -14,6 +15,10 @@ export function TeachersPage() {
   return (
     <div>
       <Breadcrumb items={[{ label: t('nav.teachers') }]} />
+      <div className="relative h-48 overflow-hidden sm:h-64">
+        <Picture image={IMAGES.campus} sizes="100vw" priority className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-scene/40" />
+      </div>
       <div className="container py-10">
         <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent-ink">{t('nav.teachers')}</p>
         <h1 className="mt-3 font-serif text-h1 text-ink">{t('teachers.title')}</h1>
