@@ -186,6 +186,18 @@ public class GatewayRouter {
         "host", "content-length"
     );
 
+    /**
+     * Headers that only the gateway itself is allowed to set — they carry
+     * trust decisions (identity, role) that downstream services rely on
+     * without re-validating the JWT. They MUST be stripped from the
+     * incoming client request before being (re)populated below, otherwise
+     * a client could spoof e.g. "X-User-Role: ADMIN" directly and have it
+     * forwarded untouched whenever no valid JWT is present.
+     */
+    private static final Set<String> IDENTITY_HEADERS = Set.of(
+        "x-user-email", "x-user-role"
+    );
+
     private ResponseEntity<String> proxy(HttpServletRequest request,
                                          String body,
                                          String targetBase,
@@ -208,7 +220,10 @@ public class GatewayRouter {
         Enumeration<String> names = request.getHeaderNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
-            if (!HOP_BY_HOP.contains(name.toLowerCase())) {
+            // IDENTITY_HEADERS excluded here too: on a public/unauthenticated
+            // route the JWT block below never runs, so without this exclusion
+            // a client-supplied X-User-Role would pass through unchanged.
+            if (!HOP_BY_HOP.contains(name.toLowerCase()) && !IDENTITY_HEADERS.contains(name.toLowerCase())) {
                 headers.set(name, request.getHeader(name));
             }
         }
@@ -305,7 +320,7 @@ public class GatewayRouter {
         Enumeration<String> names = request.getHeaderNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
-            if (!HOP_BY_HOP.contains(name.toLowerCase())) {
+            if (!HOP_BY_HOP.contains(name.toLowerCase()) && !IDENTITY_HEADERS.contains(name.toLowerCase())) {
                 headers.set(name, request.getHeader(name));
             }
         }

@@ -142,6 +142,9 @@ public class AuthController {
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
+        if (user.isSuspended()) {
+            throw new RuntimeException("Account is suspended");
+        }
 
         // Reset counter on successful login
         rateLimiter.reset("login", ip);
@@ -179,6 +182,12 @@ public class AuthController {
 
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isSuspended()) {
+            // Token belongs to an account that has since been suspended: revoke it.
+            redisTokenService.invalidateRefreshToken(request.refreshToken());
+            throw new RuntimeException("Account is suspended");
+        }
 
         redisTokenService.invalidateRefreshToken(request.refreshToken());
         String newToken        = jwtUtils.generateToken(user.getEmail(), user.getRole());
