@@ -1,4 +1,4 @@
-import { get } from '@/shared/api/http'
+import { get, post, put, patch, del } from '@/shared/api/http'
 import { courseSchema, coursePageSchema, reviewSchema } from '../model/course.schema'
 import type { Course, CoursePage } from '../model/course.schema'
 import { z } from 'zod'
@@ -9,6 +9,27 @@ export interface CourseFilters {
   q?: string
   page?: number
   size?: number
+}
+
+/** Payload d'écriture — reflète CourseRequest côté backend (zma-catalog). */
+export interface CourseWriteRequest {
+  title: string
+  slug?: string
+  description?: string
+  shortDescription?: string
+  price: number
+  level?: string
+  department?: string
+  filiere?: string
+  ects?: number
+  teacherName?: string
+  studentsCount?: number
+  rating?: number
+  durationHours?: number
+  gradientIndex?: number
+  skillsJson?: string
+  curriculumJson?: string
+  debouches?: string
 }
 
 const reviewPageSchema = z.object({
@@ -29,4 +50,19 @@ export const courseApi = {
 
   getReviews: (id: string, page = 0, size = 20) =>
     get(`/courses/${id}/reviews`, { params: { page, size } }, reviewPageSchema),
+
+  /** Cours d'un enseignant (par email), y compris non publiés. */
+  getByTeacher: (email: string): Promise<Course[]> =>
+    get(`/courses/teacher/${encodeURIComponent(email)}`, undefined, z.array(courseSchema)),
+
+  create: (data: CourseWriteRequest): Promise<Course> =>
+    post('/courses', data, courseSchema),
+
+  update: (id: string, data: CourseWriteRequest): Promise<Course> =>
+    put(`/courses/${id}`, data, courseSchema),
+
+  publish: (id: string, published: boolean): Promise<Course> =>
+    patch(`/courses/${id}/publish`, undefined, courseSchema, { params: { published } }),
+
+  remove: (id: string): Promise<void> => del(`/courses/${id}`),
 }

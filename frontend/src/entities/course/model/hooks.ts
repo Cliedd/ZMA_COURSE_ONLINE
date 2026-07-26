@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { courseApi } from '../api/courseApi'
-import type { CourseFilters } from '../api/courseApi'
+import type { CourseFilters, CourseWriteRequest } from '../api/courseApi'
 import { courseKeys } from './queryKeys'
 
 /** Liste paginée de cours, filtrée. */
@@ -38,5 +38,51 @@ export function useCourseById(id: string | undefined) {
     queryFn: () => courseApi.getById(id as string),
     enabled: Boolean(id),
     staleTime: 60_000,
+  })
+}
+
+/** Cours d'un enseignant (par email), y compris non publiés. */
+export function useTeacherCourses(email: string | undefined) {
+  return useQuery({
+    queryKey: [...courseKeys.all, 'byTeacher', email ?? ''],
+    queryFn: () => courseApi.getByTeacher(email as string),
+    enabled: Boolean(email),
+    staleTime: 30_000,
+  })
+}
+
+function invalidateCourseCaches(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: courseKeys.all })
+}
+
+export function useCreateCourse() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CourseWriteRequest) => courseApi.create(data),
+    onSuccess: () => invalidateCourseCaches(qc),
+  })
+}
+
+export function useUpdateCourse() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: CourseWriteRequest }) => courseApi.update(id, data),
+    onSuccess: () => invalidateCourseCaches(qc),
+  })
+}
+
+export function usePublishCourse() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, published }: { id: string; published: boolean }) => courseApi.publish(id, published),
+    onSuccess: () => invalidateCourseCaches(qc),
+  })
+}
+
+export function useDeleteCourse() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => courseApi.remove(id),
+    onSuccess: () => invalidateCourseCaches(qc),
   })
 }
