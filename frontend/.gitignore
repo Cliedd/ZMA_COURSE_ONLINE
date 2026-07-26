@@ -1,0 +1,4 @@
+
+# Lock non versionné : deps natives (sharp/@unrs) non portables entre plateformes ;
+# Netlify/CI utilisent npm install (résolution par plateforme). Voir netlify-build-requirements.
+frontend/package-lock.json
