@@ -42,6 +42,10 @@ export const courseApi = {
   list: (filters: CourseFilters = {}): Promise<CoursePage> =>
     get('/courses', { params: filters }, coursePageSchema),
 
+  /** Liste paginée de TOUS les cours (publiés et non publiés), réservée à l'admin. */
+  listAllAdmin: (page = 0, size = 50): Promise<CoursePage> =>
+    get('/courses/admin/all', { params: { page, size } }, coursePageSchema),
+
   getBySlug: (slug: string): Promise<Course> =>
     get(`/courses/slug/${encodeURIComponent(slug)}`, undefined, courseSchema),
 

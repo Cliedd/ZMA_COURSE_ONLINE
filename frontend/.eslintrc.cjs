@@ -3,7 +3,7 @@
 // Pages héritées non encore réécrites — listées nommément, retirées une par une
 // au fil des chantiers 1 à 4. Plus le vieux socle hors couches FSD.
 const LEGACY = [
-  'src/pages/admin/**', 'src/pages/chat/**',
+  'src/pages/chat/**',
   'src/components/**', 'src/hooks/**', 'src/services/**', 'src/types/**', 'src/lib/**',
 ]
 
@@ -97,17 +97,6 @@ module.exports = {
       // production, pas le câblage de test.
       files: ['**/*.test.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
       rules: { 'max-lines': 'off', 'no-restricted-syntax': 'off', 'import/no-restricted-paths': 'off' },
-    },
-    {
-      // Bugs réels préexistants : hooks appelés après un retour conditionnel.
-      // Ces deux pages sont intégralement réécrites aux chantiers 2 et 3 ;
-      // corriger maintenant, c'est investir dans du code jetable et risqué.
-      // Rétrogradé en avertissement UNIQUEMENT pour ces deux fichiers nommés —
-      // à ne surtout pas reproduire dans du code neuf, où la règle reste 'error'.
-      files: ['src/pages/dashboard/StudentDashboard.tsx', 'src/pages/teacher/TeacherDashboard.tsx'],
-      rules: {
-        'react-hooks/rules-of-hooks': 'warn',
-      },
     },
     {
       // Scripts Node exécutés hors navigateur (pipeline d'encodage des images).

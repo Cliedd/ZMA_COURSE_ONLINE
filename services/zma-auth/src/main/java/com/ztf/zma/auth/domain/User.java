@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean emailVerified = false;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean suspended = false;
+
     @Column(nullable = false, updatable = false,
             columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt = Instant.now();
@@ -50,6 +53,9 @@ public class User {
 
     public boolean isEmailVerified() { return emailVerified; }
     public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+
+    public boolean isSuspended() { return suspended; }
+    public void setSuspended(boolean suspended) { this.suspended = suspended; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

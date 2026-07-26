@@ -3,7 +3,7 @@ export type { Course, Review, CoursePage, CourseLevel } from './model/course.sch
 export { courseApi } from './api/courseApi'
 export type { CourseFilters } from './api/courseApi'
 export { courseKeys } from './model/queryKeys'
-export { useCourses, useCourse, useCourseById, useCourseReviews, useTeacherCourses, useCreateCourse, useUpdateCourse, usePublishCourse, useDeleteCourse } from './model/hooks'
+export { useCourses, useCourse, useCourseById, useCourseReviews, useTeacherCourses, useAdminCourses, useCreateCourse, useUpdateCourse, usePublishCourse, useDeleteCourse } from './model/hooks'
 export type { CourseWriteRequest } from './api/courseApi'
 export { courseSkills, courseOutcomes, courseCurriculum, curriculumLessonCount } from './lib/parseCourse'
 export type { CurriculumSection } from './lib/parseCourse'

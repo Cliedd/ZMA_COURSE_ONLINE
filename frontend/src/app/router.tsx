@@ -28,7 +28,9 @@ const ChatPage = lazy(() => import('@/pages/chat/ChatPage').then((m) => ({ defau
 const TeacherDashboardPage = lazy(() => import('@/pages/teacher-dashboard').then((m) => ({ default: m.TeacherDashboardPage })))
 const CourseEditorPage = lazy(() => import('@/pages/teacher-course-edit').then((m) => ({ default: m.CourseEditorPage })))
 const CourseWizardPage = lazy(() => import('@/pages/teacher-course-new').then((m) => ({ default: m.CourseWizardPage })))
-const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })))
+const AdminOverviewPage = lazy(() => import('@/pages/admin-overview').then((m) => ({ default: m.AdminOverviewPage })))
+const AdminUsersPage = lazy(() => import('@/pages/admin-users').then((m) => ({ default: m.AdminUsersPage })))
+const AdminFinancePage = lazy(() => import('@/pages/admin-finance').then((m) => ({ default: m.AdminFinancePage })))
 
 /** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
  *  TeacherDashboard et CourseWizard (hérités, réécrits au chantier 3) pointent encore
@@ -91,7 +93,9 @@ export function AppRoutes() {
             <Route path="/teacher" element={<RequireAuth><TeacherDashboardPage /></RequireAuth>} />
             <Route path="/teacher/courses/new" element={<RequireAuth><CourseWizardPage /></RequireAuth>} />
             <Route path="/teacher/courses/:courseId/edit" element={<RequireAuth><CourseEditorPage /></RequireAuth>} />
-            <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+            <Route path="/admin" element={<RequireAuth><AdminOverviewPage /></RequireAuth>} />
+            <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />
+            <Route path="/admin/finance" element={<RequireAuth><AdminFinancePage /></RequireAuth>} />
             {/* Anciens chemins de l'espace enseignant */}
             <Route path="/enseigner/cours/creer" element={<Navigate to="/teacher/courses/new" replace />} />
             <Route path="/teacher/cours/:courseId" element={<LegacyEditRedirect />} />

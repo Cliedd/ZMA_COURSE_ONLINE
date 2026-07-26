@@ -41,6 +41,15 @@ export function useCourseById(id: string | undefined) {
   })
 }
 
+/** Liste paginée de TOUS les cours (publiés et non publiés), réservée à l'admin. */
+export function useAdminCourses(page = 0) {
+  return useQuery({
+    queryKey: [...courseKeys.all, 'admin-all', page],
+    queryFn: () => courseApi.listAllAdmin(page),
+    staleTime: 30_000,
+  })
+}
+
 /** Cours d'un enseignant (par email), y compris non publiés. */
 export function useTeacherCourses(email: string | undefined) {
   return useQuery({
