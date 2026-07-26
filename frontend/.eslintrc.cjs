@@ -4,7 +4,6 @@
 // au fil des chantiers 1 à 4. Plus le vieux socle hors couches FSD.
 const LEGACY = [
   'src/pages/admin/**', 'src/pages/chat/**',
-  'src/pages/teacher/**',
   'src/components/**', 'src/hooks/**', 'src/services/**', 'src/types/**', 'src/lib/**',
 ]
 

@@ -25,9 +25,9 @@ const SettingsPage = lazy(() => import('@/pages/settings').then((m) => ({ defaul
 const CheckoutPage = lazy(() => import('@/pages/checkout-fsd').then((m) => ({ default: m.CheckoutPage })))
 const CoursePlayer = lazy(() => import('@/pages/learning-fsd').then((m) => ({ default: m.CoursePlayer })))
 const ChatPage = lazy(() => import('@/pages/chat/ChatPage').then((m) => ({ default: m.ChatPage })))
-const TeacherDashboard = lazy(() => import('@/pages/teacher/TeacherDashboard').then((m) => ({ default: m.TeacherDashboard })))
-const CourseEditor = lazy(() => import('@/pages/teacher/CourseEditor').then((m) => ({ default: m.CourseEditor })))
-const CourseWizard = lazy(() => import('@/components/wizard/CourseWizard').then((m) => ({ default: m.CourseWizard })))
+const TeacherDashboardPage = lazy(() => import('@/pages/teacher-dashboard').then((m) => ({ default: m.TeacherDashboardPage })))
+const CourseEditorPage = lazy(() => import('@/pages/teacher-course-edit').then((m) => ({ default: m.CourseEditorPage })))
+const CourseWizardPage = lazy(() => import('@/pages/teacher-course-new').then((m) => ({ default: m.CourseWizardPage })))
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })))
 
 /** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
@@ -88,9 +88,9 @@ export function AppRoutes() {
             <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
             <Route path="/checkout/:courseId" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
             <Route path="/chat/:courseId" element={<RequireAuth><ChatPage /></RequireAuth>} />
-            <Route path="/teacher" element={<RequireAuth><TeacherDashboard /></RequireAuth>} />
-            <Route path="/teacher/courses/new" element={<RequireAuth><CourseWizard /></RequireAuth>} />
-            <Route path="/teacher/courses/:courseId/edit" element={<RequireAuth><CourseEditor /></RequireAuth>} />
+            <Route path="/teacher" element={<RequireAuth><TeacherDashboardPage /></RequireAuth>} />
+            <Route path="/teacher/courses/new" element={<RequireAuth><CourseWizardPage /></RequireAuth>} />
+            <Route path="/teacher/courses/:courseId/edit" element={<RequireAuth><CourseEditorPage /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
             {/* Anciens chemins de l'espace enseignant */}
             <Route path="/enseigner/cours/creer" element={<Navigate to="/teacher/courses/new" replace />} />
