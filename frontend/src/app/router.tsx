@@ -16,11 +16,14 @@ const CataloguePage = lazy(() => import('@/pages/catalogue').then((m) => ({ defa
 const CourseDetailPage = lazy(() => import('@/pages/course-detail').then((m) => ({ default: m.CourseDetailPage })))
 const TeachersPage = lazy(() => import('@/pages/teachers').then((m) => ({ default: m.TeachersPage })))
 const TeacherProfilePage = lazy(() => import('@/pages/teacher-profile').then((m) => ({ default: m.TeacherProfilePage })))
-const LoginPage = lazy(() => import('@/pages/auth/LoginPage').then((m) => ({ default: m.LoginPage })))
-const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })))
-const StudentDashboard = lazy(() => import('@/pages/dashboard/StudentDashboard').then((m) => ({ default: m.StudentDashboard })))
-const CheckoutPage = lazy(() => import('@/pages/checkout/CheckoutPage').then((m) => ({ default: m.CheckoutPage })))
-const CoursePlayer = lazy(() => import('@/pages/learning/CoursePlayer').then((m) => ({ default: m.CoursePlayer })))
+const LoginPage = lazy(() => import('@/pages/auth-login').then((m) => ({ default: m.LoginPage })))
+const RegisterPage = lazy(() => import('@/pages/auth-register').then((m) => ({ default: m.RegisterPage })))
+const StudentDashboard = lazy(() => import('@/pages/dashboard-fsd').then((m) => ({ default: m.StudentDashboard })))
+const MyCoursesPage = lazy(() => import('@/pages/my-courses').then((m) => ({ default: m.MyCoursesPage })))
+const CertificatesPage = lazy(() => import('@/pages/certificates').then((m) => ({ default: m.CertificatesPage })))
+const SettingsPage = lazy(() => import('@/pages/settings').then((m) => ({ default: m.SettingsPage })))
+const CheckoutPage = lazy(() => import('@/pages/checkout-fsd').then((m) => ({ default: m.CheckoutPage })))
+const CoursePlayer = lazy(() => import('@/pages/learning-fsd').then((m) => ({ default: m.CoursePlayer })))
 const ChatPage = lazy(() => import('@/pages/chat/ChatPage').then((m) => ({ default: m.ChatPage })))
 const TeacherDashboard = lazy(() => import('@/pages/teacher/TeacherDashboard').then((m) => ({ default: m.TeacherDashboard })))
 const CourseEditor = lazy(() => import('@/pages/teacher/CourseEditor').then((m) => ({ default: m.CourseEditor })))
@@ -80,6 +83,9 @@ export function AppRoutes() {
 
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<RequireAuth><StudentDashboard /></RequireAuth>} />
+            <Route path="/my-courses" element={<RequireAuth><MyCoursesPage /></RequireAuth>} />
+            <Route path="/certificates" element={<RequireAuth><CertificatesPage /></RequireAuth>} />
+            <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
             <Route path="/checkout/:courseId" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
             <Route path="/chat/:courseId" element={<RequireAuth><ChatPage /></RequireAuth>} />
             <Route path="/teacher" element={<RequireAuth><TeacherDashboard /></RequireAuth>} />

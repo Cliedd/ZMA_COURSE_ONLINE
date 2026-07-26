@@ -30,3 +30,13 @@ export function useCourseReviews(id: string | undefined, page = 0) {
     enabled: Boolean(id),
   })
 }
+
+/** Un cours par son id (avec sections). */
+export function useCourseById(id: string | undefined) {
+  return useQuery({
+    queryKey: courseKeys.detail(`id:${id ?? ''}`),
+    queryFn: () => courseApi.getById(id as string),
+    enabled: Boolean(id),
+    staleTime: 60_000,
+  })
+}

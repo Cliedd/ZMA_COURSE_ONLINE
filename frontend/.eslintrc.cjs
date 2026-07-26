@@ -3,9 +3,8 @@
 // Pages héritées non encore réécrites — listées nommément, retirées une par une
 // au fil des chantiers 1 à 4. Plus le vieux socle hors couches FSD.
 const LEGACY = [
-  'src/pages/admin/**', 'src/pages/auth/**', 'src/pages/chat/**',
-  'src/pages/checkout/**', 'src/pages/dashboard/**',
-  'src/pages/learning/**', 'src/pages/teacher/**',
+  'src/pages/admin/**', 'src/pages/chat/**',
+  'src/pages/teacher/**',
   'src/components/**', 'src/hooks/**', 'src/services/**', 'src/types/**', 'src/lib/**',
 ]
 

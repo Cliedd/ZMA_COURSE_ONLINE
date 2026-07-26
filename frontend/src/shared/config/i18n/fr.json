@@ -123,5 +123,77 @@
     "empty": "Les enseignants seront présentés prochainement.",
     "backList": "Tous les enseignants",
     "profileCourses": "Ses formations"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "registerTitle": "Créer un compte",
+    "email": "Adresse électronique",
+    "password": "Mot de passe",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "google": "Continuer avec Google",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà inscrit ?",
+    "toRegister": "Créer un compte",
+    "toLogin": "Se connecter",
+    "or": "ou",
+    "pwdHint": "Au moins 8 caractères",
+    "registered": "Compte créé. Connectez-vous.",
+    "invalidEmail": "Adresse électronique invalide",
+    "pwdMin": "Au moins 8 caractères"
+  },
+  "dashboard": {
+    "title": "Mon espace",
+    "resume": "Reprendre",
+    "myCourses": "Mes cours",
+    "progress": "{{p}}% terminé",
+    "empty": "Vous n'êtes inscrit à aucun cours.",
+    "browse": "Parcourir la boutique",
+    "continue": "Continuer",
+    "certificates": "Mes certificats"
+  },
+  "myCourses": {
+    "title": "Mes cours",
+    "empty": "Aucun cours pour l'instant.",
+    "browse": "Découvrir les formations"
+  },
+  "checkout": {
+    "title": "Finaliser l'achat",
+    "course": "Cours",
+    "price": "Prix",
+    "promo": "Code promo",
+    "apply": "Appliquer",
+    "pay": "Payer",
+    "paying": "Paiement…",
+    "success": "Paiement réussi ! Accès débloqué.",
+    "goCourse": "Accéder au cours",
+    "lifetime": "Accès à vie",
+    "notFound": "Cours introuvable"
+  },
+  "certificates": {
+    "title": "Mes certificats",
+    "empty": "Vous n'avez pas encore de certificat. Terminez un cours à 80 %.",
+    "number": "N°",
+    "verify": "Vérifier"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "account": "Compte",
+    "appearance": "Apparence",
+    "theme": "Thème",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "themeSystem": "Système",
+    "logout": "Se déconnecter",
+    "email": "Adresse électronique",
+    "role": "Rôle"
+  },
+  "player": {
+    "back": "Mes cours",
+    "complete": "Marquer comme terminé",
+    "completed": "Terminé",
+    "next": "Leçon suivante",
+    "syllabus": "Programme",
+    "noVideo": "Vidéo indisponible"
   }
 }

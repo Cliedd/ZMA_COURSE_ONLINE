@@ -24,6 +24,9 @@ export const courseApi = {
   getBySlug: (slug: string): Promise<Course> =>
     get(`/courses/slug/${encodeURIComponent(slug)}`, undefined, courseSchema),
 
+  getById: (id: string): Promise<Course> =>
+    get(`/courses/${id}`, undefined, courseSchema),
+
   getReviews: (id: string, page = 0, size = 20) =>
     get(`/courses/${id}/reviews`, { params: { page, size } }, reviewPageSchema),
 }

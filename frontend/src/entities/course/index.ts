@@ -3,6 +3,6 @@ export type { Course, Review, CoursePage, CourseLevel } from './model/course.sch
 export { courseApi } from './api/courseApi'
 export type { CourseFilters } from './api/courseApi'
 export { courseKeys } from './model/queryKeys'
-export { useCourses, useCourse, useCourseReviews } from './model/hooks'
+export { useCourses, useCourse, useCourseById, useCourseReviews } from './model/hooks'
 export { courseSkills, courseOutcomes, courseCurriculum, curriculumLessonCount } from './lib/parseCourse'
 export type { CurriculumSection } from './lib/parseCourse'
