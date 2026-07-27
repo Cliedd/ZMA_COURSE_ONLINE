@@ -2,6 +2,7 @@ package com.ztf.zma.community.api;
 
 import com.ztf.zma.community.domain.Comment;
 import com.ztf.zma.community.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class CommunityController {
         this.commentService = commentService;
     }
 
+    @Operation(summary = "Add a comment on a lesson")
     @PostMapping("/comments")
     @ResponseStatus(HttpStatus.CREATED)
     public Comment addComment(@Valid @RequestBody CommentRequest request,

@@ -46,7 +46,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String email = oAuth2User.getAttribute("email");
+        String rawEmail = oAuth2User.getAttribute("email");
+        String email = rawEmail == null ? null : rawEmail.trim().toLowerCase();
 
         User user = userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();

@@ -3,6 +3,8 @@ package com.ztf.zma.auth.api;
 import com.ztf.zma.auth.domain.User;
 import com.ztf.zma.auth.repository.UserRepository;
 import com.ztf.zma.auth.infrastructure.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Auth", description = "Registration, login, tokens and account recovery")
 public class AuthController {
 
     private static final Set<String> ALLOWED_ROLES   = Set.of("STUDENT", "TEACHER");
@@ -53,11 +56,15 @@ public class AuthController {
 
     // ── Register ──────────────────────────────────────────────────────────────
 
+    @Operation(summary = "Register a new account",
+        description = "Creates a STUDENT or TEACHER account, sends a verification email, " +
+                      "and returns an access/refresh token pair.")
     @Transactional
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
+        String email = normalizeEmail(request.email());
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already in use");
         }
 
@@ -65,7 +72,7 @@ public class AuthController {
             ? request.role() : "STUDENT";
 
         User user = new User();
-        user.setEmail(request.email());
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(role);
         user.setProvider("LOCAL");
@@ -124,6 +131,9 @@ public class AuthController {
 
     // ── Login ─────────────────────────────────────────────────────────────────
 
+    @Operation(summary = "Log in with email/password",
+        description = "Rate-limited per IP. Rejects Google-only accounts, wrong credentials " +
+                      "and suspended accounts.")
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request,
                               HttpServletRequest httpRequest) {
@@ -133,7 +143,7 @@ public class AuthController {
             throw new RuntimeException("Too many login attempts. Try again in 10 minutes.");
         }
 
-        User user = userRepository.findByEmail(request.email())
+        User user = userRepository.findByEmail(normalizeEmail(request.email()))
             .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         if ("GOOGLE".equals(user.getProvider())) {
@@ -175,6 +185,9 @@ public class AuthController {
 
     // ── Refresh ───────────────────────────────────────────────────────────────
 
+    @Operation(summary = "Exchange a refresh token for a new access/refresh token pair",
+        description = "Single-use: the supplied refresh token is invalidated whether the " +
+                      "exchange succeeds or the account turns out to be suspended.")
     @PostMapping("/refresh")
     public AuthResponse refresh(@Valid @RequestBody RefreshRequest request) {
         String email = redisTokenService.getEmailByRefreshToken(request.refreshToken())
@@ -208,7 +221,7 @@ public class AuthController {
             throw new RuntimeException("Too many reset attempts. Try again later.");
         }
 
-        userRepository.findByEmail(request.email()).ifPresent(user -> {
+        userRepository.findByEmail(normalizeEmail(request.email())).ifPresent(user -> {
             String resetToken = redisTokenService.createResetToken(user.getEmail());
             mailService.sendPasswordResetEmail(user.getEmail(), resetToken);
         });
@@ -274,5 +287,15 @@ public class AuthController {
             return xff.split(",")[0].trim();
         }
         return request.getRemoteAddr();
+    }
+
+    /**
+     * Emails are stored/looked-up case-insensitively (Postgres string equality
+     * is case-sensitive by default): without this, "User@Example.com" and
+     * "user@example.com" would be treated as distinct accounts, allowing
+     * duplicate registration and login mismatches.
+     */
+    private String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
     }
 }

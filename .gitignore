@@ -41,3 +41,7 @@ frontend/.*.png
 
 # Lock non versionné : deps natives (sharp/@unrs) non portables entre plateformes.
 frontend/package-lock.json
+
+# Antigravity CLI local cache
+.gemini/
+

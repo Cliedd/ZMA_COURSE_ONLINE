@@ -2,6 +2,8 @@ package com.ztf.zma.auth.api;
 
 import com.ztf.zma.auth.domain.User;
 import com.ztf.zma.auth.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/api/v1/auth/admin/users")
+@Tag(name = "Admin - Users", description = "ADMIN-only account management (list, role, suspend)")
 public class AdminUserController {
 
     private static final Set<String> ALLOWED_ROLES = Set.of("STUDENT", "TEACHER", "ADMIN");
@@ -33,6 +36,7 @@ public class AdminUserController {
 
     // ── List all users (paginated) ──────────────────────────────────────────────
 
+    @Operation(summary = "List users (paginated)", description = "Requires ROLE_ADMIN.")
     @GetMapping
     public Page<UserSummary> listUsers(
             @RequestParam(defaultValue = "0")  int page,
@@ -48,6 +52,7 @@ public class AdminUserController {
 
     // ── Update role ───────────────────────────────────────────────────────────
 
+    @Operation(summary = "Change a user's role", description = "Requires ROLE_ADMIN. Allowed: STUDENT, TEACHER, ADMIN.")
     @Transactional
     @PatchMapping("/{id}/role")
     public UserSummary updateRole(
@@ -73,6 +78,7 @@ public class AdminUserController {
 
     // ── Suspend / reactivate ─────────────────────────────────────────────────────
 
+    @Operation(summary = "Suspend or reactivate a user", description = "Requires ROLE_ADMIN.")
     @Transactional
     @PatchMapping("/{id}/suspend")
     public UserSummary setSuspended(

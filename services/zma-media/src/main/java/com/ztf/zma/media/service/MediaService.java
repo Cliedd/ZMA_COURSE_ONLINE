@@ -4,6 +4,7 @@ import com.ztf.zma.media.domain.Media;
 import com.ztf.zma.media.repository.MediaRepository;
 import com.ztf.zma.media.storage.PresignedUrlResponse;
 import com.ztf.zma.media.storage.StorageService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,39 +69,68 @@ public class MediaService {
     }
 
     @Transactional
-    public Media confirmUpload(String mediaId) {
+    public Media confirmUpload(String mediaId, String requestingUser, String role) {
         Media media = getById(mediaId);
+        requireAccess(media, requestingUser, role);
         storageService.confirmUpload(media.getS3Key());
         media.setStatus("READY");
         return mediaRepository.save(media);
     }
 
-    /** Attach media to a course and/or lesson */
+    /** Attach media to a course and/or lesson. Only the uploader (or a teacher/admin) may attach. */
     @Transactional
-    public Media attach(String mediaId, String courseId, String lessonId) {
+    public Media attach(String mediaId, String courseId, String lessonId,
+                         String requestingUser, String role) {
         Media media = getById(mediaId);
+        requireAccess(media, requestingUser, role);
         if (courseId != null) media.setCourseId(courseId);
         if (lessonId != null) media.setLessonId(lessonId);
         return mediaRepository.save(media);
     }
 
-    /** Generate a time-limited CDN/download URL */
-    public String getDownloadUrl(String mediaId) {
+    /**
+     * Generate a time-limited CDN/download URL.
+     *
+     * Authorization: the requesting user must be the uploader, or hold the
+     * TEACHER/ADMIN role. NOTE: this service does not have visibility into
+     * course-enrollment records (owned by zma-enrollment), so a student who is
+     * genuinely enrolled in the course a media item is attached to but who did
+     * not upload it will currently be denied. Properly supporting "enrolled
+     * students can stream course media" requires either (a) an inter-service
+     * call/token claim asserting enrollment, or (b) embedding the caller's
+     * enrolled course IDs in the JWT. This is an architectural decision left
+     * for the team — see audit report.
+     */
+    public String getDownloadUrl(String mediaId, String requestingUser, String role) {
         Media media = getById(mediaId);
+        requireAccess(media, requestingUser, role);
         if (!"READY".equals(media.getStatus())) {
             throw new RuntimeException("Media is not ready");
         }
         return storageService.generateDownloadUrl(media.getS3Key(), 3600);
     }
 
+    /** Get media metadata, enforcing the same ownership/role check as downloads. */
+    public Media getByIdForUser(String mediaId, String requestingUser, String role) {
+        Media media = getById(mediaId);
+        requireAccess(media, requestingUser, role);
+        return media;
+    }
+
+    /** Throws if the requesting user is neither the uploader nor an ADMIN/TEACHER. */
+    private void requireAccess(Media media, String requestingUser, String role) {
+        boolean isOwner = media.getUploadedBy() != null && media.getUploadedBy().equals(requestingUser);
+        boolean isPrivileged = "ADMIN".equals(role) || "TEACHER".equals(role);
+        if (!isOwner && !isPrivileged) {
+            throw new AccessDeniedException("Access denied");
+        }
+    }
+
     /** Soft-delete: sets deletedAt and deletes the file from storage */
     @Transactional
     public void deleteMedia(String mediaId, String requestingUser, String role) {
         Media media = getById(mediaId);
-        if (!media.getUploadedBy().equals(requestingUser)
-                && !"ADMIN".equals(role) && !"TEACHER".equals(role)) {
-            throw new RuntimeException("Access denied");
-        }
+        requireAccess(media, requestingUser, role);
         storageService.deleteFile(media.getS3Key());
         media.setDeletedAt(Instant.now());
         media.setStatus("DELETED");

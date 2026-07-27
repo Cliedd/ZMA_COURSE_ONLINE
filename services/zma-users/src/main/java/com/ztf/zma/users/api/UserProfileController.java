@@ -4,6 +4,7 @@ import com.ztf.zma.users.domain.UserPreferences;
 import com.ztf.zma.users.domain.UserProfile;
 import com.ztf.zma.users.repository.UserPreferencesRepository;
 import com.ztf.zma.users.repository.UserProfileRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class UserProfileController {
 
     // ── Internal (called by zma-auth on register) ─────────────────────────────
 
+    @Operation(summary = "Internal: create a profile", description = "Called by zma-auth on registration.")
     @Transactional
     @PostMapping("/internal/create")
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,6 +54,7 @@ public class UserProfileController {
 
     // ── Current user ──────────────────────────────────────────────────────────
 
+    @Operation(summary = "Get my profile")
     @GetMapping("/me")
     public ResponseEntity<ProfileResponse> getMyProfile(
             @AuthenticationPrincipal String email) {
@@ -59,6 +62,7 @@ public class UserProfileController {
         return ResponseEntity.ok(ProfileResponse.from(profile));
     }
 
+    @Operation(summary = "Update my profile")
     @Transactional
     @PutMapping("/me")
     public ResponseEntity<ProfileResponse> updateMyProfile(
@@ -78,6 +82,7 @@ public class UserProfileController {
         return ResponseEntity.ok(ProfileResponse.from(profile));
     }
 
+    @Operation(summary = "Update my avatar")
     @Transactional
     @PatchMapping("/me/avatar")
     public ResponseEntity<ProfileResponse> updateAvatar(
@@ -94,6 +99,7 @@ public class UserProfileController {
      * Soft-delete: anonymize PII and set deletedAt.
      * The auth-service record is NOT deleted here — call zma-auth /logout first.
      */
+    @Operation(summary = "Delete (anonymize) my profile")
     @Transactional
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -112,6 +118,7 @@ public class UserProfileController {
 
     // ── Preferences ───────────────────────────────────────────────────────────
 
+    @Operation(summary = "Get my preferences")
     @GetMapping("/me/preferences")
     public UserPreferences getPreferences(@AuthenticationPrincipal String email) {
         UserProfile profile = findActiveByEmail(email);
@@ -119,6 +126,7 @@ public class UserProfileController {
             .orElseGet(() -> defaultPrefs(profile.getId()));
     }
 
+    @Operation(summary = "Update my preferences")
     @Transactional
     @PutMapping("/me/preferences")
     public UserPreferences updatePreferences(
@@ -140,6 +148,7 @@ public class UserProfileController {
 
     // ── By ID (inter-service / public) ────────────────────────────────────────
 
+    @Operation(summary = "Get a profile by id", description = "Inter-service / authenticated lookup.")
     @GetMapping("/{id}")
     public ResponseEntity<ProfileResponse> getById(@PathVariable String id) {
         UserProfile profile = profileRepository.findById(id)

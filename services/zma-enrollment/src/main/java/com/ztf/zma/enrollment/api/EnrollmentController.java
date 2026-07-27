@@ -2,6 +2,8 @@ package com.ztf.zma.enrollment.api;
 
 import com.ztf.zma.enrollment.domain.Enrollment;
 import com.ztf.zma.enrollment.service.EnrollmentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/enrollments")
+@Tag(name = "Enrollments", description = "Inscriptions et progression des étudiants")
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
@@ -22,6 +25,7 @@ public class EnrollmentController {
     }
 
     /** Enroll the authenticated student */
+    @Operation(summary = "Inscrire l'utilisateur authentifié à un cours", description = "Idempotent : renvoie l'inscription existante si déjà inscrit.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Enrollment enroll(@Valid @RequestBody EnrollRequest request,
@@ -48,6 +52,7 @@ public class EnrollmentController {
     }
 
     /** Check enrollment status for the current user */
+    @Operation(summary = "Vérifier le statut d'inscription de l'utilisateur authentifié à un cours")
     @GetMapping("/check")
     public Map<String, Object> check(@RequestParam String courseId,
                                      Authentication auth) {
@@ -87,6 +92,8 @@ public class EnrollmentController {
         return e;
     }
 
+    @Operation(summary = "Mettre à jour la progression d'une inscription",
+               description = "Réservé à l'étudiant propriétaire de l'inscription (vérifié via studentId == utilisateur authentifié). Déclenche l'émission d'un certificat à 100%.")
     @PatchMapping("/{id}/progress")
     public Enrollment updateProgress(@PathVariable String id,
                                      @RequestBody Double progress,

@@ -66,9 +66,13 @@ public class GatewayRouter {
         this.jwtUtils    = jwtUtils;
         this.rateLimiter = rateLimiter;
         // Use Apache HttpComponents to support all HTTP methods including PATCH
-        // Long timeouts for large file uploads
+        // Long response timeout for large file uploads, but a short connect
+        // timeout: establishing the TCP connection to a downstream service
+        // should always be fast regardless of payload size, so a hung/unreachable
+        // service is detected quickly instead of tying up gateway threads.
         HttpClient httpClient = HttpClients.custom()
             .setDefaultRequestConfig(RequestConfig.custom()
+                .setConnectTimeout(10, TimeUnit.SECONDS)
                 .setResponseTimeout(600, TimeUnit.SECONDS)
                 .setConnectionRequestTimeout(30, TimeUnit.SECONDS)
                 .build())

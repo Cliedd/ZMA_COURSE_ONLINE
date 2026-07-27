@@ -49,6 +49,7 @@ public class SecurityConfig {
                 // Internal endpoint called by zma-auth — network-isolated, no JWT needed
                 .requestMatchers("/api/v1/users/internal/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

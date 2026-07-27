@@ -3,6 +3,7 @@ package com.ztf.zma.community.api;
 import com.ztf.zma.community.domain.ChatMessage;
 import com.ztf.zma.community.domain.ChatRoom;
 import com.ztf.zma.community.service.ChatService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ public class ChatController {
     }
 
     /** Create or retrieve the chat room for a course */
+    @Operation(summary = "Create or get a course chat room")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ChatRoom createOrGetRoom(@RequestBody Map<String, String> body,
@@ -46,6 +48,7 @@ public class ChatController {
     }
 
     /** Send a message — sender identity comes from JWT */
+    @Operation(summary = "Send a chat message", description = "Sender identity is derived from the JWT, not client-supplied")
     @PostMapping("/{roomId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
     public ChatMessage sendMessage(
@@ -76,6 +79,7 @@ public class ChatController {
     }
 
     /** Edit a message (sender only) */
+    @Operation(summary = "Edit a chat message", description = "Only the original sender may edit their message")
     @PatchMapping("/{roomId}/messages/{messageId}")
     public ChatMessage editMessage(
             @PathVariable String roomId,
@@ -86,6 +90,7 @@ public class ChatController {
     }
 
     /** Soft-delete a message (sender, or ADMIN/TEACHER) */
+    @Operation(summary = "Delete a chat message", description = "Sender, ADMIN, or TEACHER only")
     @DeleteMapping("/{roomId}/messages/{messageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMessage(

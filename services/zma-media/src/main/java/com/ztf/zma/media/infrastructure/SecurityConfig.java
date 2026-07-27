@@ -47,10 +47,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Metadata and file downloads are public
-                .requestMatchers(HttpMethod.GET, "/api/v1/media/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
-                // Presign, upload-direct, confirm, attach all require authentication
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // Metadata, downloads, presign, upload-direct, confirm, attach all require
+                // authentication. Ownership/course-access is enforced in MediaService.
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,7 +1,7 @@
-import { ChevronDown } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/shared/ui'
+import { Menu, MenuContent, MenuItem, MenuTrigger, toast } from '@/shared/ui'
 import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 import { MobileNav } from './MobileNav'
 import { ThemeToggle } from '@/shared/theme'
@@ -24,6 +24,98 @@ function TrainingsMenu() {
             </Link>
           </MenuItem>
         ))}
+      </MenuContent>
+    </Menu>
+  )
+}
+
+function UserMenu() {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const email = useAuthStore((s) => s.email)
+  const role = useAuthStore((s) => s.role)
+  const logout = useAuthStore((s) => s.logout)
+
+  const initial = email ? email.charAt(0).toUpperCase() : 'U'
+
+  const handleLogout = () => {
+    logout()
+    toast.info('Vous êtes déconnecté. À bientôt !', 'Déconnexion')
+    navigate('/')
+  }
+
+  return (
+    <Menu>
+      <MenuTrigger className="flex min-h-touch items-center gap-2.5 rounded-full border border-line bg-paper px-3 py-1.5 hover:border-ink/40 transition-all shadow-sm">
+        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-blue font-sans text-xs font-bold text-paper shadow-inner">
+          {initial}
+          <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success ring-2 ring-paper" />
+        </div>
+        <span className="hidden font-sans text-sm font-semibold text-ink sm:inline max-w-[120px] truncate">
+          {email?.split('@')[0] || t('nav.mySpace')}
+        </span>
+        <ChevronDown className="h-3.5 w-3.5 text-ink-muted" aria-hidden />
+      </MenuTrigger>
+
+      <MenuContent className="w-56 p-1">
+        <div className="border-b border-line px-3 py-2">
+          <p className="font-sans text-xs font-semibold text-ink truncate">{email}</p>
+          <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue/10 px-2 py-0.5 font-sans text-[10px] font-bold text-blue uppercase">
+            <Shield className="h-3 w-3" />
+            {role || 'STUDENT'}
+          </div>
+        </div>
+
+        <MenuItem asChild>
+          <Link to="/dashboard" className="flex items-center gap-2.5 py-2">
+            <LayoutDashboard className="h-4 w-4 text-ink-muted" />
+            <span>Tableau de bord</span>
+          </Link>
+        </MenuItem>
+
+        <MenuItem asChild>
+          <Link to="/my-courses" className="flex items-center gap-2.5 py-2">
+            <BookOpen className="h-4 w-4 text-ink-muted" />
+            <span>Mes cours</span>
+          </Link>
+        </MenuItem>
+
+        {role === 'TEACHER' && (
+          <MenuItem asChild>
+            <Link to="/teacher" className="flex items-center gap-2.5 py-2">
+              <UserIcon className="h-4 w-4 text-ink-muted" />
+              <span>Espace Enseignant</span>
+            </Link>
+          </MenuItem>
+        )}
+
+        {role === 'ADMIN' && (
+          <MenuItem asChild>
+            <Link to="/admin" className="flex items-center gap-2.5 py-2">
+              <Shield className="h-4 w-4 text-ink-muted" />
+              <span>Administration</span>
+            </Link>
+          </MenuItem>
+        )}
+
+        <MenuItem asChild>
+          <Link to="/settings" className="flex items-center gap-2.5 py-2">
+            <Settings className="h-4 w-4 text-ink-muted" />
+            <span>Paramètres</span>
+          </Link>
+        </MenuItem>
+
+        <div className="my-1 border-t border-line" />
+
+        <MenuItem asChild>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2.5 py-2 text-danger hover:bg-danger/10"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Se déconnecter</span>
+          </button>
+        </MenuItem>
       </MenuContent>
     </Menu>
   )
@@ -60,9 +152,7 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
           {authenticated ? (
-            <Link to="/dashboard" className="flex min-h-touch items-center rounded bg-ink px-4 font-sans text-sm font-semibold text-paper">
-              {t('nav.mySpace')}
-            </Link>
+            <UserMenu />
           ) : (
             <>
               <Link to="/auth/login" className="hidden min-h-touch items-center rounded border border-ink px-4 font-sans text-sm font-semibold text-ink sm:flex">

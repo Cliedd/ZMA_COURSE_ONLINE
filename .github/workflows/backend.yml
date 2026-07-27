@@ -1,0 +1,25 @@
+name: Backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      # Compiles every module declared in the root pom.xml (all 8 services).
+      - name: Compile all modules
+        run: mvn -B compile
+      # Runs the test suite for every module. Docker is preinstalled on
+      # ubuntu-latest runners, so Testcontainers-based tests (if any service
+      # uses them) work with no extra setup.
+      - name: Test all modules
+        run: mvn -B test

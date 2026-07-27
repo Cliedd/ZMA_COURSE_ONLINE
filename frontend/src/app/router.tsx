@@ -18,6 +18,8 @@ const TeachersPage = lazy(() => import('@/pages/teachers').then((m) => ({ defaul
 const TeacherProfilePage = lazy(() => import('@/pages/teacher-profile').then((m) => ({ default: m.TeacherProfilePage })))
 const LoginPage = lazy(() => import('@/pages/auth-login').then((m) => ({ default: m.LoginPage })))
 const RegisterPage = lazy(() => import('@/pages/auth-register').then((m) => ({ default: m.RegisterPage })))
+const ResetPasswordPage = lazy(() => import('@/pages/auth-reset-password').then((m) => ({ default: m.ResetPasswordPage })))
+
 const StudentDashboard = lazy(() => import('@/pages/dashboard').then((m) => ({ default: m.StudentDashboard })))
 const MyCoursesPage = lazy(() => import('@/pages/my-courses').then((m) => ({ default: m.MyCoursesPage })))
 const CertificatesPage = lazy(() => import('@/pages/certificates').then((m) => ({ default: m.CertificatesPage })))
@@ -78,6 +80,7 @@ export function AppRoutes() {
           <Route element={<AuthLayout />}>
             <Route path="/auth/login" element={<LoginPage />} />
             <Route path="/auth/register" element={<RegisterPage />} />
+            <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
             {/* Anciens chemins français — conservés pour ne pas casser les liens */}
             <Route path="/auth/connexion" element={<Navigate to="/auth/login" replace />} />
             <Route path="/auth/inscription" element={<Navigate to="/auth/register" replace />} />

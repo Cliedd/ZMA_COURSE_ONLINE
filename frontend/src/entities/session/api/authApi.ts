@@ -16,4 +16,9 @@ export const authApi = {
     post('/auth/login', { email, password }, authResponseSchema),
   register: (email: string, password: string): Promise<{ message?: string }> =>
     post('/auth/register', { email, password }),
+  forgotPassword: (email: string): Promise<{ message?: string }> =>
+    post('/auth/forgot-password', { email }),
+  resetPassword: (resetToken: string, newPassword: string): Promise<{ message?: string }> =>
+    post('/auth/reset-password', { resetToken, newPassword }),
 }
+

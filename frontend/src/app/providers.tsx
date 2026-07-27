@@ -6,6 +6,8 @@ import { i18n } from '@/shared/config/i18n'
 import { AppError } from '@/shared/api/http'
 import { connectSessionToHttp } from '@/entities/session'
 
+import { ToastContainer } from '@/shared/ui'
+
 // Branche la session au client HTTP partagé, une fois, au chargement du module app.
 connectSessionToHttp()
 
@@ -26,7 +28,10 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18n}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <ToastContainer />
+        </ThemeProvider>
       </I18nextProvider>
     </QueryClientProvider>
   )

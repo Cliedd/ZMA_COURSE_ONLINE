@@ -3,6 +3,8 @@ package com.ztf.zma.catalog.api;
 import com.ztf.zma.catalog.domain.Course;
 import com.ztf.zma.catalog.domain.Review;
 import com.ztf.zma.catalog.service.CourseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/courses")
+@Tag(name = "Courses", description = "Gestion du catalogue de cours")
 public class CourseController {
 
     private final CourseService courseService;
@@ -28,6 +31,7 @@ public class CourseController {
 
     // ── Admin listing (all courses, including unpublished) ────────────────────
 
+    @Operation(summary = "Lister tous les cours (admin)", description = "Inclut les cours non publiés. Réservé au rôle ADMIN.")
     @GetMapping("/admin/all")
     public Page<Course> listAllCourses(
             @RequestParam(defaultValue = "0")   int page,
@@ -44,6 +48,7 @@ public class CourseController {
 
     // ── Public listing ────────────────────────────────────────────────────────
 
+    @Operation(summary = "Lister/rechercher les cours publiés", description = "Filtrable par département, niveau et recherche plein texte, paginé.")
     @GetMapping
     public Page<Course> listCourses(
             @RequestParam(required = false) String department,
@@ -118,6 +123,7 @@ public class CourseController {
 
     // ── Write (TEACHER / ADMIN) ───────────────────────────────────────────────
 
+    @Operation(summary = "Créer un cours", description = "Réservé aux enseignants et admins. Le cours créé appartient à l'enseignant authentifié.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Course createCourse(@Valid @RequestBody CourseRequest request,
@@ -125,6 +131,7 @@ public class CourseController {
         return courseService.createCourse(request, auth.getName());
     }
 
+    @Operation(summary = "Mettre à jour un cours", description = "Réservé au propriétaire (teacherEmail) du cours ou à un ADMIN.")
     @PutMapping("/{id}")
     public Course updateCourse(@PathVariable String id,
                                @Valid @RequestBody CourseRequest request,
@@ -132,6 +139,7 @@ public class CourseController {
         return courseService.updateCourse(id, request, auth.getName(), getRole(auth));
     }
 
+    @Operation(summary = "Publier/dépublier un cours", description = "Réservé au propriétaire (teacherEmail) du cours ou à un ADMIN.")
     @PatchMapping("/{id}/publish")
     public Course publishCourse(@PathVariable String id,
                                 @RequestParam(defaultValue = "true") boolean published,
@@ -139,6 +147,7 @@ public class CourseController {
         return courseService.publishCourse(id, published, auth.getName(), getRole(auth));
     }
 
+    @Operation(summary = "Supprimer (soft-delete) un cours", description = "Réservé au propriétaire (teacherEmail) du cours ou à un ADMIN.")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCourse(@PathVariable String id, Authentication auth) {

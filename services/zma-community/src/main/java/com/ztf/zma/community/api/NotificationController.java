@@ -2,6 +2,7 @@ package com.ztf.zma.community.api;
 
 import com.ztf.zma.community.domain.Notification;
 import com.ztf.zma.community.service.NotificationService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
+    @Operation(summary = "List current user's notifications")
     @GetMapping
     public List<Notification> getNotifications(Authentication auth) {
         return notificationService.getNotifications(auth.getName());
