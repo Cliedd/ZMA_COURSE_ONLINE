@@ -144,6 +144,9 @@ public class Course {
     public Integer getLessonCount() { return lessonCount; }
     public void setLessonCount(Integer lessonCount) { this.lessonCount = lessonCount; }
 
+    @com.fasterxml.jackson.annotation.JsonProperty("published")
+    public boolean isPublished() { return status == CourseStatus.PUBLISHED; }
+
     public List<Section> getSections() { return sections; }
     public void setSections(List<Section> sections) { this.sections = sections; }
 }
