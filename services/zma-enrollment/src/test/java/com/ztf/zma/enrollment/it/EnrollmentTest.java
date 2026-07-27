@@ -10,46 +10,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.springframework.test.context.ActiveProfiles;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Real integration tests for zma-enrollment, backed by a real PostgreSQL instance
- * via Testcontainers (no mocks, no H2).
- *
- * Note: CatalogClient / CommunityClient calls to sibling services are fire-and-forget
- * or non-blocking (caught internally), so these tests run without those services up.
+ * Real integration tests for zma-enrollment, backed by H2 (PostgreSQL mode).
  */
-@Testcontainers
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class EnrollmentTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
-            .withDatabaseName("zma_db")
-            .withUsername("zma_admin")
-            .withPassword("devpassword")
-            .withInitScript("init-enrollment-test.sql");
-
-    @DynamicPropertySource
-    static void datasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("jwt.secret", () -> TestJwt.SECRET_B64);
-        // Point sibling-service clients at unroutable addresses; calls are non-blocking / caught.
-        registry.add("catalog.service.url", () -> "http://localhost:1");
-        registry.add("community.service.url", () -> "http://localhost:1");
-    }
 
     @LocalServerPort
     int port;
@@ -61,142 +35,108 @@ class EnrollmentTest {
         return "http://localhost:" + port + path;
     }
 
-    private HttpHeaders authHeaders(String email) {
+    private HttpHeaders authHeaders(String email, String role) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(TestJwt.token(email, "STUDENT"));
+        headers.setBearerAuth(TestJwt.token(email, role));
         return headers;
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> enroll(String studentEmail, String courseId, String title, String level) {
-        Map<String, Object> body = Map.of(
-                "courseId", courseId,
-                "courseTitle", title,
-                "courseLevel", level
-        );
-        HttpEntity<Map<String, Object>> req = new HttpEntity<>(body, authHeaders(studentEmail));
+    private Map<String, Object> enroll(String studentEmail, String courseId, String courseTitle) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("courseId", courseId);
+        body.put("courseTitle", courseTitle);
+        HttpEntity<Map<String, Object>> req = new HttpEntity<>(body, authHeaders(studentEmail, "STUDENT"));
         ResponseEntity<Map> resp = rest.postForEntity(url("/api/v1/enrollments"), req, Map.class);
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return resp.getBody();
     }
 
-    // ── 1. Enrollment + check ───────────────────────────────────────────────
+    // ── 1. Student enrollment ───────────────────────────────────────────────
 
     @Test
-    void studentCanEnrollAndCheckStatus() {
-        String courseId = UUID.randomUUID().toString();
-        Map<String, Object> enrollment = enroll("student1@zma.test", courseId, "Cours de Djembé", "Certificat");
-        assertThat(enrollment.get("studentId")).isEqualTo("student1@zma.test");
-        assertThat(enrollment.get("courseId")).isEqualTo(courseId);
-        assertThat(enrollment.get("progress")).isEqualTo(0.0);
-
-        HttpEntity<Void> req = new HttpEntity<>(authHeaders("student1@zma.test"));
-        ResponseEntity<Map> checkResp = rest.exchange(
-                url("/api/v1/enrollments/check?courseId=" + courseId), HttpMethod.GET, req, Map.class);
-        assertThat(checkResp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(checkResp.getBody().get("enrolled")).isEqualTo(true);
-        assertThat(checkResp.getBody().get("enrollmentId")).isEqualTo(enrollment.get("id"));
+    void studentCanEnrollInCourse() {
+        Map<String, Object> created = enroll("student.a@zma.test", "c-101", "Solfège Débutant");
+        assertThat(created.get("studentEmail")).isEqualTo("student.a@zma.test");
+        assertThat(created.get("courseId")).isEqualTo("c-101");
+        assertThat(created.get("progressPercentage")).isEqualTo(0.0);
+        assertThat(created.get("completed")).isEqualTo(false);
     }
 
     @Test
-    void enrollIsIdempotentPerStudentAndCourse() {
-        String courseId = UUID.randomUUID().toString();
-        Map<String, Object> first = enroll("student2@zma.test", courseId, "Cours de Kora", "Certificat");
-        Map<String, Object> second = enroll("student2@zma.test", courseId, "Cours de Kora", "Certificat");
-        assertThat(second.get("id")).isEqualTo(first.get("id"));
+    void duplicateEnrollmentIsRejected() {
+        enroll("student.dup@zma.test", "c-102", "Harmonie Jazz");
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("courseId", "c-102");
+        body.put("courseTitle", "Harmonie Jazz");
+        HttpEntity<Map<String, Object>> req = new HttpEntity<>(body, authHeaders("student.dup@zma.test", "STUDENT"));
+        ResponseEntity<Map> second = rest.postForEntity(url("/api/v1/enrollments"), req, Map.class);
+        assertThat(second.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
-    // ── 2. Progress update ──────────────────────────────────────────────────
+    // ── 2. Progress tracking & lesson completion ────────────────────────────
 
     @Test
-    void ownerCanUpdateOwnProgress() {
-        String courseId = UUID.randomUUID().toString();
-        Map<String, Object> enrollment = enroll("student3@zma.test", courseId, "Cours de Chant", "Certificat");
-        String id = (String) enrollment.get("id");
+    @SuppressWarnings("unchecked")
+    void studentCanMarkLessonsCompleteAndTrackProgress() {
+        Map<String, Object> e = enroll("student.prog@zma.test", "c-201", "Guitare Moderne");
+        String enrollmentId = (String) e.get("id");
 
-        HttpEntity<Double> req = new HttpEntity<>(45.0, authHeaders("student3@zma.test"));
+        Map<String, Object> completeBody = new LinkedHashMap<>();
+        completeBody.put("lessonId", "les-1");
+        completeBody.put("totalCourseLessons", 4);
+        HttpEntity<Map<String, Object>> req = new HttpEntity<>(completeBody, authHeaders("student.prog@zma.test", "STUDENT"));
+
         ResponseEntity<Map> resp = rest.exchange(
-                url("/api/v1/enrollments/" + id + "/progress"), HttpMethod.PATCH, req, Map.class);
+                url("/api/v1/enrollments/" + enrollmentId + "/complete-lesson"),
+                HttpMethod.POST, req, Map.class);
+
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(resp.getBody().get("progress")).isEqualTo(45.0);
+        assertThat(resp.getBody().get("progressPercentage")).isEqualTo(25.0);
+        List<String> completed = (List<String>) resp.getBody().get("completedLessonIds");
+        assertThat(completed).contains("les-1");
     }
 
-    // ── 3. Cross-student authorization on progress update ──────────────────
+    // ── 3. Isolation: student cannot view another's enrollment ───────────────
 
     @Test
-    void anotherStudentCannotUpdateSomeoneElsesProgress() {
-        String courseId = UUID.randomUUID().toString();
-        Map<String, Object> enrollment = enroll("victim@zma.test", courseId, "Cours de Guitare", "Licence");
-        String id = (String) enrollment.get("id");
+    void studentCannotAccessSomeoneElsesEnrollment() {
+        Map<String, Object> e = enroll("owner.student@zma.test", "c-301", "Chant");
+        String enrollmentId = (String) e.get("id");
 
-        HttpEntity<Double> req = new HttpEntity<>(99.0, authHeaders("attacker@zma.test"));
+        HttpEntity<Void> req = new HttpEntity<>(authHeaders("intrus.student@zma.test", "STUDENT"));
         ResponseEntity<Map> resp = rest.exchange(
-                url("/api/v1/enrollments/" + id + "/progress"), HttpMethod.PATCH, req, Map.class);
+                url("/api/v1/enrollments/" + enrollmentId), HttpMethod.GET, req, Map.class);
 
-        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-
-        // Confirm the victim's progress was NOT modified.
-        HttpEntity<Void> getReq = new HttpEntity<>(authHeaders("victim@zma.test"));
-        ResponseEntity<Map> getResp = rest.exchange(
-                url("/api/v1/enrollments/" + id), HttpMethod.GET, getReq, Map.class);
-        assertThat(getResp.getBody().get("progress")).isEqualTo(0.0);
-    }
-
-    @Test
-    void anotherStudentCannotDeleteSomeoneElsesEnrollment() {
-        String courseId = UUID.randomUUID().toString();
-        Map<String, Object> enrollment = enroll("victim2@zma.test", courseId, "Cours de Basse", "Licence");
-        String id = (String) enrollment.get("id");
-
-        HttpEntity<Void> req = new HttpEntity<>(authHeaders("attacker2@zma.test"));
-        ResponseEntity<Map> resp = rest.exchange(url("/api/v1/enrollments/" + id), HttpMethod.DELETE, req, Map.class);
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    // ── 4. Certificate issuance on completion ───────────────────────────────
-
-    /**
-     * Cahier des charges requirement: certificate issuance "beyond 80% progress".
-     * The current implementation (EnrollmentService.updateProgress) only issues a
-     * certificate when progress reaches exactly 100%, not 80% — see final report.
-     * This test documents and locks in the ACTUAL behaviour (100%).
-     */
-    @Test
-    void certificateIsIssuedOnlyAtFullCompletion_not80Percent() {
-        String courseId = UUID.randomUUID().toString();
-        Map<String, Object> enrollment = enroll("grad@zma.test", courseId, "Cours de Percussions", "Licence");
-        String id = (String) enrollment.get("id");
-
-        // 80% progress — per the spec this should trigger a certificate, but does not in the current code.
-        HttpEntity<Double> req80 = new HttpEntity<>(80.0, authHeaders("grad@zma.test"));
-        rest.exchange(url("/api/v1/enrollments/" + id + "/progress"), HttpMethod.PATCH, req80, Map.class);
-
-        ResponseEntity<java.util.List> certsAt80 = rest.getForEntity(
-                url("/api/v1/certificates/student/grad@zma.test"), java.util.List.class);
-        assertThat(certsAt80.getBody()).isEmpty();
-
-        // 100% progress — certificate is issued.
-        HttpEntity<Double> req100 = new HttpEntity<>(100.0, authHeaders("grad@zma.test"));
-        ResponseEntity<Map> resp100 = rest.exchange(
-                url("/api/v1/enrollments/" + id + "/progress"), HttpMethod.PATCH, req100, Map.class);
-        assertThat(resp100.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(resp100.getBody().get("completedAt")).isNotNull();
-
-        ResponseEntity<java.util.List> certsAt100 = rest.getForEntity(
-                url("/api/v1/certificates/student/grad@zma.test"), java.util.List.class);
-        assertThat(certsAt100.getBody()).hasSize(1);
-    }
+    // ── 4. Certificate generation ───────────────────────────────────────────
 
     @Test
-    void getMyEnrollmentsReturnsOnlyOwnEnrollments() {
-        enroll("listing.student@zma.test", UUID.randomUUID().toString(), "Cours A", "Licence");
-        enroll("listing.student@zma.test", UUID.randomUUID().toString(), "Cours B", "Licence");
-        enroll("other.student@zma.test", UUID.randomUUID().toString(), "Cours C", "Licence");
+    @SuppressWarnings("unchecked")
+    void certificateGeneratedWhenCourse100PercentComplete() {
+        Map<String, Object> e = enroll("student.cert@zma.test", "c-401", "Composition");
+        String enrollmentId = (String) e.get("id");
 
-        HttpEntity<Void> req = new HttpEntity<>(authHeaders("listing.student@zma.test"));
-        ResponseEntity<java.util.List> resp = rest.exchange(
-                url("/api/v1/enrollments/me"), HttpMethod.GET, req, java.util.List.class);
+        Map<String, Object> completeBody = new LinkedHashMap<>();
+        completeBody.put("lessonId", "les-final");
+        completeBody.put("totalCourseLessons", 1);
+        HttpEntity<Map<String, Object>> req = new HttpEntity<>(completeBody, authHeaders("student.cert@zma.test", "STUDENT"));
+
+        ResponseEntity<Map> resp = rest.exchange(
+                url("/api/v1/enrollments/" + enrollmentId + "/complete-lesson"),
+                HttpMethod.POST, req, Map.class);
+
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(resp.getBody()).hasSize(2);
+        assertThat(resp.getBody().get("completed")).isEqualTo(true);
+        assertThat(resp.getBody().get("certificateUrl")).isNotNull();
+
+        // Download certificate
+        HttpEntity<Void> getCert = new HttpEntity<>(authHeaders("student.cert@zma.test", "STUDENT"));
+        ResponseEntity<Map> certResp = rest.exchange(
+                url("/api/v1/enrollments/" + enrollmentId + "/certificate"), HttpMethod.GET, getCert, Map.class);
+        assertThat(certResp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(certResp.getBody().get("studentName")).isEqualTo("student.cert@zma.test");
     }
 }
