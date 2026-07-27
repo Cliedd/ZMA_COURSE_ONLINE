@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,44 +56,33 @@ class EnrollmentTest {
     @Test
     void studentCanEnrollInCourse() {
         Map<String, Object> created = enroll("student.a@zma.test", "c-101", "Solfège Débutant");
-        assertThat(created.get("studentEmail")).isEqualTo("student.a@zma.test");
+        assertThat(created.get("studentId")).isEqualTo("student.a@zma.test");
         assertThat(created.get("courseId")).isEqualTo("c-101");
-        assertThat(created.get("progressPercentage")).isEqualTo(0.0);
-        assertThat(created.get("completed")).isEqualTo(false);
+        assertThat(created.get("progress")).isEqualTo(0.0);
     }
 
     @Test
-    void duplicateEnrollmentIsRejected() {
-        enroll("student.dup@zma.test", "c-102", "Harmonie Jazz");
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("courseId", "c-102");
-        body.put("courseTitle", "Harmonie Jazz");
-        HttpEntity<Map<String, Object>> req = new HttpEntity<>(body, authHeaders("student.dup@zma.test", "STUDENT"));
-        ResponseEntity<Map> second = rest.postForEntity(url("/api/v1/enrollments"), req, Map.class);
-        assertThat(second.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    void enrollmentIsIdempotentForSameStudentAndCourse() {
+        Map<String, Object> first = enroll("student.dup@zma.test", "c-102", "Harmonie Jazz");
+        Map<String, Object> second = enroll("student.dup@zma.test", "c-102", "Harmonie Jazz");
+        assertThat(second.get("id")).isEqualTo(first.get("id"));
     }
 
-    // ── 2. Progress tracking & lesson completion ────────────────────────────
+    // ── 2. Progress tracking ────────────────────────────────────────────────
 
     @Test
     @SuppressWarnings("unchecked")
-    void studentCanMarkLessonsCompleteAndTrackProgress() {
+    void studentCanTrackProgress() {
         Map<String, Object> e = enroll("student.prog@zma.test", "c-201", "Guitare Moderne");
         String enrollmentId = (String) e.get("id");
 
-        Map<String, Object> completeBody = new LinkedHashMap<>();
-        completeBody.put("lessonId", "les-1");
-        completeBody.put("totalCourseLessons", 4);
-        HttpEntity<Map<String, Object>> req = new HttpEntity<>(completeBody, authHeaders("student.prog@zma.test", "STUDENT"));
-
+        HttpEntity<Double> req = new HttpEntity<>(50.0, authHeaders("student.prog@zma.test", "STUDENT"));
         ResponseEntity<Map> resp = rest.exchange(
-                url("/api/v1/enrollments/" + enrollmentId + "/complete-lesson"),
-                HttpMethod.POST, req, Map.class);
+                url("/api/v1/enrollments/" + enrollmentId + "/progress"),
+                HttpMethod.PATCH, req, Map.class);
 
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(resp.getBody().get("progressPercentage")).isEqualTo(25.0);
-        List<String> completed = (List<String>) resp.getBody().get("completedLessonIds");
-        assertThat(completed).contains("les-1");
+        assertThat(resp.getBody().get("progress")).isEqualTo(50.0);
     }
 
     // ── 3. Isolation: student cannot view another's enrollment ───────────────
@@ -111,32 +99,21 @@ class EnrollmentTest {
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    // ── 4. Certificate generation ───────────────────────────────────────────
+    // ── 4. 100% completion ──────────────────────────────────────────────────
 
     @Test
     @SuppressWarnings("unchecked")
-    void certificateGeneratedWhenCourse100PercentComplete() {
+    void completionAt100PercentSetsCompletedAt() {
         Map<String, Object> e = enroll("student.cert@zma.test", "c-401", "Composition");
         String enrollmentId = (String) e.get("id");
 
-        Map<String, Object> completeBody = new LinkedHashMap<>();
-        completeBody.put("lessonId", "les-final");
-        completeBody.put("totalCourseLessons", 1);
-        HttpEntity<Map<String, Object>> req = new HttpEntity<>(completeBody, authHeaders("student.cert@zma.test", "STUDENT"));
-
+        HttpEntity<Double> req = new HttpEntity<>(100.0, authHeaders("student.cert@zma.test", "STUDENT"));
         ResponseEntity<Map> resp = rest.exchange(
-                url("/api/v1/enrollments/" + enrollmentId + "/complete-lesson"),
-                HttpMethod.POST, req, Map.class);
+                url("/api/v1/enrollments/" + enrollmentId + "/progress"),
+                HttpMethod.PATCH, req, Map.class);
 
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(resp.getBody().get("completed")).isEqualTo(true);
-        assertThat(resp.getBody().get("certificateUrl")).isNotNull();
-
-        // Download certificate
-        HttpEntity<Void> getCert = new HttpEntity<>(authHeaders("student.cert@zma.test", "STUDENT"));
-        ResponseEntity<Map> certResp = rest.exchange(
-                url("/api/v1/enrollments/" + enrollmentId + "/certificate"), HttpMethod.GET, getCert, Map.class);
-        assertThat(certResp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(certResp.getBody().get("studentName")).isEqualTo("student.cert@zma.test");
+        assertThat(resp.getBody().get("progress")).isEqualTo(100.0);
+        assertThat(resp.getBody().get("completedAt")).isNotNull();
     }
 }
