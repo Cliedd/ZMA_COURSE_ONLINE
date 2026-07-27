@@ -1,6 +1,7 @@
 package com.ztf.zma.catalog.repository;
 
 import com.ztf.zma.catalog.domain.Course;
+import com.ztf.zma.catalog.domain.CourseStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,21 +17,21 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     boolean          existsBySlug(String slug);
 
     // Paginated + filtered public listing (published + not deleted)
-    Page<Course> findByPublishedAndDeletedAtIsNull(Boolean published, Pageable pageable);
+    Page<Course> findByStatusAndDeletedAtIsNull(CourseStatus status, Pageable pageable);
 
-    Page<Course> findByPublishedAndDepartmentIgnoreCaseAndDeletedAtIsNull(
-        Boolean published, String department, Pageable pageable);
+    Page<Course> findByStatusAndDepartmentIgnoreCaseAndDeletedAtIsNull(
+        CourseStatus status, String department, Pageable pageable);
 
-    Page<Course> findByPublishedAndLevelIgnoreCaseAndDeletedAtIsNull(
-        Boolean published, String level, Pageable pageable);
+    Page<Course> findByStatusAndLevelIgnoreCaseAndDeletedAtIsNull(
+        CourseStatus status, String level, Pageable pageable);
 
-    Page<Course> findByPublishedAndDepartmentIgnoreCaseAndLevelIgnoreCaseAndDeletedAtIsNull(
-        Boolean published, String department, String level, Pageable pageable);
+    Page<Course> findByStatusAndDepartmentIgnoreCaseAndLevelIgnoreCaseAndDeletedAtIsNull(
+        CourseStatus status, String department, String level, Pageable pageable);
 
     // Full-text search on title + short description (published + not deleted)
     @Query("""
         SELECT c FROM Course c
-        WHERE c.published = true
+        WHERE c.status = com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED
           AND c.deletedAt IS NULL
           AND (LOWER(c.title) LIKE LOWER(CONCAT('%',:q,'%'))
             OR LOWER(c.shortDescription) LIKE LOWER(CONCAT('%',:q,'%')))

@@ -6,28 +6,28 @@ import { Separator } from '../ui/separator'
 import { cn } from '../../lib/utils'
 
 const DEPARTMENTS = [
-  'Interprétation et Pratique Instrumentale',
-  'Composition, Écriture et Théorie Musicale',
-  'Technologies Musicales et Production Audiovisuelle',
-  'Pédagogie Musicale et Formation des Formateurs',
-  'Musicologie, Patrimoine et Management Culturel',
+  'Performance & Instrumental Practice',
+  'Composition, Writing & Music Theory',
+  'Music Technology & Audiovisual Production',
+  'Music Education & Teacher Training',
+  'Musicology, Heritage & Cultural Management',
 ]
 
 const DEPT_LABELS: Record<string, string> = {
-  'Interprétation et Pratique Instrumentale': 'Interprétation',
-  'Composition, Écriture et Théorie Musicale': 'Composition',
-  'Technologies Musicales et Production Audiovisuelle': 'Technologies',
-  'Pédagogie Musicale et Formation des Formateurs': 'Pédagogie',
-  'Musicologie, Patrimoine et Management Culturel': 'Musicologie',
+  'Performance & Instrumental Practice': 'Performance',
+  'Composition, Writing & Music Theory': 'Composition',
+  'Music Technology & Audiovisual Production': 'Music Technology',
+  'Music Education & Teacher Training': 'Music Education',
+  'Musicology, Heritage & Cultural Management': 'Musicology',
 }
 
-const LEVELS = ['Licence', 'Master', 'Doctorat', 'Certificat', 'Atelier']
+const LEVELS = ['Bachelor\'s', 'Master\'s', 'Doctorate', 'Certificate']
 
 const PRICE_RANGES = [
-  { label: 'Moins de 150€', max: 150 },
-  { label: '150€ – 350€', min: 150, max: 350 },
-  { label: '350€ – 500€', min: 350, max: 500 },
-  { label: 'Plus de 500€', min: 500 },
+  { label: 'Under $150', max: 150 },
+  { label: '$150 – $350', min: 150, max: 350 },
+  { label: '$350 – $500', min: 350, max: 500 },
+  { label: 'Over $500', min: 500 },
 ]
 
 export interface FilterState {
@@ -64,11 +64,11 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
   const reset = () => onChange({ departments: [], levels: [], priceRange: null })
 
   return (
-    <aside className="w-60 shrink-0 space-y-4">
+    <aside className="w-full md:w-60 shrink-0 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <SlidersHorizontal className="h-4 w-4 text-primary" />
-          Filtres
+          Filters
           {totalActive > 0 && (
             <Badge className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
               {totalActive}
@@ -80,7 +80,7 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
             onClick={reset}
             className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
           >
-            <X className="h-3 w-3" /> Effacer
+            <X className="h-3 w-3" /> Clear
           </button>
         )}
       </div>
@@ -110,10 +110,10 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
 
       <Accordion type="multiple" defaultValue={['dept', 'level', 'price']} className="space-y-0">
 
-        {/* Départements */}
+        {/* Departments */}
         <AccordionItem value="dept" className="border-none">
           <AccordionTrigger className="text-sm font-semibold py-2.5 px-0 hover:no-underline">
-            Département
+            Department
           </AccordionTrigger>
           <AccordionContent className="pb-1">
             <div className="space-y-1">
@@ -135,10 +135,10 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
           </AccordionContent>
         </AccordionItem>
 
-        {/* Niveau */}
+        {/* Level */}
         <AccordionItem value="level" className="border-none">
           <AccordionTrigger className="text-sm font-semibold py-2.5 px-0 hover:no-underline">
-            Niveau
+            Level
           </AccordionTrigger>
           <AccordionContent className="pb-1">
             <div className="space-y-1">
@@ -160,10 +160,10 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
           </AccordionContent>
         </AccordionItem>
 
-        {/* Prix */}
+        {/* Price */}
         <AccordionItem value="price" className="border-none">
           <AccordionTrigger className="text-sm font-semibold py-2.5 px-0 hover:no-underline">
-            Prix
+            Price
           </AccordionTrigger>
           <AccordionContent className="pb-1">
             <div className="space-y-1">
@@ -188,7 +188,7 @@ export const CatalogFilter = ({ filters, onChange }: CatalogFilterProps) => {
 
       {totalActive > 0 && (
         <Button variant="outline" className="w-full" size="sm" onClick={reset}>
-          Réinitialiser les filtres
+          Reset filters
         </Button>
       )}
     </aside>

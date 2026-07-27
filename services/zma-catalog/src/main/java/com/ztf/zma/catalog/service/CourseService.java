@@ -2,6 +2,7 @@ package com.ztf.zma.catalog.service;
 
 import com.ztf.zma.catalog.api.CourseRequest;
 import com.ztf.zma.catalog.domain.Course;
+import com.ztf.zma.catalog.domain.CourseStatus;
 import com.ztf.zma.catalog.domain.Review;
 import com.ztf.zma.catalog.repository.CourseRepository;
 import com.ztf.zma.catalog.repository.ReviewRepository;
@@ -36,13 +37,15 @@ public class CourseService {
         boolean hasLevel = StringUtils.hasText(level);
 
         if (hasDept && hasLevel)
-            return courseRepository.findByPublishedAndDepartmentIgnoreCaseAndLevelIgnoreCaseAndDeletedAtIsNull(
-                true, department, level, pageable);
+            return courseRepository.findByStatusAndDepartmentIgnoreCaseAndLevelIgnoreCaseAndDeletedAtIsNull(
+                CourseStatus.PUBLISHED, department, level, pageable);
         if (hasDept)
-            return courseRepository.findByPublishedAndDepartmentIgnoreCaseAndDeletedAtIsNull(true, department, pageable);
+            return courseRepository.findByStatusAndDepartmentIgnoreCaseAndDeletedAtIsNull(
+                CourseStatus.PUBLISHED, department, pageable);
         if (hasLevel)
-            return courseRepository.findByPublishedAndLevelIgnoreCaseAndDeletedAtIsNull(true, level, pageable);
-        return courseRepository.findByPublishedAndDeletedAtIsNull(true, pageable);
+            return courseRepository.findByStatusAndLevelIgnoreCaseAndDeletedAtIsNull(
+                CourseStatus.PUBLISHED, level, pageable);
+        return courseRepository.findByStatusAndDeletedAtIsNull(CourseStatus.PUBLISHED, pageable);
     }
 
     // ── Admin listing (all courses, including unpublished) ────────────────────
@@ -131,7 +134,7 @@ public class CourseService {
     public Course createCourse(CourseRequest req, String teacherEmail) {
         Course course = new Course();
         course.setTeacherEmail(teacherEmail);
-        course.setPublished(false);
+        course.setStatus(CourseStatus.DRAFT);
         applyRequest(course, req);
         // Auto-generate slug if not provided or empty
         if (!StringUtils.hasText(course.getSlug())) {
@@ -144,15 +147,69 @@ public class CourseService {
     public Course updateCourse(String id, CourseRequest req, String callerEmail, String callerRole) {
         Course course = getCourseById(id);
         checkOwnership(course, callerEmail, callerRole);
+        // R10: any substantial change to a published course sends it back for re-review
+        if (course.getStatus() == CourseStatus.PUBLISHED) {
+            course.setStatus(CourseStatus.REVISION_NEEDED);
+        }
         applyRequest(course, req);
         return courseRepository.save(course);
     }
 
+    // ── Publication workflow ─────────────────────────────────────────────────
+
+    /** Teacher submits a DRAFT or REVISION_NEEDED course for admin review. */
     @Transactional
-    public Course publishCourse(String id, boolean published, String callerEmail, String callerRole) {
+    public Course submitCourse(String id, String callerEmail, String callerRole) {
         Course course = getCourseById(id);
         checkOwnership(course, callerEmail, callerRole);
-        course.setPublished(published);
+        requireStatus(course, "submit", CourseStatus.DRAFT, CourseStatus.REVISION_NEEDED);
+        course.setStatus(CourseStatus.SUBMITTED);
+        course.setReviewComment(null);
+        return courseRepository.save(course);
+    }
+
+    /** Admin claims a SUBMITTED course to begin reviewing it. */
+    @Transactional
+    public Course startReview(String id, String callerRole) {
+        requireAdmin(callerRole);
+        Course course = getCourseById(id);
+        requireStatus(course, "start review on", CourseStatus.SUBMITTED);
+        course.setStatus(CourseStatus.IN_REVIEW);
+        return courseRepository.save(course);
+    }
+
+    /** Admin approves an IN_REVIEW course — it becomes visible in the public catalog. */
+    @Transactional
+    public Course approveCourse(String id, String callerRole) {
+        requireAdmin(callerRole);
+        Course course = getCourseById(id);
+        requireStatus(course, "approve", CourseStatus.IN_REVIEW);
+        course.setStatus(CourseStatus.PUBLISHED);
+        course.setReviewComment(null);
+        return courseRepository.save(course);
+    }
+
+    /** Admin rejects an IN_REVIEW course, sending it back to the teacher with feedback. */
+    @Transactional
+    public Course rejectCourse(String id, String callerRole, String comment) {
+        requireAdmin(callerRole);
+        if (!StringUtils.hasText(comment)) {
+            throw new RuntimeException("A comment is required to reject a course");
+        }
+        Course course = getCourseById(id);
+        requireStatus(course, "reject", CourseStatus.IN_REVIEW);
+        course.setStatus(CourseStatus.REVISION_NEEDED);
+        course.setReviewComment(comment);
+        return courseRepository.save(course);
+    }
+
+    /** Admin archives a PUBLISHED course — removed from the catalog, existing buyers keep access. */
+    @Transactional
+    public Course archiveCourse(String id, String callerRole) {
+        requireAdmin(callerRole);
+        Course course = getCourseById(id);
+        requireStatus(course, "archive", CourseStatus.PUBLISHED);
+        course.setStatus(CourseStatus.ARCHIVED);
         return courseRepository.save(course);
     }
 
@@ -162,13 +219,12 @@ public class CourseService {
         Course course = getCourseById(id);
         checkOwnership(course, callerEmail, callerRole);
         course.setDeletedAt(Instant.now());
-        course.setPublished(false);
         courseRepository.save(course);
     }
 
     /** Converts a title to a URL-safe slug, unique in the DB. */
     private String generateUniqueSlug(String title) {
-        if (!StringUtils.hasText(title)) title = "cours";
+        if (!StringUtils.hasText(title)) title = "course";
         // Normalize unicode → remove accents
         String normalized = Normalizer.normalize(title, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "");
@@ -176,7 +232,7 @@ public class CourseService {
         String base = normalized.toLowerCase()
                 .replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("^-|-$", "");
-        if (!StringUtils.hasText(base)) base = "cours";
+        if (!StringUtils.hasText(base)) base = "course";
 
         String candidate = base;
         int attempt = 0;
@@ -195,6 +251,19 @@ public class CourseService {
         if (!"ADMIN".equals(callerRole) && !callerEmail.equals(course.getTeacherEmail())) {
             throw new RuntimeException("Access denied");
         }
+    }
+
+    private void requireAdmin(String callerRole) {
+        if (!"ADMIN".equals(callerRole)) {
+            throw new RuntimeException("Access denied");
+        }
+    }
+
+    private void requireStatus(Course course, String action, CourseStatus... allowed) {
+        for (CourseStatus s : allowed) {
+            if (course.getStatus() == s) return;
+        }
+        throw new RuntimeException("Cannot " + action + " a course in status " + course.getStatus());
     }
 
     private void applyRequest(Course c, CourseRequest req) {

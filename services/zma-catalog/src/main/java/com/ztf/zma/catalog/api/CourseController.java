@@ -147,6 +147,36 @@ public class CourseController {
         return courseService.publishCourse(id, published, auth.getName(), getRole(auth));
     }
 
+    // ── Publication workflow ─────────────────────────────────────────────────
+
+    @PostMapping("/{id}/submit")
+    public Course submitCourse(@PathVariable String id, Authentication auth) {
+        return courseService.submitCourse(id, auth.getName(), getRole(auth));
+    }
+
+    @PostMapping("/{id}/review/start")
+    public Course startReview(@PathVariable String id, Authentication auth) {
+        return courseService.startReview(id, getRole(auth));
+    }
+
+    @PostMapping("/{id}/review/approve")
+    public Course approveCourse(@PathVariable String id, Authentication auth) {
+        return courseService.approveCourse(id, getRole(auth));
+    }
+
+    @PostMapping("/{id}/review/reject")
+    public Course rejectCourse(@PathVariable String id,
+                               @RequestBody Map<String, Object> body,
+                               Authentication auth) {
+        String comment = (String) body.get("comment");
+        return courseService.rejectCourse(id, getRole(auth), comment);
+    }
+
+    @PostMapping("/{id}/archive")
+    public Course archiveCourse(@PathVariable String id, Authentication auth) {
+        return courseService.archiveCourse(id, getRole(auth));
+    }
+
     @Operation(summary = "Supprimer (soft-delete) un cours", description = "Réservé au propriétaire (teacherEmail) du cours ou à un ADMIN.")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -169,7 +199,7 @@ public class CourseController {
             "level",       course.getLevel() != null ? course.getLevel() : "",
             "price",       course.getPrice() != null ? course.getPrice() : 0.0,
             "lessonCount", course.getLessonCount() != null ? course.getLessonCount() : 0,
-            "published",   course.getPublished() != null && course.getPublished()
+            "published",   course.getStatus() == com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED
         );
     }
 

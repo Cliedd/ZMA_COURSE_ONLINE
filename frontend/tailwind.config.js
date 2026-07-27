@@ -41,10 +41,12 @@ export default {
       keyframes: {
         'accordion-down': { from: { height: '0' }, to: { height: 'var(--radix-accordion-content-height)' } },
         'accordion-up': { from: { height: 'var(--radix-accordion-content-height)' }, to: { height: '0' } },
+        'gradient-shift': { '0%': { backgroundPosition: '0% 50%' }, '100%': { backgroundPosition: '200% 50%' } },
       },
       animation: {
         'accordion-down': 'accordion-down var(--duration) var(--ease)',
         'accordion-up': 'accordion-up var(--duration) var(--ease)',
+        'gradient-shift': 'gradient-shift 4s linear infinite',
       },
     },
   },

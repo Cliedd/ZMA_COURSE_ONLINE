@@ -5,6 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # SPA : toutes les routes servent index.html (React Router côté client).
 [[redirects]]

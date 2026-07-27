@@ -63,12 +63,12 @@ export const ChatPage = () => {
           <Lock className="h-8 w-8 text-destructive" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">Accès restreint</h2>
-          <p className="text-muted-foreground mt-1 text-sm">Vous devez être inscrit à ce cours pour accéder au chat.</p>
+          <h2 className="text-xl font-bold">Restricted access</h2>
+          <p className="text-muted-foreground mt-1 text-sm">You need to be enrolled in this course to access the chat.</p>
         </div>
         {course && (
           <Link to={`/checkout/${course.id}`}>
-            <Button>S'inscrire au cours</Button>
+            <Button>Enroll in course</Button>
           </Link>
         )}
       </div>
@@ -105,20 +105,20 @@ export const ChatPage = () => {
       <div className="flex items-center gap-4 border-b border-border px-6 py-3 glass shrink-0">
         <Link to={isTeacher ? '/teacher' : '/dashboard'}>
           <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground h-8 px-2.5">
-            <ChevronLeft className="h-4 w-4" /> Retour
+            <ChevronLeft className="h-4 w-4" /> Back
           </Button>
         </Link>
         <Separator orientation="vertical" className="h-4" />
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <MessageSquare className="h-4 w-4 text-primary shrink-0" />
-          <p className="text-sm font-semibold truncate">{course?.title ?? 'Chargement...'}</p>
+          <p className="text-sm font-semibold truncate">{course?.title ?? 'Loading...'}</p>
           {room && (
-            <Badge variant="outline" className="text-[10px] ml-1">Chat actif</Badge>
+            <Badge variant="outline" className="text-[10px] ml-1">Active chat</Badge>
           )}
         </div>
         {isTeacher && (
           <Badge variant="secondary" className="text-xs gap-1">
-            <Users className="h-3 w-3" /> Enseignant
+            <Users className="h-3 w-3" /> Teacher
           </Badge>
         )}
       </div>
@@ -135,11 +135,11 @@ export const ChatPage = () => {
               <MessageSquare className="h-6 w-6 text-muted-foreground" />
             </div>
             <div>
-              <p className="font-medium">Aucun chat disponible</p>
+              <p className="font-medium">No chat available</p>
               <p className="text-sm text-muted-foreground mt-1">
                 {isTeacher
-                  ? 'Créez le chat de ce cours pour démarrer la discussion.'
-                  : "L'enseignant n'a pas encore créé de chat pour ce cours."}
+                  ? 'Create the chat for this course to start the discussion.'
+                  : "The teacher hasn't created a chat for this course yet."}
               </p>
             </div>
             {isTeacher && course && (
@@ -151,7 +151,7 @@ export const ChatPage = () => {
                 }, { onSuccess: () => refetchRoom() })}
                 disabled={createOrGetRoom.isPending}
               >
-                {createOrGetRoom.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Créer le chat'}
+                {createOrGetRoom.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create chat'}
               </Button>
             )}
           </div>
@@ -160,8 +160,8 @@ export const ChatPage = () => {
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
               <MessageSquare className="h-6 w-6 text-primary" />
             </div>
-            <p className="font-medium">Aucun message pour l'instant</p>
-            <p className="text-sm text-muted-foreground">Soyez le premier à écrire !</p>
+            <p className="font-medium">No messages yet</p>
+            <p className="text-sm text-muted-foreground">Be the first to write something!</p>
           </div>
         ) : (
           messages.map((msg: ChatMessage) => {
@@ -182,7 +182,7 @@ export const ChatPage = () => {
                     isMe ? 'flex-row-reverse' : 'flex-row'
                   )}>
                     <span className="font-medium">{msg.senderName}</span>
-                    <span>{new Date(msg.sentAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span>{new Date(msg.sentAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <div className={cn(
                     'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
@@ -212,7 +212,7 @@ export const ChatPage = () => {
             <div className="flex-1 relative">
               <textarea
                 className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-12 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[44px] max-h-32"
-                placeholder="Écrivez un message..."
+                placeholder="Write a message..."
                 rows={1}
                 value={input}
                 onChange={e => setInput(e.target.value)}
@@ -233,7 +233,7 @@ export const ChatPage = () => {
             </div>
           </div>
           <p className="text-center text-[10px] text-muted-foreground mt-2">
-            Appuyez sur Entrée pour envoyer · Maj+Entrée pour aller à la ligne
+            Press Enter to send · Shift+Enter for a new line
           </p>
         </div>
       )}
