@@ -81,7 +81,7 @@ class AuthFlowIntegrationTest extends AbstractIntegrationTest {
         ResponseEntity<Map> response =
                 restTemplate.postForEntity("/api/v1/auth/login", login, Map.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).containsEntry("message", "Account is suspended");
     }
 
@@ -104,7 +104,7 @@ class AuthFlowIntegrationTest extends AbstractIntegrationTest {
         ResponseEntity<Map> refreshResponse =
                 restTemplate.postForEntity("/api/v1/auth/refresh", refreshRequest, Map.class);
 
-        assertThat(refreshResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(refreshResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(refreshResponse.getBody()).containsEntry("message", "Account is suspended");
 
         // The refresh token must have been revoked — a second attempt is now "invalid token", not "suspended".
