@@ -155,6 +155,14 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    @Transactional
+    public Course publishCourse(String id, boolean published, String callerEmail, String callerRole) {
+        Course course = getCourseById(id);
+        checkOwnership(course, callerEmail, callerRole);
+        course.setStatus(published ? CourseStatus.PUBLISHED : CourseStatus.DRAFT);
+        return courseRepository.save(course);
+    }
+
     // ── Publication workflow ─────────────────────────────────────────────────
 
     /** Teacher submits a DRAFT or REVISION_NEEDED course for admin review. */
