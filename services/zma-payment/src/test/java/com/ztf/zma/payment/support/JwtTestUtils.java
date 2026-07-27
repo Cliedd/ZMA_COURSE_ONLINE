@@ -9,15 +9,13 @@ import java.time.Instant;
 import java.util.Date;
 
 /**
- * Builds valid JWTs signed with the same secret configured in
- * src/test/resources/application.properties (jwt.secret), so tests exercise
- * the real JwtAuthFilter / JwtUtils rather than bypassing security.
+ * Builds valid JWTs signed with the same secret configured in application-test.properties.
  */
-public final class TestJwt {
+public final class JwtTestUtils {
 
     public static final String SECRET_BASE64 = "wTttfwluXbJn8FOJj8UAlR5DDbvzyjlaqdKuN811f5M=";
 
-    private TestJwt() {}
+    private JwtTestUtils() {}
 
     public static String token(String email, String role) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_BASE64));
