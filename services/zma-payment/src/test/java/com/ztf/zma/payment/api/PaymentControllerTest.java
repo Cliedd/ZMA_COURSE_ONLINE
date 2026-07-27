@@ -60,7 +60,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
 
     @Test
     void webhook_rejectsRequestWithoutSignature() throws Exception {
-        mockMvc.perform(post("/api/v1/payments/cinetpay-webhook")
+        mockMvc.perform(post("/api/v1/payments/webhook/cinetpay")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"cpay_trans_id\":\"ZMA-1\"}"))
                 .andExpect(status().isUnauthorized());
@@ -68,7 +68,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
 
     @Test
     void webhook_rejectsRequestWithInvalidSignature() throws Exception {
-        mockMvc.perform(post("/api/v1/payments/cinetpay-webhook")
+        mockMvc.perform(post("/api/v1/payments/webhook/cinetpay")
                         .header("x-cinetpay-hmac-sha256", "invalid-signature")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"cpay_trans_id\":\"ZMA-1\"}"))
@@ -89,7 +89,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         String payload = "{\"cpay_trans_id\":\"ZMA-TXN-GOODSIG\",\"cpay_result\":\"00\",\"cpay_user_id\":\"student-1\"}";
         String signature = hmacSignature(payload);
 
-        mockMvc.perform(post("/api/v1/payments/cinetpay-webhook")
+        mockMvc.perform(post("/api/v1/payments/webhook/cinetpay")
                         .header("x-cinetpay-hmac-sha256", signature)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
