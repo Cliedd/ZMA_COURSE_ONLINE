@@ -124,6 +124,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"courseId\":\"course-paid\"}"))
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.amount").value(15000.0))
                 .andExpect(jsonPath("$.status").value("PENDING"));
