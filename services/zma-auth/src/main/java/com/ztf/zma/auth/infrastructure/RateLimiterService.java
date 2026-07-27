@@ -51,6 +51,16 @@ public class RateLimiterService {
         fallbackStore.remove(key);
     }
 
+    public void clearAll() {
+        try {
+            var keys = redis.keys(PREFIX + "*");
+            if (keys != null && !keys.isEmpty()) {
+                redis.delete(keys);
+            }
+        } catch (Exception ignored) {}
+        fallbackStore.clear();
+    }
+
     public long getCount(String action, String identifier) {
         String key = PREFIX + action + ":" + identifier;
         try {

@@ -1,5 +1,6 @@
 package com.ztf.zma.auth.support;
 
+import com.ztf.zma.auth.infrastructure.RateLimiterService;
 import com.ztf.zma.auth.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,15 @@ public abstract class AbstractIntegrationTest {
     @Autowired(required = false)
     protected StringRedisTemplate redisTemplate;
 
+    @Autowired(required = false)
+    protected RateLimiterService rateLimiterService;
+
     @BeforeEach
     void cleanState() {
         userRepository.deleteAll();
+        if (rateLimiterService != null) {
+            rateLimiterService.clearAll();
+        }
         if (redisTemplate != null) {
             try {
                 var connectionFactory = redisTemplate.getConnectionFactory();
