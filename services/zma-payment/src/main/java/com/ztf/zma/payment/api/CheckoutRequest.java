@@ -1,9 +1,9 @@
 package com.ztf.zma.payment.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 public record CheckoutRequest(
-        @NotBlank String courseId,
-        /** Optional promo code for discount */
-        String promoCode
+        @JsonProperty("courseId") @NotBlank String courseId,
+        @JsonProperty("promoCode") String promoCode
 ) {}

@@ -1,10 +1,10 @@
 package com.ztf.zma.payment.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ztf.zma.payment.domain.Payment;
 import com.ztf.zma.payment.infrastructure.CatalogClient;
 import com.ztf.zma.payment.infrastructure.EnrollmentClient;
 import com.ztf.zma.payment.repository.PaymentRepository;
-import com.ztf.zma.payment.domain.Payment;
 import com.ztf.zma.payment.support.AbstractIntegrationTest;
 import com.ztf.zma.payment.support.JwtTestUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +21,16 @@ import java.util.HexFormat;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Real integration tests backed by H2 database (PostgreSQL mode).
@@ -62,17 +68,17 @@ class PaymentControllerTest extends AbstractIntegrationTest {
     void webhook_rejectsRequestWithoutSignature() throws Exception {
         mockMvc.perform(post("/api/v1/payments/webhook/cinetpay")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"cpay_trans_id\":\"ZMA-1\"}"))
-                .andExpect(status().isUnauthorized());
+                        .content("{\"cpm_trans_id\":\"ZMA-1\"}"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
     void webhook_rejectsRequestWithInvalidSignature() throws Exception {
         mockMvc.perform(post("/api/v1/payments/webhook/cinetpay")
-                        .header("x-cinetpay-hmac-sha256", "invalid-signature")
+                        .header("x-token", "invalid-signature")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"cpay_trans_id\":\"ZMA-1\"}"))
-                .andExpect(status().isUnauthorized());
+                        .content("{\"cpm_trans_id\":\"ZMA-1\"}"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -86,15 +92,15 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         p.setTransactionId("ZMA-TXN-GOODSIG");
         paymentRepository.save(p);
 
-        String payload = "{\"cpay_trans_id\":\"ZMA-TXN-GOODSIG\",\"cpay_result\":\"00\",\"cpay_user_id\":\"student-1\"}";
+        String payload = "{\"cpm_trans_id\":\"ZMA-TXN-GOODSIG\",\"cpm_result\":\"00\",\"cpm_user_id\":\"student-1\"}";
         String signature = hmacSignature(payload);
 
         mockMvc.perform(post("/api/v1/payments/webhook/cinetpay")
-                        .header("x-cinetpay-hmac-sha256", signature)
+                        .header("x-token", signature)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("OK"));
+                .andExpect(content().string("Payment confirmed"));
 
         Payment updated = paymentRepository.findByTransactionId("ZMA-TXN-GOODSIG").orElseThrow();
         assertThat(updated.getStatus()).isEqualTo("SUCCESS");
@@ -168,6 +174,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                         .header("Authorization", "Bearer " + studentToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"courseId\":\"course-refund\"}"))
+                .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         String paymentId = objectMapper.readTree(response).get("id").asText();
 
