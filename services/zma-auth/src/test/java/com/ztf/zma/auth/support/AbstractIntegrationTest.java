@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -78,6 +79,10 @@ public abstract class AbstractIntegrationTest {
 
     @BeforeEach
     void cleanState() {
+        if (restTemplate != null && restTemplate.getRestTemplate().getRequestFactory() instanceof SimpleClientHttpRequestFactory factory) {
+            factory.setOutputStreaming(false);
+        }
+
         userRepository.deleteAll();
         if (redisTemplate != null) {
             try {
