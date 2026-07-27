@@ -35,8 +35,7 @@ class AdminUserControllerIntegrationTest extends AbstractIntegrationTest {
         ResponseEntity<Map> response =
                 restTemplate.getForEntity("/api/v1/auth/admin/users", Map.class);
 
-        assertThat(response.getStatusCode()).isNotEqualTo(HttpStatus.OK);
-        assertThat(response.getStatusCode().is2xxSuccessful()).isFalse();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -76,14 +75,14 @@ class AdminUserControllerIntegrationTest extends AbstractIntegrationTest {
         HttpEntity<Void> nonAdminRequest = authenticated(studentToken);
         ResponseEntity<Map> forbidden = restTemplate.exchange(
                 "/api/v1/auth/admin/users/" + target.getId() + "/role?role=TEACHER",
-                HttpMethod.PATCH, nonAdminRequest, Map.class);
+                HttpMethod.PUT, nonAdminRequest, Map.class);
         assertThat(forbidden.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
         // Admin can change the role.
         HttpEntity<Void> adminRequest = authenticated(adminToken);
         ResponseEntity<UserSummary> ok = restTemplate.exchange(
                 "/api/v1/auth/admin/users/" + target.getId() + "/role?role=TEACHER",
-                HttpMethod.PATCH, adminRequest, UserSummary.class);
+                HttpMethod.PUT, adminRequest, UserSummary.class);
 
         assertThat(ok.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(ok.getBody()).isNotNull();
@@ -99,7 +98,7 @@ class AdminUserControllerIntegrationTest extends AbstractIntegrationTest {
         HttpEntity<Void> adminRequest = authenticated(adminToken);
         ResponseEntity<UserSummary> response = restTemplate.exchange(
                 "/api/v1/auth/admin/users/" + target.getId() + "/suspend?suspended=true",
-                HttpMethod.PATCH, adminRequest, UserSummary.class);
+                HttpMethod.PUT, adminRequest, UserSummary.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();

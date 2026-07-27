@@ -54,7 +54,7 @@ public class AdminUserController {
 
     @Operation(summary = "Change a user's role", description = "Requires ROLE_ADMIN. Allowed: STUDENT, TEACHER, ADMIN.")
     @Transactional
-    @PatchMapping("/{id}/role")
+    @RequestMapping(value = "/{id}/role", method = {RequestMethod.PATCH, RequestMethod.PUT})
     public UserSummary updateRole(
             @PathVariable String id,
             @RequestParam String role,
@@ -80,7 +80,7 @@ public class AdminUserController {
 
     @Operation(summary = "Suspend or reactivate a user", description = "Requires ROLE_ADMIN.")
     @Transactional
-    @PatchMapping("/{id}/suspend")
+    @RequestMapping(value = "/{id}/suspend", method = {RequestMethod.PATCH, RequestMethod.PUT})
     public UserSummary setSuspended(
             @PathVariable String id,
             @RequestParam boolean suspended,
