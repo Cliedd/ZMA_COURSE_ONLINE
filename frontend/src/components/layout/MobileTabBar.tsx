@@ -1,10 +1,10 @@
 import { useState, forwardRef, type ButtonHTMLAttributes } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Home, BookOpen, LayoutDashboard, LogIn, UserPlus, LogOut, ChevronRight, type LucideIcon } from 'lucide-react'
-import { useAuthStore } from '../../store/authStore'
+import { useAuthStore } from '@/entities/session'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet'
-import { cn } from '../../lib/utils'
+import { cn } from '@/lib/utils'
 
 type TabIcon = LucideIcon | React.ComponentType<{ className?: string; strokeWidth?: number }>
 
