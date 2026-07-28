@@ -17,3 +17,19 @@ export function useCheckout() {
 export function useConfirmPayment() {
   return useMutation({ mutationFn: (id: string) => paymentApi.confirm(id) })
 }
+
+export function useRevenueAnalytics(groupBy: 'day' | 'month' | 'year' = 'month') {
+  return useQuery({
+    queryKey: [...paymentKeys.all, 'analytics', 'revenue', groupBy],
+    queryFn: () => paymentApi.getRevenueAnalytics(groupBy),
+    staleTime: 60_000,
+  })
+}
+
+export function useTeacherPayouts() {
+  return useQuery({
+    queryKey: [...paymentKeys.all, 'analytics', 'teacher-payouts'],
+    queryFn: () => paymentApi.getTeacherPayouts(),
+    staleTime: 60_000,
+  })
+}
