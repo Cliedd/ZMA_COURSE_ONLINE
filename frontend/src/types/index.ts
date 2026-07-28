@@ -159,6 +159,8 @@ export interface ChatMessage {
   senderName: string;
   content: string;
   sentAt: string;
+  editedAt?: string | null;
+  deletedAt?: string | null;
 }
 
 export interface ChatRoomRequest {
