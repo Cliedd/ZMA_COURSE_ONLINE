@@ -70,7 +70,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'zma-auth',
-      partialize: (s) => ({ token: s.token, refreshToken: s.refreshToken, email: s.email, role: s.role }),
+      // refreshToken volontairement exclu : le garder hors localStorage limite
+      // la casse d'un XSS à l'access token (courte durée de vie), pas à une
+      // prise de session durable. Conséquence acceptée : un rechargement de
+      // page après expiration de l'access token déconnecte l'utilisateur.
+      partialize: (s) => ({ token: s.token, email: s.email, role: s.role }),
     },
   ),
 )
