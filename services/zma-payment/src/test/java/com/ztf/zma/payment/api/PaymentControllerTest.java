@@ -193,4 +193,78 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("REFUNDED"));
     }
+
+    @Test
+    void invoicePdf_isRejectedWhilePending() throws Exception {
+        when(catalogClient.getCourseInfo("course-invoice")).thenReturn(Map.of(
+                "id", "course-invoice", "title", "Saxophone", "level", "BEGINNER", "price", 4000,
+                "teacherEmail", "teacher-sax@zma.test"
+        ));
+        String token = JwtTestUtils.token("invoice-buyer@zma.test", "STUDENT");
+
+        String response = mockMvc.perform(post("/api/v1/payments/checkout")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"courseId\":\"course-invoice\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        String paymentId = objectMapper.readTree(response).get("id").asText();
+
+        mockMvc.perform(get("/api/v1/payments/{id}/invoice/pdf", paymentId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void invoicePdf_isRejectedForNonOwnerNonAdmin() throws Exception {
+        when(catalogClient.getCourseInfo("course-invoice2")).thenReturn(Map.of(
+                "id", "course-invoice2", "title", "Cello", "level", "BEGINNER", "price", 4000,
+                "teacherEmail", "teacher-cello@zma.test"
+        ));
+        String ownerToken = JwtTestUtils.token("owner2@zma.test", "STUDENT");
+        String response = mockMvc.perform(post("/api/v1/payments/checkout")
+                        .header("Authorization", "Bearer " + ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"courseId\":\"course-invoice2\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        String paymentId = objectMapper.readTree(response).get("id").asText();
+        mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
+                        .header("Authorization", "Bearer " + ownerToken))
+                .andExpect(status().isOk());
+
+        String strangerToken = JwtTestUtils.token("stranger@zma.test", "STUDENT");
+        mockMvc.perform(get("/api/v1/payments/{id}/invoice/pdf", paymentId)
+                        .header("Authorization", "Bearer " + strangerToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void invoicePdf_downloadsForOwnerAfterConfirmation() throws Exception {
+        when(catalogClient.getCourseInfo("course-invoice3")).thenReturn(Map.of(
+                "id", "course-invoice3", "title", "Flute", "level", "BEGINNER", "price", 4000,
+                "teacherEmail", "teacher-flute@zma.test"
+        ));
+        String token = JwtTestUtils.token("invoice-owner3@zma.test", "STUDENT");
+        String response = mockMvc.perform(post("/api/v1/payments/checkout")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"courseId\":\"course-invoice3\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        String paymentId = objectMapper.readTree(response).get("id").asText();
+        mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+
+        byte[] pdf = mockMvc.perform(get("/api/v1/payments/{id}/invoice/pdf", paymentId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header()
+                        .string("Content-Type", "application/pdf"))
+                .andReturn().getResponse().getContentAsByteArray();
+
+        assertThat(pdf).isNotEmpty();
+        assertThat(new String(pdf, 0, 5, StandardCharsets.US_ASCII)).isEqualTo("%PDF-");
+    }
 }

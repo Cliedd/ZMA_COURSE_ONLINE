@@ -49,12 +49,15 @@ public class PaymentService {
         double amount  = 0.0;
         String title   = "";
         String level   = "";
+        String teacherEmail = null;
         String currency = "XAF";
 
         if (courseInfo != null) {
             amount  = courseInfo.get("price")    != null ? ((Number) courseInfo.get("price")).doubleValue() : 0.0;
             title   = courseInfo.getOrDefault("title", "").toString();
             level   = courseInfo.getOrDefault("level", "").toString();
+            Object te = courseInfo.get("teacherEmail");
+            teacherEmail = (te != null && !te.toString().isBlank()) ? te.toString() : null;
         }
 
         // Free course → enroll directly, skip payment gateway
@@ -63,6 +66,7 @@ public class PaymentService {
             free.setStudentId(studentId);
             free.setCourseId(courseId);
             free.setCourseTitle(title);
+            free.setTeacherEmail(teacherEmail);
             free.setAmount(0.0);
             free.setCurrency(currency);
             free.setStatus("SUCCESS");
@@ -78,6 +82,7 @@ public class PaymentService {
         payment.setStudentId(studentId);
         payment.setCourseId(courseId);
         payment.setCourseTitle(title);
+        payment.setTeacherEmail(teacherEmail);
         payment.setAmount(amount);
         payment.setCurrency(currency);
         payment.setStatus("PENDING");

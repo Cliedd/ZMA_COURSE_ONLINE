@@ -3,6 +3,7 @@ package com.ztf.zma.payment.repository;
 import com.ztf.zma.payment.domain.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,4 +12,5 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     Optional<Payment> findByStudentIdAndCourseIdAndStatus(String studentId, String courseId, String status);
     Optional<Payment> findByTransactionId(String transactionId);
     List<Payment> findByCourseId(String courseId);
+    List<Payment> findByStatusAndConfirmedAtBetween(String status, Instant from, Instant to);
 }

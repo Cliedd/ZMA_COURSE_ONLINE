@@ -2,6 +2,7 @@ package com.ztf.zma.payment.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztf.zma.payment.domain.Payment;
+import com.ztf.zma.payment.service.InvoicePdfService;
 import com.ztf.zma.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,11 +10,14 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -30,13 +34,15 @@ public class PaymentController {
     private static final Logger log = LoggerFactory.getLogger(PaymentController.class);
 
     private final PaymentService paymentService;
+    private final InvoicePdfService invoicePdfService;
     private final ObjectMapper objectMapper;
 
     @Value("${cinetpay.webhook.secret}")
     private String webhookSecret;
 
-    public PaymentController(PaymentService paymentService, ObjectMapper objectMapper) {
+    public PaymentController(PaymentService paymentService, InvoicePdfService invoicePdfService, ObjectMapper objectMapper) {
         this.paymentService = paymentService;
+        this.invoicePdfService = invoicePdfService;
         this.objectMapper = objectMapper;
     }
 
@@ -83,6 +89,25 @@ public class PaymentController {
     @GetMapping("/{id}")
     public Payment getById(@PathVariable String id) {
         return paymentService.getById(id);
+    }
+
+    /** PDF receipt — the paying student or an ADMIN only, and only once the payment succeeded. */
+    @Operation(summary = "Download invoice PDF", description = "Owning student or ADMIN only; payment must be SUCCESS")
+    @GetMapping("/{id}/invoice/pdf")
+    public ResponseEntity<byte[]> invoicePdf(@PathVariable String id, Authentication auth) {
+        Payment payment = paymentService.getById(id);
+        boolean isOwner = payment.getStudentId().equals(auth.getName());
+        if (!isOwner && !"ADMIN".equals(getRole(auth))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your payment");
+        }
+        if (!"SUCCESS".equals(payment.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Invoice only available for successful payments");
+        }
+        byte[] pdf = invoicePdfService.generate(payment);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"invoice-" + payment.getId() + ".pdf\"")
+                .body(pdf);
     }
 
     /** Current user's payment history */

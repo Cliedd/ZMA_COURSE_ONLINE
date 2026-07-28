@@ -18,6 +18,10 @@ public class Payment {
 
     private String courseTitle;
 
+    /** Denormalized from zma-catalog at checkout time — avoids an N-call
+     *  fan-out to the catalog service when aggregating teacher payouts. */
+    private String teacherEmail;
+
     @Column(nullable = false)
     private Double amount;
 
@@ -55,6 +59,8 @@ public class Payment {
     public void setCourseId(String courseId) { this.courseId = courseId; }
     public String getCourseTitle() { return courseTitle; }
     public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
+    public String getTeacherEmail() { return teacherEmail; }
+    public void setTeacherEmail(String teacherEmail) { this.teacherEmail = teacherEmail; }
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
     public String getCurrency() { return currency; }

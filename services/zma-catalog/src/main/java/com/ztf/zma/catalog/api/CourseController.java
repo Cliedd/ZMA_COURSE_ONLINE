@@ -194,12 +194,13 @@ public class CourseController {
     public Map<String, Object> getCourseInternal(@PathVariable String id) {
         Course course = courseService.getCourseById(id);
         return Map.of(
-            "id",          course.getId(),
-            "title",       course.getTitle() != null ? course.getTitle() : "",
-            "level",       course.getLevel() != null ? course.getLevel() : "",
-            "price",       course.getPrice() != null ? course.getPrice() : 0.0,
-            "lessonCount", course.getLessonCount() != null ? course.getLessonCount() : 0,
-            "published",   course.getStatus() == com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED
+            "id",           course.getId(),
+            "title",        course.getTitle() != null ? course.getTitle() : "",
+            "level",        course.getLevel() != null ? course.getLevel() : "",
+            "price",        course.getPrice() != null ? course.getPrice() : 0.0,
+            "lessonCount",  course.getLessonCount() != null ? course.getLessonCount() : 0,
+            "published",    course.getStatus() == com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED,
+            "teacherEmail", course.getTeacherEmail() != null ? course.getTeacherEmail() : ""
         );
     }
 
