@@ -85,7 +85,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void deleteMessage(String messageId, String senderEmail, String role) {
+    public ChatMessage deleteMessage(String messageId, String senderEmail, String role) {
         ChatMessage msg = messageRepository.findById(messageId)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
         // Sender or admin/teacher can delete
@@ -95,6 +95,6 @@ public class ChatService {
         }
         msg.setDeletedAt(LocalDateTime.now());
         msg.setContent("[deleted]");
-        messageRepository.save(msg);
+        return messageRepository.save(msg);
     }
 }

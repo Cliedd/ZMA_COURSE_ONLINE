@@ -52,6 +52,9 @@ public class SecurityConfig {
                 // Public read: community posts and comments
                 .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
+                // WebSocket handshake — auth happens on the STOMP CONNECT frame,
+                // not this HTTP upgrade request (see ChatChannelInterceptor)
+                .requestMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

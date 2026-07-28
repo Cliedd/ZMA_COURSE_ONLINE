@@ -6,6 +6,7 @@ import com.ztf.zma.community.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,11 @@ import java.util.Map;
 public class ChatController {
 
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ChatController(ChatService chatService) {
+    public ChatController(ChatService chatService, SimpMessagingTemplate messagingTemplate) {
         this.chatService = chatService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /** Create or retrieve the chat room for a course */
@@ -55,12 +58,14 @@ public class ChatController {
             @PathVariable String roomId,
             @RequestBody Map<String, String> body,
             Authentication auth) {
-        return chatService.sendMessage(
+        ChatMessage saved = chatService.sendMessage(
                 roomId,
                 auth.getName(),
                 body.getOrDefault("senderName", auth.getName()),
                 body.get("content")
         );
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId, saved);
+        return saved;
     }
 
     /** Paginated messages — page=0, size=50 default */
@@ -86,7 +91,9 @@ public class ChatController {
             @PathVariable String messageId,
             @RequestBody Map<String, String> body,
             Authentication auth) {
-        return chatService.editMessage(messageId, auth.getName(), body.get("content"));
+        ChatMessage edited = chatService.editMessage(messageId, auth.getName(), body.get("content"));
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId, edited);
+        return edited;
     }
 
     /** Soft-delete a message (sender, or ADMIN/TEACHER) */
@@ -97,7 +104,8 @@ public class ChatController {
             @PathVariable String roomId,
             @PathVariable String messageId,
             Authentication auth) {
-        chatService.deleteMessage(messageId, auth.getName(), getRole(auth));
+        ChatMessage deleted = chatService.deleteMessage(messageId, auth.getName(), getRole(auth));
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId, deleted);
     }
 
     private String getRole(Authentication auth) {
