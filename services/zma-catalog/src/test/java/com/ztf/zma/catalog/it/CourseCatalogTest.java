@@ -186,4 +186,110 @@ class CourseCatalogTest {
                 url("/api/v1/courses/admin/all"), HttpMethod.GET, req, Map.class);
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    // ── 5. Full-text search (title / description / shortDescription) ───────
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> searchContent(String q) {
+        ResponseEntity<Map> resp = rest.getForEntity(
+                url("/api/v1/courses?q=" + q + "&page=0&size=50"), Map.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return (List<Map<String, Object>>) resp.getBody().get("content");
+    }
+
+    @Test
+    void searchMatchesOnTitleCaseInsensitively() {
+        Map<String, Object> created = createCourse("search.teacher@zma.test",
+                "Improvisation Jazz Avancée", "Jazz", "Master");
+        publish((String) created.get("id"), "search.teacher@zma.test");
+
+        List<Map<String, Object>> results = searchContent("improvisation");
+        assertThat(results).extracting(c -> c.get("title"))
+                .contains("Improvisation Jazz Avancée");
+    }
+
+    @Test
+    void searchMatchesOnDescription() {
+        Map<String, Object> body = courseBody("Cours Harmonie Contemporaine", "Musique", "Licence");
+        body.put("description", "Une exploration unique de la polytonalité expérimentale.");
+        HttpEntity<Map<String, Object>> req = new HttpEntity<>(body, authHeaders("search.teacher2@zma.test", "TEACHER"));
+        ResponseEntity<Map> createResp = rest.postForEntity(url("/api/v1/courses"), req, Map.class);
+        assertThat(createResp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        publish((String) createResp.getBody().get("id"), "search.teacher2@zma.test");
+
+        List<Map<String, Object>> results = searchContent("polytonalité");
+        assertThat(results).extracting(c -> c.get("title"))
+                .contains("Cours Harmonie Contemporaine");
+    }
+
+    @Test
+    void searchOnlyReturnsPublishedCourses() {
+        // Not published — must not appear in search results.
+        createCourse("search.teacher3@zma.test", "Cours Brouillon Introuvable Xyz", "Musique", "Licence");
+
+        List<Map<String, Object>> results = searchContent("IntrouvableXyz");
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    void blankQueryFallsBackToUnfilteredListing() {
+        Map<String, Object> created = createCourse("search.teacher4@zma.test",
+                "Cours Requête Vide", "Musique", "Licence");
+        publish((String) created.get("id"), "search.teacher4@zma.test");
+
+        ResponseEntity<Map> resp = rest.getForEntity(
+                url("/api/v1/courses?q=&page=0&size=50"), Map.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) resp.getBody().get("content");
+        assertThat(content).extracting(c -> c.get("title")).contains("Cours Requête Vide");
+    }
+
+    // ── 6. Preview lessons ───────────────────────────────────────────────────
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void previewLessonsReturnsFirstLessonOfEachSection() {
+        Map<String, Object> body = courseBody("Cours Piano Complet", "Musique", "Licence");
+        body.put("curriculumJson", "[{\"id\":\"s1\",\"title\":\"Bases\",\"lessons\":[\"Posture et position des mains\",\"Gammes majeures\"]},"
+                + "{\"id\":\"s2\",\"title\":\"Avancé\",\"lessons\":[\"Improvisation jazz\",\"Composition\"]}]");
+        HttpEntity<Map<String, Object>> req = new HttpEntity<>(body, authHeaders("preview.teacher@zma.test", "TEACHER"));
+        ResponseEntity<Map> createResp = rest.postForEntity(url("/api/v1/courses"), req, Map.class);
+        assertThat(createResp.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        String id = (String) createResp.getBody().get("id");
+
+        ResponseEntity<List> resp = rest.getForEntity(url("/api/v1/courses/" + id + "/preview-lessons"), List.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<Map<String, String>> lessons = resp.getBody();
+        assertThat(lessons).hasSize(2);
+        assertThat(lessons.get(0).get("sectionTitle")).isEqualTo("Bases");
+        assertThat(lessons.get(0).get("lessonTitle")).isEqualTo("Posture et position des mains");
+        assertThat(lessons.get(1).get("sectionTitle")).isEqualTo("Avancé");
+        assertThat(lessons.get(1).get("lessonTitle")).isEqualTo("Improvisation jazz");
+    }
+
+    @Test
+    void previewLessonsReturnsEmptyListWhenNoCurriculum() {
+        Map<String, Object> created = createCourse("preview.teacher2@zma.test", "Cours Sans Curriculum", "Musique", "Licence");
+        String id = (String) created.get("id");
+
+        ResponseEntity<List> resp = rest.getForEntity(url("/api/v1/courses/" + id + "/preview-lessons"), List.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resp.getBody()).isEmpty();
+    }
+
+    @Test
+    void previewLessonsIsPublicNoJwtRequired() {
+        Map<String, Object> created = createCourse("preview.teacher3@zma.test", "Cours Public Preview", "Musique", "Licence");
+        String id = (String) created.get("id");
+
+        // No Authorization header at all.
+        ResponseEntity<List> resp = rest.getForEntity(url("/api/v1/courses/" + id + "/preview-lessons"), List.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void previewLessonsReturns404ForUnknownCourse() {
+        ResponseEntity<Map> resp = rest.getForEntity(url("/api/v1/courses/does-not-exist/preview-lessons"), Map.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }

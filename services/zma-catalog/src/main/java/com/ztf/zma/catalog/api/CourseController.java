@@ -100,6 +100,14 @@ public class CourseController {
         );
     }
 
+    // ── Preview lessons ──────────────────────────────────────────────────────
+
+    @Operation(summary = "Leçons gratuites en aperçu", description = "Retourne la première leçon de chaque section, consultable avant achat. Public, sans JWT.")
+    @GetMapping("/{id}/preview-lessons")
+    public List<Map<String, String>> getPreviewLessons(@PathVariable String id) {
+        return courseService.getPreviewLessons(id);
+    }
+
     // ── Reviews ───────────────────────────────────────────────────────────────
 
     @GetMapping("/{id}/reviews")

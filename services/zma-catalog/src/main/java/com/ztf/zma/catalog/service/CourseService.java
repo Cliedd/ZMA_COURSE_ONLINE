@@ -1,5 +1,7 @@
 package com.ztf.zma.catalog.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztf.zma.catalog.api.CourseRequest;
 import com.ztf.zma.catalog.domain.Course;
 import com.ztf.zma.catalog.domain.CourseStatus;
@@ -14,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.text.Normalizer;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,6 +26,7 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final ReviewRepository reviewRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CourseService(CourseRepository courseRepository,
                          ReviewRepository reviewRepository) {
@@ -73,6 +77,50 @@ public class CourseService {
 
     public List<Course> getCoursesByTeacherEmail(String email) {
         return courseRepository.findByTeacherEmail(email);
+    }
+
+    // ── Preview lessons ──────────────────────────────────────────────────────
+
+    /**
+     * Returns the free-to-preview lesson titles for a course, before purchase.
+     *
+     * The domain model has no explicit "free lesson" flag on curriculum entries
+     * (curriculumJson lessons are plain strings), so the chosen convention is:
+     * the first lesson title of each section is free to preview. This mirrors
+     * the common "preview the intro of every module" pattern used by course
+     * marketplaces and requires no schema change.
+     */
+    public List<Map<String, String>> getPreviewLessons(String courseId) {
+        Course course = getCourseById(courseId); // 404 if unknown/deleted
+        List<Map<String, String>> preview = new ArrayList<>();
+        String json = course.getCurriculumJson();
+        if (!StringUtils.hasText(json)) {
+            return preview;
+        }
+        try {
+            JsonNode sections = objectMapper.readTree(json);
+            if (!sections.isArray()) return preview;
+            for (JsonNode section : sections) {
+                String sectionTitle = section.path("title").asText("");
+                JsonNode lessons = section.path("lessons");
+                if (lessons.isArray() && !lessons.isEmpty()) {
+                    JsonNode firstLesson = lessons.get(0);
+                    String lessonTitle = firstLesson.isTextual()
+                        ? firstLesson.asText()
+                        : firstLesson.path("title").asText("");
+                    if (StringUtils.hasText(lessonTitle)) {
+                        Map<String, String> entry = new java.util.LinkedHashMap<>();
+                        entry.put("sectionTitle", sectionTitle);
+                        entry.put("lessonTitle", lessonTitle);
+                        preview.add(entry);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Malformed curriculumJson — treat as no preview lessons rather than failing the request.
+            return new ArrayList<>();
+        }
+        return preview;
     }
 
     // ── Stats ─────────────────────────────────────────────────────────────────

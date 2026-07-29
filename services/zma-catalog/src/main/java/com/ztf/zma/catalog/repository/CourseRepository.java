@@ -28,13 +28,14 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     Page<Course> findByStatusAndDepartmentIgnoreCaseAndLevelIgnoreCaseAndDeletedAtIsNull(
         CourseStatus status, String department, String level, Pageable pageable);
 
-    // Full-text search on title + short description (published + not deleted)
+    // Full-text search on title + short description + description (published + not deleted)
     @Query("""
         SELECT c FROM Course c
         WHERE c.status = com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED
           AND c.deletedAt IS NULL
           AND (LOWER(c.title) LIKE LOWER(CONCAT('%',:q,'%'))
-            OR LOWER(c.shortDescription) LIKE LOWER(CONCAT('%',:q,'%')))
+            OR LOWER(c.shortDescription) LIKE LOWER(CONCAT('%',:q,'%'))
+            OR LOWER(c.description) LIKE LOWER(CONCAT('%',:q,'%')))
         """)
     Page<Course> search(@Param("q") String query, Pageable pageable);
 
