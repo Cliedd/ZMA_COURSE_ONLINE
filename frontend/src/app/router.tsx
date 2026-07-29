@@ -33,6 +33,7 @@ const CourseWizardPage = lazy(() => import('@/pages/teacher-course-new').then((m
 const AdminOverviewPage = lazy(() => import('@/pages/admin-overview').then((m) => ({ default: m.AdminOverviewPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin-users').then((m) => ({ default: m.AdminUsersPage })))
 const AdminFinancePage = lazy(() => import('@/pages/admin-finance').then((m) => ({ default: m.AdminFinancePage })))
+const CertificateVerifyPage = lazy(() => import('@/pages/certificate-verify').then((m) => ({ default: m.CertificateVerifyPage })))
 
 /** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
  *  TeacherDashboard et CourseWizard (hérités, réécrits au chantier 3) pointent encore
@@ -74,6 +75,8 @@ export function AppRoutes() {
             <Route path="/course/:slug" element={<CourseDetailPage />} />
             <Route path="/teachers" element={<TeachersPage />} />
             <Route path="/teachers/:username" element={<TeacherProfilePage />} />
+            <Route path="/certificates/verify" element={<CertificateVerifyPage />} />
+            <Route path="/certificates/verify/:certNumber" element={<CertificateVerifyPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 

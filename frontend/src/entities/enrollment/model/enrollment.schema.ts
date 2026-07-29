@@ -24,3 +24,12 @@ export const enrollCheckSchema = z.object({
   enrolled: z.boolean().nullish().transform((v) => v ?? false),
   enrollmentId: z.string().nullable().transform((v) => v ?? null),
 })
+
+/** Réponse publique de vérification — miroir de CertificateVerificationResponse (backend). */
+export const certificateVerificationSchema = z.object({
+  valid: z.boolean().nullish().transform((v) => v ?? false),
+  certNumber: z.string().nullish().transform((v) => v ?? ''),
+  courseTitle: z.string().nullish().transform((v) => v ?? ''),
+  issuedAt: z.string().nullable().transform((v) => v ?? null),
+})
+export type CertificateVerification = z.infer<typeof certificateVerificationSchema>

@@ -6,6 +6,7 @@ export const enrollmentKeys = {
   mine: () => [...enrollmentKeys.all, 'mine'] as const,
   check: (courseId: string) => [...enrollmentKeys.all, 'check', courseId] as const,
   certificates: () => ['certificates', 'mine'] as const,
+  verify: (certNumber: string) => ['certificates', 'verify', certNumber] as const,
 }
 
 export function useMyEnrollments() {
@@ -22,6 +23,16 @@ export function useEnrollmentCheck(courseId: string | undefined) {
 
 export function useMyCertificates() {
   return useQuery({ queryKey: enrollmentKeys.certificates(), queryFn: enrollmentApi.getCertificates, staleTime: 60_000 })
+}
+
+/** Vérification publique d'un certificat — aucune session requise. */
+export function useVerifyCertificate(certNumber: string | undefined) {
+  return useQuery({
+    queryKey: enrollmentKeys.verify(certNumber ?? ''),
+    queryFn: () => enrollmentApi.verifyCertificate(certNumber as string),
+    enabled: Boolean(certNumber),
+    retry: false,
+  })
 }
 
 /** Met à jour la progression et invalide les inscriptions. */

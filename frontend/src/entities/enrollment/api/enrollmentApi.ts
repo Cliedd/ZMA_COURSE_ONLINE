@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { get, patch } from '@/shared/api/http'
-import { enrollmentSchema, certificateSchema, enrollCheckSchema } from '../model/enrollment.schema'
-import type { Enrollment, Certificate } from '../model/enrollment.schema'
+import { enrollmentSchema, certificateSchema, enrollCheckSchema, certificateVerificationSchema } from '../model/enrollment.schema'
+import type { Enrollment, Certificate, CertificateVerification } from '../model/enrollment.schema'
 
 export const enrollmentApi = {
   getMine: (): Promise<Enrollment[]> =>
@@ -18,4 +18,8 @@ export const enrollmentApi = {
 
   getCertificates: (): Promise<Certificate[]> =>
     get('/certificates/me', undefined, z.array(certificateSchema)),
+
+  /** Public — aucune session requise. 404 si le numéro est inconnu (voir CertificateController). */
+  verifyCertificate: (certNumber: string): Promise<CertificateVerification> =>
+    get(`/certificates/verify/${encodeURIComponent(certNumber)}`, undefined, certificateVerificationSchema),
 }
