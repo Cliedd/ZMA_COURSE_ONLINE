@@ -150,4 +150,9 @@ public class EnrollmentService {
     public List<Certificate> getCertificatesByStudent(String studentId) {
         return certificateRepository.findByStudentId(studentId);
     }
+
+    public Certificate getCertificateByCertNumber(String certNumber) {
+        return certificateRepository.findByCertNumber(certNumber)
+                .orElseThrow(() -> new RuntimeException("Certificate not found"));
+    }
 }

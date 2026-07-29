@@ -48,6 +48,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Internal endpoint called by zma-payment — network-isolated
                 .requestMatchers("/api/v1/enrollments/internal/**").permitAll()
+                // Public certificate verification — meant to be shared with third parties (e.g. employers)
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/certificates/verify/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
             )
