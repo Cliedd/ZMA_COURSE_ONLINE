@@ -2,6 +2,8 @@ package com.ztf.zma.users.api;
 
 import com.ztf.zma.users.domain.UserPreferences;
 import com.ztf.zma.users.domain.UserProfile;
+import com.ztf.zma.users.infrastructure.CatalogClient;
+import com.ztf.zma.users.infrastructure.MediaClient;
 import com.ztf.zma.users.repository.UserPreferencesRepository;
 import com.ztf.zma.users.repository.UserProfileRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,11 +25,17 @@ public class UserProfileController {
 
     private final UserProfileRepository     profileRepository;
     private final UserPreferencesRepository preferencesRepository;
+    private final MediaClient               mediaClient;
+    private final CatalogClient             catalogClient;
 
     public UserProfileController(UserProfileRepository profileRepository,
-                                  UserPreferencesRepository preferencesRepository) {
+                                  UserPreferencesRepository preferencesRepository,
+                                  MediaClient mediaClient,
+                                  CatalogClient catalogClient) {
         this.profileRepository     = profileRepository;
         this.preferencesRepository = preferencesRepository;
+        this.mediaClient           = mediaClient;
+        this.catalogClient         = catalogClient;
     }
 
     // ── Internal (called by zma-auth on register) ─────────────────────────────
@@ -70,19 +78,11 @@ public class UserProfileController {
             @Valid @RequestBody UpdateProfileRequest request) {
 
         UserProfile profile = findActiveByEmail(email);
-
-        if (StringUtils.hasText(request.firstName()))         profile.setFirstName(request.firstName());
-        if (StringUtils.hasText(request.lastName()))          profile.setLastName(request.lastName());
-        if (request.bio() != null)                            profile.setBio(request.bio());
-        if (StringUtils.hasText(request.avatarUrl()))         profile.setAvatarUrl(request.avatarUrl());
-        if (StringUtils.hasText(request.phoneNumber()))       profile.setPhoneNumber(request.phoneNumber());
-        if (StringUtils.hasText(request.preferredLanguage())) profile.setPreferredLanguage(request.preferredLanguage());
-
-        profileRepository.save(profile);
+        applyProfileUpdate(profile, request);
         return ResponseEntity.ok(ProfileResponse.from(profile));
     }
 
-    @Operation(summary = "Update my avatar")
+    @Operation(summary = "Update my avatar (legacy)", description = "Prefer POST /me/avatar.")
     @Transactional
     @PatchMapping("/me/avatar")
     public ResponseEntity<ProfileResponse> updateAvatar(
@@ -92,6 +92,40 @@ public class UserProfileController {
         UserProfile profile = findActiveByEmail(email);
         profile.setAvatarUrl(avatarUrl);
         profileRepository.save(profile);
+        return ResponseEntity.ok(ProfileResponse.from(profile));
+    }
+
+    /**
+     * Set the current user's avatar from either a mediaId (a zma-media upload that
+     * has already gone through presign -> upload -> confirm and is READY — its
+     * confirmed download URL is resolved here and stored) or a direct avatarUrl.
+     * Reuses the same update path as PUT /me rather than duplicating persistence logic.
+     */
+    @Operation(summary = "Set my avatar", description = "Accepts either mediaId (a confirmed zma-media upload) or a direct avatarUrl.")
+    @Transactional
+    @PostMapping("/me/avatar")
+    public ResponseEntity<ProfileResponse> setMyAvatar(
+            @AuthenticationPrincipal String email,
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody AvatarUpdateRequest request) {
+
+        UserProfile profile = findActiveByEmail(email);
+
+        String resolvedAvatarUrl = request.avatarUrl();
+        if (!StringUtils.hasText(resolvedAvatarUrl)) {
+            if (!StringUtils.hasText(request.mediaId())) {
+                throw new RuntimeException("Either mediaId or avatarUrl is required");
+            }
+            String bearerToken = authorizationHeader.startsWith("Bearer ")
+                    ? authorizationHeader.substring(7) : authorizationHeader;
+            resolvedAvatarUrl = mediaClient.resolveAvatarUrl(request.mediaId(), bearerToken);
+            if (!StringUtils.hasText(resolvedAvatarUrl)) {
+                throw new RuntimeException("Could not resolve avatar from mediaId");
+            }
+        }
+
+        applyProfileUpdate(profile, new UpdateProfileRequest(
+                null, null, null, resolvedAvatarUrl, null, null));
         return ResponseEntity.ok(ProfileResponse.from(profile));
     }
 
@@ -146,6 +180,25 @@ public class UserProfileController {
         return preferencesRepository.save(prefs);
     }
 
+    // ── Public ────────────────────────────────────────────────────────────────
+
+    /**
+     * Public-safe view of a teacher's profile (no auth required — see SecurityConfig).
+     * 404s for unknown ids and for ids that exist but aren't a TEACHER, since from the
+     * caller's perspective "not a teacher" and "no such teacher" are indistinguishable.
+     */
+    @Operation(summary = "Get a teacher's public profile", description = "Public endpoint — no email/phone exposed.")
+    @GetMapping("/teachers/{id}/public-profile")
+    public ResponseEntity<TeacherPublicProfileResponse> getTeacherPublicProfile(@PathVariable String id) {
+        UserProfile profile = profileRepository.findById(id)
+            .filter(p -> !p.isDeleted())
+            .filter(p -> "TEACHER".equals(p.getRole()))
+            .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        int courseCount = catalogClient.countCoursesByTeacherEmail(profile.getEmail());
+        return ResponseEntity.ok(TeacherPublicProfileResponse.from(profile, courseCount));
+    }
+
     // ── By ID (inter-service / public) ────────────────────────────────────────
 
     @Operation(summary = "Get a profile by id", description = "Inter-service / authenticated lookup.")
@@ -163,6 +216,17 @@ public class UserProfileController {
         return profileRepository.findByEmail(email)
             .filter(p -> !p.isDeleted())
             .orElseThrow(() -> new RuntimeException("Profile not found"));
+    }
+
+    /** Shared PATCH-semantics apply logic used by both PUT /me and POST /me/avatar. */
+    private void applyProfileUpdate(UserProfile profile, UpdateProfileRequest request) {
+        if (StringUtils.hasText(request.firstName()))         profile.setFirstName(request.firstName());
+        if (StringUtils.hasText(request.lastName()))          profile.setLastName(request.lastName());
+        if (request.bio() != null)                            profile.setBio(request.bio());
+        if (StringUtils.hasText(request.avatarUrl()))         profile.setAvatarUrl(request.avatarUrl());
+        if (StringUtils.hasText(request.phoneNumber()))       profile.setPhoneNumber(request.phoneNumber());
+        if (StringUtils.hasText(request.preferredLanguage())) profile.setPreferredLanguage(request.preferredLanguage());
+        profileRepository.save(profile);
     }
 
     private UserPreferences defaultPrefs(String userId) {

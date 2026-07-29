@@ -29,6 +29,13 @@ public class Media {
     /** Optional: associate media to a specific lesson */
     private String lessonId;
 
+    /**
+     * Optional upload purpose hint, e.g. "AVATAR". When set to "AVATAR" and the
+     * content type is a resizable image, the direct-upload flow will resize and
+     * re-encode the file (see ImageProcessingService) before marking it READY.
+     */
+    private String purpose;
+
     private Instant uploadedAt;
 
     /** Soft-delete timestamp */
@@ -60,6 +67,8 @@ public class Media {
     public void setCourseId(String courseId) { this.courseId = courseId; }
     public String getLessonId() { return lessonId; }
     public void setLessonId(String lessonId) { this.lessonId = lessonId; }
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
     public Instant getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(Instant uploadedAt) { this.uploadedAt = uploadedAt; }
     public Instant getDeletedAt() { return deletedAt; }

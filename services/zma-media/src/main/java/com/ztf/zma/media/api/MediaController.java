@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,10 @@ public class MediaController {
 
     private final MediaService mediaService;
 
+    /** Base directory for locally stored files. Configurable so tests don't need to write to /app. */
+    @Value("${storage.local.upload-dir:/app/uploads}")
+    private String uploadDir;
+
     public MediaController(MediaService mediaService) {
         this.mediaService = mediaService;
     }
@@ -47,6 +52,7 @@ public class MediaController {
                 request.fileName(),
                 request.contentType(),
                 request.sizeBytes(),
+                request.purpose(),
                 auth.getName());
     }
 
@@ -69,10 +75,13 @@ public class MediaController {
             @RequestParam("file") MultipartFile file,
             Authentication auth) throws IOException {
         Media media = mediaService.getByIdForUser(id, auth.getName(), getRole(auth));
-        Path dir  = Paths.get("/app/uploads", id);
+        Path dir  = Paths.get(uploadDir, id);
         Files.createDirectories(dir);
         Path dest = dir.resolve(media.getFileName());
         file.transferTo(dest.toFile());
+        // Avatar-purpose images get resized/re-encoded here; everything else
+        // (course videos, PDFs, non-avatar images, ...) is left untouched.
+        mediaService.processAvatarUploadIfApplicable(media, dest);
         return mediaService.confirmUpload(id, auth.getName(), getRole(auth));
     }
 
@@ -91,7 +100,7 @@ public class MediaController {
         if (parts.length < 3 || !"local".equals(parts[0])) {
             return ResponseEntity.notFound().build();
         }
-        Path filePath = Paths.get("/app/uploads", parts[1], parts[2]);
+        Path filePath = Paths.get(uploadDir, parts[1], parts[2]);
         Resource resource = new FileSystemResource(filePath);
         if (!resource.exists()) {
             return ResponseEntity.notFound().build();
@@ -169,5 +178,7 @@ public class MediaController {
 record MediaUploadRequest(
         @NotBlank String fileName,
         @NotBlank String contentType,
-        @Positive long sizeBytes
+        @Positive long sizeBytes,
+        /** Optional upload purpose hint, e.g. "AVATAR" — see MediaService#PURPOSE_AVATAR. */
+        String purpose
 ) {}

@@ -4,10 +4,15 @@ import com.ztf.zma.media.domain.Media;
 import com.ztf.zma.media.repository.MediaRepository;
 import com.ztf.zma.media.storage.PresignedUrlResponse;
 import com.ztf.zma.media.storage.StorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +20,11 @@ import java.util.UUID;
 
 @Service
 public class MediaService {
+
+    private static final Logger log = LoggerFactory.getLogger(MediaService.class);
+
+    /** Purpose value that triggers avatar resize/re-encode on direct upload. */
+    public static final String PURPOSE_AVATAR = "AVATAR";
 
     /** Allowed MIME types */
     private static final Set<String> ALLOWED_TYPES = Set.of(
@@ -30,15 +40,24 @@ public class MediaService {
 
     private final MediaRepository mediaRepository;
     private final StorageService  storageService;
+    private final ImageProcessingService imageProcessingService;
 
-    public MediaService(MediaRepository mediaRepository, StorageService storageService) {
+    public MediaService(MediaRepository mediaRepository, StorageService storageService,
+                         ImageProcessingService imageProcessingService) {
         this.mediaRepository = mediaRepository;
         this.storageService  = storageService;
+        this.imageProcessingService = imageProcessingService;
     }
 
     @Transactional
     public PresignUrlWithId requestUpload(String fileName, String contentType,
                                           long sizeBytes, String uploadedBy) {
+        return requestUpload(fileName, contentType, sizeBytes, null, uploadedBy);
+    }
+
+    @Transactional
+    public PresignUrlWithId requestUpload(String fileName, String contentType,
+                                          long sizeBytes, String purpose, String uploadedBy) {
         // Validate file type
         if (!ALLOWED_TYPES.contains(contentType.toLowerCase())) {
             throw new RuntimeException("File type not allowed: " + contentType);
@@ -62,10 +81,41 @@ public class MediaService {
         media.setS3Key(presigned.s3Key());
         media.setStatus("UPLOADING");
         media.setUploadedBy(uploadedBy);
+        media.setPurpose(purpose);
         Media saved = mediaRepository.save(media);
 
         return new PresignUrlWithId(saved.getId(), presigned.uploadUrl(),
                 presigned.s3Key(), presigned.expiresInSeconds());
+    }
+
+    /**
+     * If this media item was requested with purpose="AVATAR" and holds a
+     * resizable image type, resize it to a max 512x512 bounding box and
+     * re-encode as optimized JPEG in place, updating size/contentType.
+     * No-op for every other upload (course videos/PDFs/etc.) so the existing
+     * non-image upload path is completely unaffected.
+     *
+     * Only applicable to the local-storage direct-upload path, where the
+     * server actually receives the file bytes; R2 uploads go straight from
+     * the client to object storage via presigned PUT and never pass through
+     * this service, so this hook is not invoked for storage.type=r2 today.
+     */
+    @Transactional
+    public void processAvatarUploadIfApplicable(Media media, Path localFilePath) {
+        if (!PURPOSE_AVATAR.equalsIgnoreCase(media.getPurpose())) return;
+        if (!imageProcessingService.isResizable(media.getContentType())) return;
+
+        try {
+            byte[] original = Files.readAllBytes(localFilePath);
+            ImageProcessingService.ProcessedImage processed = imageProcessingService.resizeForAvatar(original);
+            Files.write(localFilePath, processed.bytes());
+            media.setSize((long) processed.bytes().length);
+            media.setContentType(processed.contentType());
+            mediaRepository.save(media);
+        } catch (IOException ex) {
+            // Don't fail the upload just because resize failed — keep the original file.
+            log.warn("Avatar image resize failed for media {}: {}", media.getId(), ex.getMessage());
+        }
     }
 
     @Transactional
