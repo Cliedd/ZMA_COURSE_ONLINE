@@ -64,7 +64,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String token        = jwtUtils.generateToken(user.getEmail(), user.getRole());
         String refreshToken = redisTokenService.createRefreshToken(user.getEmail());
 
-        response.sendRedirect(frontendUrl + "/dashboard?token=" + token
+        // Dedicated callback route (not /dashboard directly): /dashboard is
+        // wrapped in RequireAuth, which evaluates isAuthenticated() on the
+        // very first render — before the frontend has had a chance to read
+        // and store this token — and would bounce to /auth/login first. The
+        // callback route sets the session, then navigates to /dashboard only
+        // once isAuthenticated() is already true.
+        response.sendRedirect(frontendUrl + "/auth/callback?token=" + token
                               + "&refreshToken=" + refreshToken);
     }
 }

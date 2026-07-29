@@ -20,8 +20,10 @@ interface AuthState {
 
   /** Enregistre une session complète — à privilégier sur setToken. */
   setSession: (response: AuthResponse) => void
-  /** Enregistre un JWT seul. Utilisé par la redirection OAuth2, qui ne fournit que ?token=. */
+  /** Enregistre un JWT seul, sans refreshToken. Ne pas utiliser pour la redirection OAuth2 (perd le refresh). */
   setToken: (token: string) => void
+  /** Redirection OAuth2 : le callback fournit token + refreshToken, pas le AuthResponse complet. */
+  setOAuthTokens: (token: string, refreshToken: string) => void
   logout: () => void
   isAuthenticated: () => boolean
 }
@@ -51,6 +53,11 @@ export const useAuthStore = create<AuthState>()(
       setToken: (token: string) => {
         const decoded = decodeToken(token)
         set({ token, email: decoded?.email ?? null, role: decoded?.role ?? 'STUDENT' })
+      },
+
+      setOAuthTokens: (token: string, refreshToken: string) => {
+        const decoded = decodeToken(token)
+        set({ token, refreshToken, email: decoded?.email ?? null, role: decoded?.role ?? 'STUDENT' })
       },
 
       logout: () => set({ token: null, refreshToken: null, email: null, role: null }),

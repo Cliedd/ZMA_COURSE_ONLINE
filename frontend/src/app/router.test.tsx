@@ -5,7 +5,7 @@ import { axe } from 'jest-axe'
 import { NotFound } from './NotFound'
 import { RequireAuth, RequireRole } from './guards'
 import { LegacyEditRedirect } from './router'
-import { OAuthTokenCapture } from './OAuthTokenCapture'
+import { OAuthCallbackPage } from './OAuthCallbackPage'
 import { ThemeProvider } from '@/shared/theme'
 import { useAuthStore } from '@/entities/session'
 
@@ -126,32 +126,39 @@ describe('LegacyEditRedirect', () => {
   })
 })
 
-describe('OAuthTokenCapture', () => {
-  it('capture le ?token= de la redirection Google, le mémorise et nettoie l\'URL', async () => {
+describe('OAuthCallbackPage', () => {
+  it('capture token + refreshToken de la redirection Google et atterrit directement sur /dashboard, sans détour par /auth/login', async () => {
     const exp = Math.floor(Date.now() / 1000) + 3600
     const token = `h.${btoa(JSON.stringify({ sub: 'e@z.cm', role: 'STUDENT', exp }))}.s`
 
     wrap(
       <Routes>
-        <Route path="/dashboard" element={<><OAuthTokenCapture /><p>Tableau de bord</p></>} />
+        <Route path="/auth/callback" element={<OAuthCallbackPage />} />
+        <Route path="/dashboard" element={<p>Tableau de bord</p>} />
+        <Route path="/auth/login" element={<p>Page de connexion</p>} />
       </Routes>,
-      `/dashboard?token=${token}`,
+      `/auth/callback?token=${token}&refreshToken=r-123`,
     )
 
-    // Le jeton de la redirection OAuth est enregistré dans le store.
+    // Atterrit directement sur /dashboard — jamais un flash de /auth/login,
+    // exactement le bug corrigé ici (RequireAuth évaluait isAuthenticated()
+    // avant que le token soit posé quand la cible était /dashboard directement).
     expect(await screen.findByText('Tableau de bord')).toBeInTheDocument()
+    expect(screen.queryByText('Page de connexion')).not.toBeInTheDocument()
     expect(useAuthStore.getState().token).toBe(token)
+    expect(useAuthStore.getState().refreshToken).toBe('r-123')
     expect(useAuthStore.getState().isAuthenticated()).toBe(true)
   })
 
-  it('ne fait rien quand aucun token n\'est présent', () => {
+  it('redirige vers /auth/login quand token ou refreshToken manque', async () => {
     wrap(
       <Routes>
-        <Route path="/dashboard" element={<><OAuthTokenCapture /><p>Tableau de bord</p></>} />
+        <Route path="/auth/callback" element={<OAuthCallbackPage />} />
+        <Route path="/auth/login" element={<p>Page de connexion</p>} />
       </Routes>,
-      '/dashboard',
+      '/auth/callback',
     )
-    expect(screen.getByText('Tableau de bord')).toBeInTheDocument()
+    expect(await screen.findByText('Page de connexion')).toBeInTheDocument()
     expect(useAuthStore.getState().token).toBeNull()
   })
 })

@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NotFound } from './NotFound'
 import { RequireAuth } from './guards'
-import { OAuthTokenCapture } from './OAuthTokenCapture'
+import { OAuthCallbackPage } from './OAuthCallbackPage'
 import { PublicLayout } from '@/app/layouts/PublicLayout'
 import { AppLayout } from '@/app/layouts/AppLayout'
 import { AuthLayout } from '@/app/layouts/AuthLayout'
@@ -65,9 +65,7 @@ export function AppRoutes() {
   }, [navigate])
 
   return (
-    <>
-      <OAuthTokenCapture />
-      <Suspense fallback={<RouteFallback />}>
+    <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route element={<PublicLayout />}>
             <Route index path="/" element={<HomePage />} />
@@ -84,6 +82,7 @@ export function AppRoutes() {
             <Route path="/auth/login" element={<LoginPage />} />
             <Route path="/auth/register" element={<RegisterPage />} />
             <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/auth/callback" element={<OAuthCallbackPage />} />
             {/* Anciens chemins français — conservés pour ne pas casser les liens */}
             <Route path="/auth/connexion" element={<Navigate to="/auth/login" replace />} />
             <Route path="/auth/inscription" element={<Navigate to="/auth/register" replace />} />
@@ -112,7 +111,6 @@ export function AppRoutes() {
             <Route path="/learning/:courseId/:lessonId" element={<RequireAuth><CoursePlayer /></RequireAuth>} />
           </Route>
         </Routes>
-      </Suspense>
-    </>
+    </Suspense>
   )
 }
