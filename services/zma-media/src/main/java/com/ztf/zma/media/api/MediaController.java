@@ -1,7 +1,11 @@
 package com.ztf.zma.media.api;
 
 import com.ztf.zma.media.domain.Media;
+import com.ztf.zma.media.domain.MediaVariant;
 import com.ztf.zma.media.service.MediaService;
+import com.ztf.zma.media.service.TranscodingAsyncRunner;
+import com.ztf.zma.media.service.TranscodingService;
+import com.ztf.zma.media.storage.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -31,13 +35,20 @@ import java.util.Map;
 public class MediaController {
 
     private final MediaService mediaService;
+    private final TranscodingService transcodingService;
+    private final TranscodingAsyncRunner transcodingAsyncRunner;
+    private final StorageService storageService;
 
     /** Base directory for locally stored files. Configurable so tests don't need to write to /app. */
     @Value("${storage.local.upload-dir:/app/uploads}")
     private String uploadDir;
 
-    public MediaController(MediaService mediaService) {
+    public MediaController(MediaService mediaService, TranscodingService transcodingService,
+                            TranscodingAsyncRunner transcodingAsyncRunner, StorageService storageService) {
         this.mediaService = mediaService;
+        this.transcodingService = transcodingService;
+        this.transcodingAsyncRunner = transcodingAsyncRunner;
+        this.storageService = storageService;
     }
 
     /** Request a presigned upload URL */
@@ -166,6 +177,41 @@ public class MediaController {
         return mediaService.listByUploader(auth.getName());
     }
 
+    /**
+     * Trigger asynchronous H.264/AAC MP4 transcoding of a video into 1080p/720p/480p
+     * variants (skipping any target at or above the source's actual resolution).
+     * Restricted the same way as other mutating operations on this media item:
+     * uploader (course owner/TEACHER) or ADMIN — see MediaService#requireAccess.
+     * Returns immediately; poll GET /{id}/variants for progress/results.
+     */
+    @Operation(summary = "Transcode a video into multiple resolutions",
+            description = "202 Accepted — runs asynchronously. Only valid for video/* content types.")
+    @PostMapping("/transcode/{fileId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Media transcode(@PathVariable String fileId, Authentication auth) {
+        Media media = mediaService.getByIdForUser(fileId, auth.getName(), getRole(auth));
+        Media pending = transcodingService.startTranscode(media);
+        transcodingAsyncRunner.runAsync(pending.getId());
+        return pending;
+    }
+
+    /** List transcoded variants (and their availability) for a media item. */
+    @Operation(summary = "List transcoded video variants", description = "Requires the caller to own the media or hold an ADMIN/TEACHER role.")
+    @GetMapping("/{id}/variants")
+    public List<VariantResponse> listVariants(@PathVariable String id, Authentication auth) {
+        Media media = mediaService.getByIdForUser(id, auth.getName(), getRole(auth));
+        return transcodingService.listVariants(media.getId()).stream()
+                .map(v -> new VariantResponse(
+                        v.getId(),
+                        v.getResolution(),
+                        v.getWidth(),
+                        v.getHeight(),
+                        v.getStatus(),
+                        "READY".equals(v.getStatus()) ? storageService.generateDownloadUrl(v.getS3Key(), 3600) : null,
+                        v.getErrorMessage()))
+                .toList();
+    }
+
     private String getRole(Authentication auth) {
         return auth.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
@@ -181,4 +227,14 @@ record MediaUploadRequest(
         @Positive long sizeBytes,
         /** Optional upload purpose hint, e.g. "AVATAR" — see MediaService#PURPOSE_AVATAR. */
         String purpose
+) {}
+
+record VariantResponse(
+        String id,
+        String resolution,
+        Integer width,
+        Integer height,
+        String status,
+        String url,
+        String errorMessage
 ) {}

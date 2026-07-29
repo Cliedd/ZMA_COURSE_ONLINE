@@ -10,11 +10,16 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 
 /**
@@ -98,5 +103,20 @@ public class R2StorageService implements StorageService {
         } catch (Exception ex) {
             log.error("Failed to delete {} from R2: {}", s3Key, ex.getMessage());
         }
+    }
+
+    @Override
+    public void downloadToLocalFile(String s3Key, Path destination) throws IOException {
+        Files.createDirectories(destination.getParent());
+        s3Client.getObject(GetObjectRequest.builder().bucket(bucket).key(s3Key).build(), destination);
+    }
+
+    @Override
+    public String uploadFile(String mediaId, String fileName, String contentType, Path localFile) throws IOException {
+        String s3Key = "media/" + mediaId + "/" + fileName;
+        s3Client.putObject(
+                PutObjectRequest.builder().bucket(bucket).key(s3Key).contentType(contentType).build(),
+                localFile);
+        return s3Key;
     }
 }

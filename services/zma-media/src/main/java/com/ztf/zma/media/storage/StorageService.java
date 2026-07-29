@@ -1,5 +1,8 @@
 package com.ztf.zma.media.storage;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 /**
  * Storage abstraction.
  * Local dev: LocalStorageService — stores files on disk, serves via /api/v1/media/{id}/file
@@ -26,4 +29,20 @@ public interface StorageService {
 
     /** Permanently remove the file from storage. */
     void deleteFile(String s3Key);
+
+    /**
+     * Download the object identified by {@code s3Key} to a local file at
+     * {@code destination}, overwriting it if present. Needed by operations
+     * (e.g. ffmpeg transcoding) that must operate on real local files
+     * regardless of whether the active backend is local disk or remote
+     * object storage (R2/S3).
+     */
+    void downloadToLocalFile(String s3Key, Path destination) throws IOException;
+
+    /**
+     * Upload a local file as a new object and return its storage key.
+     * Used to persist derived artifacts (e.g. transcoded video variants)
+     * back through the same storage abstraction used for original uploads.
+     */
+    String uploadFile(String mediaId, String fileName, String contentType, Path localFile) throws IOException;
 }

@@ -36,6 +36,16 @@ public class Media {
      */
     private String purpose;
 
+    /**
+     * Overall transcoding job status for this media item: null (never requested) |
+     * PENDING | PROCESSING | COMPLETED | FAILED. Only meaningful for video content
+     * types. Individual per-resolution results live in {@link MediaVariant}.
+     * FAILED here means the job itself could not run at all (e.g. ffprobe could
+     * not read the source / corrupt file) — a job that ran and produced some
+     * FAILED variants alongside READY ones is still COMPLETED overall.
+     */
+    private String transcodeStatus;
+
     private Instant uploadedAt;
 
     /** Soft-delete timestamp */
@@ -69,6 +79,8 @@ public class Media {
     public void setLessonId(String lessonId) { this.lessonId = lessonId; }
     public String getPurpose() { return purpose; }
     public void setPurpose(String purpose) { this.purpose = purpose; }
+    public String getTranscodeStatus() { return transcodeStatus; }
+    public void setTranscodeStatus(String transcodeStatus) { this.transcodeStatus = transcodeStatus; }
     public Instant getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(Instant uploadedAt) { this.uploadedAt = uploadedAt; }
     public Instant getDeletedAt() { return deletedAt; }
