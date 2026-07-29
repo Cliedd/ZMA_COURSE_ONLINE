@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, it, expect } from 'vitest'
 import { mswServer } from '@/test/msw'
 import { renderWithProviders } from '@/test/renderWithProviders'
@@ -35,5 +36,24 @@ describe('CataloguePage', () => {
     renderWithProviders(<CataloguePage />, { route: '/catalogue' })
 
     await waitFor(() => expect(screen.getByRole('button', { name: /Réessayer/ })).toBeInTheDocument())
+  })
+
+  it('débounce la recherche et interroge l\'API avec le paramètre q', async () => {
+    const receivedQueries: Array<string | null> = []
+    mswServer.use(http.get(`${API}/courses`, ({ request }) => {
+      receivedQueries.push(new URL(request.url).searchParams.get('q'))
+      return HttpResponse.json(coursePage([{ id: '1', slug: 'piano', title: 'Piano classique', price: 18, rating: 4.9 }]))
+    }))
+    renderWithProviders(<CataloguePage />, { route: '/catalogue' })
+
+    await screen.findByRole('heading', { name: 'Piano classique' })
+
+    const searchInput = screen.getByRole('searchbox', { name: /Rechercher un cours/ })
+    await userEvent.type(searchInput, 'piano')
+
+    // Pas de requête supplémentaire tant que le délai de debounce (~300ms) n'est pas écoulé.
+    expect(receivedQueries).not.toContain('piano')
+
+    await waitFor(() => expect(receivedQueries).toContain('piano'), { timeout: 2000 })
   })
 })

@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next'
+import { useEffect, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { COURSE_LEVELS } from '@/entities/course'
 import { DEPARTMENTS } from '@/shared/config/navigation'
 import { cn } from '@/shared/lib/cn'
+import { useDebouncedValue } from '@/shared/lib/useDebouncedValue'
 import type { CourseFilters } from '@/entities/course'
 
 interface FilterBarProps {
@@ -10,9 +12,29 @@ interface FilterBarProps {
   onSetFilter: (key: 'department' | 'level' | 'q', value: string | undefined) => void
 }
 
-/** Barre de filtres du catalogue : recherche + puces niveau + puces département. */
+/** Barre de filtres du catalogue : recherche (débouncée, synchronisée à l'URL) + puces niveau + puces département. */
 export function FilterBar({ filters, onSetFilter }: FilterBarProps) {
   const { t } = useTranslation()
+
+  // État local pour une saisie réactive ; la valeur débouncée seule est répercutée dans l'URL,
+  // pour éviter une requête API à chaque frappe (spec § 6 règle 5 : l'URL reste la source de vérité).
+  const [searchInput, setSearchInput] = useState(filters.q ?? '')
+  const debouncedSearch = useDebouncedValue(searchInput, 300)
+  const isFirstRun = useRef(true)
+
+  // Resynchronise l'état local si le filtre change en dehors de cet input (ex. réinitialisation).
+  useEffect(() => {
+    setSearchInput(filters.q ?? '')
+  }, [filters.q])
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+      return
+    }
+    onSetFilter('q', debouncedSearch || undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- ne réagit qu'à la valeur débouncée
+  }, [debouncedSearch])
 
   return (
     <div className="flex flex-col gap-5">
@@ -20,8 +42,8 @@ export function FilterBar({ filters, onSetFilter }: FilterBarProps) {
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" aria-hidden />
         <input
           type="search"
-          value={filters.q ?? ''}
-          onChange={(e) => onSetFilter('q', e.target.value || undefined)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           placeholder={t('catalogue.search')}
           aria-label={t('catalogue.search')}
           className="min-h-touch w-full rounded border border-line bg-surface pl-9 pr-3 font-sans text-body text-ink placeholder:text-ink-faint"
