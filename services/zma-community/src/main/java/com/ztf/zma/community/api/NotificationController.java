@@ -1,7 +1,9 @@
 package com.ztf.zma.community.api;
 
 import com.ztf.zma.community.domain.Notification;
+import com.ztf.zma.community.domain.PushSubscription;
 import com.ztf.zma.community.service.NotificationService;
+import com.ztf.zma.community.service.PushSubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -15,9 +17,12 @@ import java.util.Map;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final PushSubscriptionService pushSubscriptionService;
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService,
+                                   PushSubscriptionService pushSubscriptionService) {
         this.notificationService = notificationService;
+        this.pushSubscriptionService = pushSubscriptionService;
     }
 
     @Operation(summary = "List current user's notifications")
@@ -47,5 +52,12 @@ public class NotificationController {
     @ResponseStatus(HttpStatus.CREATED)
     public Notification internalNotify(@RequestBody Map<String, String> body) {
         return notificationService.create(body.get("userId"), body.get("message"));
+    }
+
+    @Operation(summary = "Subscribe (or refresh) the current device for Web Push notifications")
+    @PostMapping("/push/subscribe")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PushSubscription subscribeToPush(@RequestBody PushSubscribeRequest request, Authentication auth) {
+        return pushSubscriptionService.subscribe(auth.getName(), request);
     }
 }

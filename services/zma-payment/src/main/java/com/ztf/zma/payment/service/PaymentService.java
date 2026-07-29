@@ -2,6 +2,7 @@ package com.ztf.zma.payment.service;
 
 import com.ztf.zma.payment.domain.Payment;
 import com.ztf.zma.payment.infrastructure.CatalogClient;
+import com.ztf.zma.payment.infrastructure.CommunityNotificationClient;
 import com.ztf.zma.payment.infrastructure.EnrollmentClient;
 import com.ztf.zma.payment.repository.PaymentRepository;
 import org.slf4j.Logger;
@@ -22,13 +23,16 @@ public class PaymentService {
     private final PaymentRepository  paymentRepository;
     private final EnrollmentClient   enrollmentClient;
     private final CatalogClient      catalogClient;
+    private final CommunityNotificationClient communityNotificationClient;
 
     public PaymentService(PaymentRepository paymentRepository,
                           EnrollmentClient enrollmentClient,
-                          CatalogClient catalogClient) {
+                          CatalogClient catalogClient,
+                          CommunityNotificationClient communityNotificationClient) {
         this.paymentRepository = paymentRepository;
         this.enrollmentClient  = enrollmentClient;
         this.catalogClient     = catalogClient;
+        this.communityNotificationClient = communityNotificationClient;
     }
 
     /**
@@ -111,11 +115,14 @@ public class PaymentService {
         Payment saved = paymentRepository.save(payment);
         enrollmentClient.enroll(saved.getStudentId(), saved.getCourseId(),
                                 saved.getCourseTitle(), null);
+        // Best-effort — must never break payment confirmation (see CommunityNotificationClientImpl).
+        communityNotificationClient.notifyPaymentConfirmed(saved.getStudentId(), saved.getCourseTitle());
         return saved;
     }
 
     /**
      * Confirms payment by CinetPay transaction ID (webhook path).
+     * Delegates to confirmPayment (idempotent check above prevents double-notification).
      */
     @Transactional
     public Payment confirmByTransactionId(String transactionId) {
