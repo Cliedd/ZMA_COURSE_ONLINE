@@ -33,7 +33,10 @@ public class Payment {
     @Column(nullable = false)
     private String status;
 
-    /** CinetPay transaction ID (or Stripe charge ID in future) */
+    /** STRIPE_CARD | STRIPE_PAYPAL | CINETPAY | FREE — which real gateway (if any) handled this payment. */
+    private String provider;
+
+    /** CinetPay transaction ID, or Stripe Checkout Session ID for Stripe payments. */
     private String transactionId;
 
     /** Redirect URL returned by payment gateway */
@@ -67,6 +70,8 @@ public class Payment {
     public void setCurrency(String currency) { this.currency = currency; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getProvider() { return provider; }
+    public void setProvider(String provider) { this.provider = provider; }
     public String getTransactionId() { return transactionId; }
     public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
     public String getCheckoutUrl() { return checkoutUrl; }

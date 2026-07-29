@@ -1,6 +1,9 @@
 package com.ztf.zma.payment.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stripe.exception.SignatureVerificationException;
+import com.stripe.model.Event;
+import com.stripe.net.Webhook;
 import com.ztf.zma.payment.domain.Payment;
 import com.ztf.zma.payment.service.InvoicePdfService;
 import com.ztf.zma.payment.service.PaymentService;
@@ -40,6 +43,9 @@ public class PaymentController {
     @Value("${cinetpay.webhook.secret}")
     private String webhookSecret;
 
+    @Value("${stripe.webhook-secret:}")
+    private String stripeWebhookSecret;
+
     public PaymentController(PaymentService paymentService, InvoicePdfService invoicePdfService, ObjectMapper objectMapper) {
         this.paymentService = paymentService;
         this.invoicePdfService = invoicePdfService;
@@ -57,21 +63,32 @@ public class PaymentController {
                                             Authentication auth) {
         try {
             Payment payment = paymentService.initiateCheckout(
-                auth.getName(), request.courseId(), request.promoCode());
+                auth.getName(), request.courseId(), request.promoCode(), request.provider());
             return ResponseEntity.status(HttpStatus.CREATED).body(payment);
         } catch (PaymentService.AlreadyPaidException ex) {
             return ResponseEntity.ok(ex.getPayment());
         }
     }
 
-    /** Manual confirm (dev/simulation) or called by webhook handler */
+    /**
+     * ADMIN-only manual override (e.g. a support case where a gateway webhook
+     * genuinely never arrived and payment was verified out-of-band). NOT for
+     * general use: a payment moving to SUCCESS must otherwise only ever come
+     * from a signature-verified gateway webhook — allowing any authenticated
+     * user to call this would let a student mark their own pending payment
+     * SUCCESS for free.
+     */
+    @Operation(summary = "Manually confirm a payment", description = "Requires ROLE_ADMIN — normal confirmation is webhook-driven only")
     @PatchMapping("/{id}/confirm")
-    public Payment confirm(@PathVariable String id) {
+    public Payment confirm(@PathVariable String id, Authentication auth) {
+        requireAdmin(auth);
         return paymentService.confirmPayment(id);
     }
 
+    @Operation(summary = "Manually fail a payment", description = "Requires ROLE_ADMIN")
     @PatchMapping("/{id}/fail")
-    public Payment fail(@PathVariable String id) {
+    public Payment fail(@PathVariable String id, Authentication auth) {
+        requireAdmin(auth);
         return paymentService.failPayment(id);
     }
 
@@ -213,5 +230,93 @@ public class PaymentController {
             .filter(a -> a.startsWith("ROLE_"))
             .map(a -> a.substring(5))
             .findFirst().orElse("STUDENT");
+    }
+
+    private void requireAdmin(Authentication auth) {
+        if (!"ADMIN".equals(getRole(auth))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "ADMIN role required");
+        }
+    }
+
+    // ── Stripe Webhook ───────────────────────────────────────────────────────
+
+    /**
+     * Stripe sends a POST here on checkout events. The Stripe SDK verifies the
+     * "Stripe-Signature" header itself (Webhook.constructEvent) using the
+     * shared {@code stripe.webhook-secret} — requests with a missing or
+     * invalid signature are rejected with 400 before any payment is touched.
+     * Only checkout.session.completed actually confirms a payment; every
+     * other event type is acknowledged (200) and ignored.
+     */
+    @Operation(summary = "Stripe payment webhook", description = "Signature-verified callback from Stripe confirming a checkout session")
+    @PostMapping("/webhook/stripe")
+    public ResponseEntity<String> stripeWebhook(
+            @RequestHeader(value = "Stripe-Signature", required = false) String signatureHeader,
+            @RequestBody(required = false) String rawBody) {
+        if (rawBody == null || rawBody.isBlank()) {
+            return ResponseEntity.badRequest().body("Empty body");
+        }
+        if (signatureHeader == null || signatureHeader.isBlank()) {
+            log.warn("Stripe webhook: rejected — missing Stripe-Signature header");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Missing signature");
+        }
+        if (stripeWebhookSecret == null || stripeWebhookSecret.isBlank()) {
+            log.error("stripe.webhook-secret is not configured — refusing webhook");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Webhook not configured");
+        }
+
+        Event event;
+        try {
+            event = Webhook.constructEvent(rawBody, signatureHeader, stripeWebhookSecret);
+        } catch (SignatureVerificationException ex) {
+            log.warn("Stripe webhook: rejected — invalid signature");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid signature");
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body("Invalid payload");
+        }
+
+        if (!"checkout.session.completed".equals(event.getType())) {
+            return ResponseEntity.ok("Ignored event type: " + event.getType());
+        }
+
+        // Signature is already verified above via the real Stripe SDK — reading
+        // fields back out of the same verified rawBody with plain JSON parsing
+        // (rather than the SDK's typed data.object deserialization, which
+        // requires matching Stripe's internal API-version-specific schema
+        // exactly and is brittle across SDK/API versions) doesn't weaken
+        // security at all: the bytes were already proven untampered.
+        String paymentId;
+        String paymentStatus;
+        String sessionId;
+        try {
+            Map<String, Object> root = objectMapper.readValue(rawBody, Map.class);
+            Map<String, Object> data = (Map<String, Object>) root.get("data");
+            Map<String, Object> session = data != null ? (Map<String, Object>) data.get("object") : null;
+            paymentId = session != null ? (String) session.get("client_reference_id") : null;
+            paymentStatus = session != null ? (String) session.get("payment_status") : null;
+            sessionId = session != null ? (String) session.get("id") : null;
+        } catch (Exception ex) {
+            log.error("Stripe webhook: could not parse checkout.session.completed payload: {}", ex.getMessage());
+            return ResponseEntity.badRequest().body("Could not read session");
+        }
+
+        if (paymentId == null || paymentId.isBlank()) {
+            log.error("Stripe webhook: session {} has no client_reference_id", sessionId);
+            return ResponseEntity.badRequest().body("Missing client_reference_id");
+        }
+
+        if (!"paid".equals(paymentStatus)) {
+            log.warn("Stripe webhook: session {} completed but payment_status={} — not confirming",
+                    sessionId, paymentStatus);
+            return ResponseEntity.ok("Payment not settled — ignoring");
+        }
+
+        try {
+            paymentService.confirmByIdIdempotent(paymentId);
+            return ResponseEntity.ok("Payment confirmed");
+        } catch (Exception ex) {
+            log.error("Stripe webhook confirm failed for payment {}: {}", paymentId, ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Confirm failed: " + ex.getMessage());
+        }
     }
 }

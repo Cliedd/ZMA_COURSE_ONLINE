@@ -1,9 +1,12 @@
 package com.ztf.zma.payment.service;
 
 import com.ztf.zma.payment.domain.Payment;
+import com.ztf.zma.payment.domain.PaymentProvider;
 import com.ztf.zma.payment.infrastructure.CatalogClient;
+import com.ztf.zma.payment.infrastructure.CinetPayClient;
 import com.ztf.zma.payment.infrastructure.CommunityNotificationClient;
 import com.ztf.zma.payment.infrastructure.EnrollmentClient;
+import com.ztf.zma.payment.infrastructure.StripeClient;
 import com.ztf.zma.payment.repository.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,31 +27,39 @@ public class PaymentService {
     private final EnrollmentClient   enrollmentClient;
     private final CatalogClient      catalogClient;
     private final CommunityNotificationClient communityNotificationClient;
+    private final StripeClient       stripeClient;
+    private final CinetPayClient     cinetPayClient;
 
     public PaymentService(PaymentRepository paymentRepository,
                           EnrollmentClient enrollmentClient,
                           CatalogClient catalogClient,
-                          CommunityNotificationClient communityNotificationClient) {
+                          CommunityNotificationClient communityNotificationClient,
+                          StripeClient stripeClient,
+                          CinetPayClient cinetPayClient) {
         this.paymentRepository = paymentRepository;
         this.enrollmentClient  = enrollmentClient;
         this.catalogClient     = catalogClient;
         this.communityNotificationClient = communityNotificationClient;
+        this.stripeClient      = stripeClient;
+        this.cinetPayClient    = cinetPayClient;
     }
 
     /**
-     * Initiates a checkout — creates a PENDING payment and returns a checkout URL.
-     *
-     * In simulation mode the URL is a placeholder and the payment is immediately
-     * confirmable via PATCH /{id}/confirm.
-     * In production replace this with a real CinetPay API call.
+     * Initiates a checkout. Free courses enroll directly, no gateway involved.
+     * Paid courses are routed to a real gateway (Stripe Checkout for
+     * card/PayPal, CinetPay for mobile money) — the returned Payment's
+     * checkoutUrl is the actual hosted payment page the browser must be
+     * redirected to. Nothing is marked SUCCESS here: that only ever happens
+     * from a signature-verified webhook (see PaymentController), never from
+     * the checkout call itself or anything the browser reports back.
      */
     @Transactional
-    public Payment initiateCheckout(String studentId, String courseId, String promoCode) {
+    public Payment initiateCheckout(String studentId, String courseId, String promoCode, PaymentProvider provider) {
         // Idempotent: return existing pending or successful payment
         paymentRepository.findByStudentIdAndCourseIdAndStatus(studentId, courseId, "SUCCESS")
             .ifPresent(p -> { throw new AlreadyPaidException(p); });
 
-        // Fetch authoritative price from catalog
+        // Fetch authoritative price from catalog — never trust a client-supplied amount
         Map<String, Object> courseInfo = catalogClient.getCourseInfo(courseId);
         double amount  = 0.0;
         String title   = "";
@@ -64,7 +75,7 @@ public class PaymentService {
             teacherEmail = (te != null && !te.toString().isBlank()) ? te.toString() : null;
         }
 
-        // Free course → enroll directly, skip payment gateway
+        // Free course → enroll directly, skip payment gateway entirely
         if (amount <= 0) {
             Payment free = new Payment();
             free.setStudentId(studentId);
@@ -74,6 +85,7 @@ public class PaymentService {
             free.setAmount(0.0);
             free.setCurrency(currency);
             free.setStatus("SUCCESS");
+            free.setProvider("FREE");
             free.setConfirmedAt(Instant.now());
             free.setPromoCode(promoCode);
             Payment saved = paymentRepository.save(free);
@@ -81,8 +93,32 @@ public class PaymentService {
             return saved;
         }
 
-        // Paid course → create PENDING record, generate simulated checkout URL
+        if (provider == null) {
+            throw new IllegalArgumentException("A payment provider is required for a paid course");
+        }
+
+        // Generated up front so it can be handed to the gateway as our own
+        // reference (client_reference_id for Stripe, transaction_id for
+        // CinetPay) BEFORE the row is persisted — a failed gateway call
+        // throws here and nothing is written, rather than leaving a PENDING
+        // row with no real checkout URL behind it.
+        String paymentId = UUID.randomUUID().toString();
+        String gatewayTransactionId;
+        String checkoutUrl;
+
+        if (provider == PaymentProvider.CINETPAY) {
+            CinetPayClient.CheckoutResult result = cinetPayClient.initiatePayment(paymentId, amount, title);
+            gatewayTransactionId = paymentId; // CinetPay echoes this back as cpm_trans_id on the webhook
+            checkoutUrl = result.checkoutUrl();
+        } else {
+            StripeClient.CheckoutSession session = stripeClient.createCheckoutSession(
+                    paymentId, provider, amount, currency, title);
+            gatewayTransactionId = session.sessionId();
+            checkoutUrl = session.checkoutUrl();
+        }
+
         Payment payment = new Payment();
+        payment.setId(paymentId);
         payment.setStudentId(studentId);
         payment.setCourseId(courseId);
         payment.setCourseTitle(title);
@@ -90,14 +126,11 @@ public class PaymentService {
         payment.setAmount(amount);
         payment.setCurrency(currency);
         payment.setStatus("PENDING");
+        payment.setProvider(provider.name());
         payment.setPromoCode(promoCode);
-        // Simulate CinetPay transaction ID
-        payment.setTransactionId("ZMA-TXN-" + UUID.randomUUID().toString().substring(0, 12).toUpperCase());
-        // In production: call CinetPay API here and store real checkoutUrl
-        payment.setCheckoutUrl("/api/v1/payments/" + "PENDING_ID" + "/simulate-confirm");
-        Payment saved = paymentRepository.save(payment);
-        saved.setCheckoutUrl("/api/v1/payments/" + saved.getId() + "/confirm");
-        return paymentRepository.save(saved);
+        payment.setTransactionId(gatewayTransactionId);
+        payment.setCheckoutUrl(checkoutUrl);
+        return paymentRepository.save(payment);
     }
 
     /**
@@ -121,7 +154,7 @@ public class PaymentService {
     }
 
     /**
-     * Confirms payment by CinetPay transaction ID (webhook path).
+     * Confirms payment by gateway transaction ID (CinetPay webhook path).
      * Delegates to confirmPayment (idempotent check above prevents double-notification).
      */
     @Transactional
@@ -130,6 +163,19 @@ public class PaymentService {
             .orElseThrow(() -> new RuntimeException("Payment not found for transaction: " + transactionId));
         if ("SUCCESS".equals(payment.getStatus())) return payment; // idempotent
         return confirmPayment(payment.getId());
+    }
+
+    /**
+     * Confirms by our own Payment.id (Stripe webhook path — client_reference_id
+     * on the Checkout Session IS our Payment.id). Idempotent: Stripe retries
+     * webhook delivery, and a duplicate checkout.session.completed for an
+     * already-SUCCESS payment must be a silent no-op, not an error.
+     */
+    @Transactional
+    public Payment confirmByIdIdempotent(String paymentId) {
+        Payment payment = getById(paymentId);
+        if ("SUCCESS".equals(payment.getStatus())) return payment;
+        return confirmPayment(paymentId);
     }
 
     @Transactional

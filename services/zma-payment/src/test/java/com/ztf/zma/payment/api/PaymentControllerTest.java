@@ -3,6 +3,7 @@ package com.ztf.zma.payment.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztf.zma.payment.domain.Payment;
 import com.ztf.zma.payment.infrastructure.CatalogClient;
+import com.ztf.zma.payment.infrastructure.CinetPayClient;
 import com.ztf.zma.payment.infrastructure.EnrollmentClient;
 import com.ztf.zma.payment.repository.PaymentRepository;
 import com.ztf.zma.payment.support.AbstractIntegrationTest;
@@ -22,6 +23,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,11 +36,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Real integration tests backed by H2 database (PostgreSQL mode).
+ * Real integration tests backed by H2 database (PostgreSQL mode). StripeClient
+ * and CinetPayClient are mocked — these tests exercise our own routing/
+ * persistence/security logic, not third-party gateways (Stripe's Checkout
+ * Session creation is covered separately, at the unit level, where it can be
+ * tested without real network calls or live API keys).
  */
 class PaymentControllerTest extends AbstractIntegrationTest {
 
     private static final String WEBHOOK_SECRET = "test-webhook-secret-for-hmac";
+    private static final String ADMIN_TOKEN = JwtTestUtils.token("admin@zma.test", "ADMIN");
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -48,6 +56,9 @@ class PaymentControllerTest extends AbstractIntegrationTest {
     @MockBean
     private EnrollmentClient enrollmentClient;
 
+    @MockBean
+    private CinetPayClient cinetPayClient;
+
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -55,6 +66,8 @@ class PaymentControllerTest extends AbstractIntegrationTest {
     void setUp() {
         mockMvc = mockMvc();
         paymentRepository.deleteAll();
+        when(cinetPayClient.initiatePayment(anyString(), anyDouble(), anyString()))
+                .thenReturn(new CinetPayClient.CheckoutResult("https://fake-cinetpay.test/pay/abc", "tok-abc"));
     }
 
     private String hmacSignature(String rawBody) throws Exception {
@@ -123,11 +136,26 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/api/v1/payments/checkout")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseId\":\"course-paid\"}"))
+                        .content("{\"courseId\":\"course-paid\",\"provider\":\"CINETPAY\"}"))
                 .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.amount").value(15000.0))
-                .andExpect(jsonPath("$.status").value("PENDING"));
+                .andExpect(jsonPath("$.status").value("PENDING"))
+                .andExpect(jsonPath("$.checkoutUrl").value("https://fake-cinetpay.test/pay/abc"));
+    }
+
+    @Test
+    void checkout_withoutProvider_isRejectedForPaidCourse() throws Exception {
+        when(catalogClient.getCourseInfo("course-noprovider")).thenReturn(Map.of(
+                "id", "course-noprovider", "title", "Piano", "level", "BEGINNER", "price", 1000
+        ));
+        String token = JwtTestUtils.token("noprovider@zma.test", "STUDENT");
+
+        mockMvc.perform(post("/api/v1/payments/checkout")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"courseId\":\"course-noprovider\"}"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -140,7 +168,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         String response = mockMvc.perform(post("/api/v1/payments/checkout")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseId\":\"course-confirm\"}"))
+                        .content("{\"courseId\":\"course-confirm\",\"provider\":\"CINETPAY\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
@@ -152,8 +180,10 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paid").value(false));
 
+        // Manual confirm is ADMIN-only now that real gateways exist — a
+        // student confirming their own payment would be a critical hole.
         mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
-                        .header("Authorization", "Bearer " + token))
+                        .header("Authorization", "Bearer " + ADMIN_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"));
 
@@ -162,6 +192,25 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                         .param("courseId", "course-confirm"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paid").value(true));
+    }
+
+    @Test
+    void confirm_isRejectedForNonAdmin() throws Exception {
+        when(catalogClient.getCourseInfo("course-selfconfirm")).thenReturn(Map.of(
+                "id", "course-selfconfirm", "title", "Bass", "level", "BEGINNER", "price", 2500
+        ));
+        String token = JwtTestUtils.token("selfconfirm@zma.test", "STUDENT");
+        String response = mockMvc.perform(post("/api/v1/payments/checkout")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"courseId\":\"course-selfconfirm\",\"provider\":\"CINETPAY\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        String paymentId = objectMapper.readTree(response).get("id").asText();
+
+        mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -174,22 +223,21 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         String response = mockMvc.perform(post("/api/v1/payments/checkout")
                         .header("Authorization", "Bearer " + studentToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseId\":\"course-refund\"}"))
+                        .content("{\"courseId\":\"course-refund\",\"provider\":\"CINETPAY\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         String paymentId = objectMapper.readTree(response).get("id").asText();
 
         mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
-                        .header("Authorization", "Bearer " + studentToken))
+                        .header("Authorization", "Bearer " + ADMIN_TOKEN))
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/v1/payments/{id}/refund", paymentId)
                         .header("Authorization", "Bearer " + studentToken))
                 .andExpect(status().isForbidden());
 
-        String adminToken = JwtTestUtils.token("admin@zma.test", "ADMIN");
         mockMvc.perform(post("/api/v1/payments/{id}/refund", paymentId)
-                        .header("Authorization", "Bearer " + adminToken))
+                        .header("Authorization", "Bearer " + ADMIN_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("REFUNDED"));
     }
@@ -205,7 +253,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         String response = mockMvc.perform(post("/api/v1/payments/checkout")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseId\":\"course-invoice\"}"))
+                        .content("{\"courseId\":\"course-invoice\",\"provider\":\"CINETPAY\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         String paymentId = objectMapper.readTree(response).get("id").asText();
@@ -225,12 +273,12 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         String response = mockMvc.perform(post("/api/v1/payments/checkout")
                         .header("Authorization", "Bearer " + ownerToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseId\":\"course-invoice2\"}"))
+                        .content("{\"courseId\":\"course-invoice2\",\"provider\":\"CINETPAY\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         String paymentId = objectMapper.readTree(response).get("id").asText();
         mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
-                        .header("Authorization", "Bearer " + ownerToken))
+                        .header("Authorization", "Bearer " + ADMIN_TOKEN))
                 .andExpect(status().isOk());
 
         String strangerToken = JwtTestUtils.token("stranger@zma.test", "STUDENT");
@@ -249,12 +297,12 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         String response = mockMvc.perform(post("/api/v1/payments/checkout")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"courseId\":\"course-invoice3\"}"))
+                        .content("{\"courseId\":\"course-invoice3\",\"provider\":\"CINETPAY\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         String paymentId = objectMapper.readTree(response).get("id").asText();
         mockMvc.perform(patch("/api/v1/payments/{id}/confirm", paymentId)
-                        .header("Authorization", "Bearer " + token))
+                        .header("Authorization", "Bearer " + ADMIN_TOKEN))
                 .andExpect(status().isOk());
 
         byte[] pdf = mockMvc.perform(get("/api/v1/payments/{id}/invoice/pdf", paymentId)
