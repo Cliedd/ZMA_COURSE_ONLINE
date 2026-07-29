@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtils {
@@ -25,9 +26,16 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /** Generate access token with email + role embedded in claims */
+    /**
+     * Generate access token with email + role embedded in claims.
+     * A random jti guarantees uniqueness even when two tokens for the same
+     * user are issued within the same millisecond (iat/exp alone would
+     * otherwise make them byte-identical, so blacklisting one would
+     * blacklist both).
+     */
     public String generateToken(String email, String role) {
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(email)
                 .claim("role", role)
                 .issuedAt(new Date())

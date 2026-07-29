@@ -150,7 +150,72 @@ class AuthFlowIntegrationTest extends AbstractIntegrationTest {
         assertThat(response.getBody()).containsEntry("message", "Invalid or expired refresh token");
     }
 
+    // ── Logout ────────────────────────────────────────────────────────────────
+
+    @Test
+    void logout_withValidRefreshToken_revokesItServerSide() {
+        registerDirectly("logout-ok@example.com", "correct-password-1", "STUDENT", false);
+        LoginRequest login = new LoginRequest("logout-ok@example.com", "correct-password-1");
+        ResponseEntity<AuthResponse> loginResponse =
+                restTemplate.postForEntity("/api/v1/auth/login", login, AuthResponse.class);
+        AuthResponse tokens = loginResponse.getBody();
+        assertThat(tokens).isNotNull();
+
+        ResponseEntity<Void> logoutResponse = restTemplate.exchange(
+                "/api/v1/auth/logout",
+                org.springframework.http.HttpMethod.POST,
+                authenticatedEntity(tokens.token(), new RefreshRequest(tokens.refreshToken())),
+                Void.class);
+
+        assertThat(logoutResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        // The refresh token was explicitly revoked server-side — it can no longer be used.
+        RefreshRequest refreshRequest = new RefreshRequest(tokens.refreshToken());
+        ResponseEntity<Map> refreshResponse =
+                restTemplate.postForEntity("/api/v1/auth/refresh", refreshRequest, Map.class);
+        assertThat(refreshResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(refreshResponse.getBody()).containsEntry("message", "Invalid or expired refresh token");
+    }
+
+    @Test
+    void logout_withUnknownRefreshToken_isIdempotentAndStillReturnsNoContent() {
+        registerDirectly("logout-idempotent@example.com", "correct-password-1", "STUDENT", false);
+        LoginRequest login = new LoginRequest("logout-idempotent@example.com", "correct-password-1");
+
+        // Garbage/unknown refresh token must not cause an error.
+        AuthResponse firstTokens = restTemplate.postForEntity(
+                "/api/v1/auth/login", login, AuthResponse.class).getBody();
+        assertThat(firstTokens).isNotNull();
+        ResponseEntity<Void> firstAttempt = restTemplate.exchange(
+                "/api/v1/auth/logout",
+                org.springframework.http.HttpMethod.POST,
+                authenticatedEntity(firstTokens.token(), new RefreshRequest("not-a-real-refresh-token")),
+                Void.class);
+        assertThat(firstAttempt.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        // Calling it again with the same (still unknown) refresh token is also a no-op.
+        // (A fresh access token is used because the first logout already blacklisted its
+        // own access token — that revocation is intentional and unrelated to the
+        // refresh-token idempotency being tested here.)
+        AuthResponse secondTokens = restTemplate.postForEntity(
+                "/api/v1/auth/login", login, AuthResponse.class).getBody();
+        assertThat(secondTokens).isNotNull();
+        ResponseEntity<Void> secondAttempt = restTemplate.exchange(
+                "/api/v1/auth/logout",
+                org.springframework.http.HttpMethod.POST,
+                authenticatedEntity(secondTokens.token(), new RefreshRequest("not-a-real-refresh-token")),
+                Void.class);
+        assertThat(secondAttempt.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private HttpEntity<RefreshRequest> authenticatedEntity(String accessToken, RefreshRequest body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        return new HttpEntity<>(body, headers);
+    }
 
     private User registerDirectly(String email, String rawPassword, String role, boolean suspended) {
         User user = new User();

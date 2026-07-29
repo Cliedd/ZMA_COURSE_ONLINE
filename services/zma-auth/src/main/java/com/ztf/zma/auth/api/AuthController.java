@@ -167,20 +167,22 @@ public class AuthController {
 
     // ── Logout ────────────────────────────────────────────────────────────────
 
+    @Operation(summary = "Log out and revoke the refresh token",
+        description = "Requires a valid access token. Blacklists the current access token and " +
+                      "explicitly revokes the supplied refresh token server-side so it cannot be " +
+                      "used again even if leaked. Idempotent: an already-invalid or unknown " +
+                      "refresh token still returns 204.")
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(
-            HttpServletRequest request,
-            @RequestParam(required = false) String refreshToken) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpServletRequest request,
+                       @Valid @RequestBody RefreshRequest logoutRequest) {
 
         String token = extractBearerToken(request);
         if (token != null) {
             long ttl = jwtUtils.getRemainingTtlSeconds(token);
             redisTokenService.blacklistToken(token, ttl);
         }
-        if (StringUtils.hasText(refreshToken)) {
-            redisTokenService.invalidateRefreshToken(refreshToken);
-        }
-        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+        redisTokenService.invalidateRefreshToken(logoutRequest.refreshToken());
     }
 
     // ── Refresh ───────────────────────────────────────────────────────────────
