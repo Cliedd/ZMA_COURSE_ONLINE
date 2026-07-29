@@ -21,7 +21,15 @@
       "explore": "Explorer",
       "myCourses": "Mes cours",
       "profile": "Profil"
-    }
+    },
+    "dashboard": "Tableau de bord",
+    "myCourses": "Mes cours",
+    "teacherSpace": "Espace enseignant",
+    "administration": "Administration",
+    "settingsLink": "Paramètres",
+    "logoutToastTitle": "Déconnexion",
+    "logoutToastBody": "Vous êtes déconnecté. À bientôt !",
+    "roleStudent": "ÉTUDIANT"
   },
   "breadcrumb": {
     "label": "Fil d'Ariane",
@@ -140,7 +148,41 @@
     "pwdHint": "Au moins 8 caractères",
     "registered": "Compte créé. Connectez-vous.",
     "invalidEmail": "Adresse électronique invalide",
-    "pwdMin": "Au moins 8 caractères"
+    "pwdMin": "Au moins 8 caractères",
+    "forgotTitle": "Mot de passe oublié",
+    "forgotBody": "Entrez votre adresse e-mail ci-dessous. Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe.",
+    "forgotLink": "Mot de passe oublié ?",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "backToLogin": "Retour à la connexion",
+    "emailSentTitle": "E-mail envoyé avec succès !",
+    "emailSentBody": "Veuillez consulter votre boîte de réception (et vos spams). Cliquez ensuite sur le lien reçu pour définir votre nouveau mot de passe.",
+    "welcomeToastTitle": "Connexion réussie",
+    "welcomeToastBody": "Bienvenue {{email}} ! Vous êtes connecté.",
+    "registerToastTitle": "Inscription réussie",
+    "registerToastBody": "Votre compte a été créé avec succès ! Connectez-vous.",
+    "forgotToastTitle": "Demande envoyée",
+    "forgotToastBody": "Si cet e-mail existe, un lien de réinitialisation vous a été envoyé.",
+    "genericError": "Erreur de connexion",
+    "errorToastTitle": "Erreur"
+  },
+  "resetPassword": {
+    "title": "Réinitialisation du mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe sécurisé pour votre compte ZMA Course Online.",
+    "invalidTitle": "Lien invalide ou expiré",
+    "invalidBody": "Le jeton de réinitialisation est absent de l'URL. Veuillez refaire une demande.",
+    "requestNewLink": "Demander un nouveau lien",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmez le nouveau mot de passe",
+    "pwdHint": "Au moins 8 caractères",
+    "submit": "Mettre à jour le mot de passe",
+    "successToastTitle": "Réinitialisation réussie",
+    "successToastBody": "Votre mot de passe a été réinitialisé avec succès ! Connectez-vous.",
+    "errorToastTitle": "Erreur",
+    "genericError": "Erreur lors de la réinitialisation",
+    "missingToken": "Jeton de réinitialisation manquant ou invalide.",
+    "pwdMin": "Le mot de passe doit contenir au moins 8 caractères",
+    "confirmRequired": "Veuillez confirmer le mot de passe",
+    "pwdMismatch": "Les mots de passe ne correspondent pas"
   },
   "dashboard": {
     "title": "Mon espace",
@@ -195,5 +237,51 @@
     "next": "Leçon suivante",
     "syllabus": "Programme",
     "noVideo": "Vidéo indisponible"
+  },
+  "teacherDashboard": {
+    "breadcrumb": "Mes cours",
+    "title": "Tableau de bord enseignant",
+    "subtitle": "Gérez vos cours et suivez vos statistiques.",
+    "newCourse": "Créer un cours",
+    "statCourses": "Cours",
+    "statStudents": "Étudiants",
+    "statRating": "Note moyenne",
+    "loadError": "Impossible de charger vos cours pour le moment.",
+    "empty": "Vous n'avez pas encore créé de cours.",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "edit": "Modifier"
+  },
+  "localeSwitch": {
+    "label": "Langue",
+    "fr": "Français",
+    "en": "Anglais",
+    "switchTo": "Passer en {{lang}}"
+  },
+  "certificateVerify": {
+    "breadcrumb": "Vérifier un certificat",
+    "title": "Vérifier un certificat",
+    "subtitle": "Entrez le numéro d'un certificat ZTF Music Academy pour confirmer son authenticité.",
+    "numberLabel": "Numéro de certificat",
+    "numberPlaceholder": "ex. ZTF-2026-000123",
+    "submit": "Vérifier",
+    "notFoundTitle": "Certificat introuvable",
+    "notFoundBody": "Aucun certificat ne correspond au numéro « {{certNumber}} ». Vérifiez qu'il a été saisi correctement.",
+    "errorBody": "Impossible de vérifier ce certificat pour le moment. Réessayez plus tard.",
+    "validTitle": "Certificat authentique",
+    "labelNumber": "Numéro : ",
+    "labelCourse": "Formation : ",
+    "labelIssuedAt": "Délivré le : "
+  },
+  "adminOverview": {
+    "breadcrumb": "Administration",
+    "title": "Vue d'ensemble",
+    "subtitle": "Suivi global de la plateforme : cours, utilisateurs et finances.",
+    "totalCourses": "Cours au total",
+    "users": "Utilisateurs",
+    "publishedCourses": "Cours publiés",
+    "onThisPage": "sur cette page",
+    "userManagement": "Gestion des utilisateurs",
+    "financeOverview": "Aperçu financier"
   }
 }

@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/shared/ui'
 import type { Course } from '@/entities/course'
 
 /** Une ligne de la liste des cours de l'enseignant. */
 export function TeacherCourseRow({ course }: { course: Course }) {
+  const { t } = useTranslation()
   return (
     <li className="flex items-center justify-between border border-line bg-surface p-4">
       <div>
@@ -14,13 +16,13 @@ export function TeacherCourseRow({ course }: { course: Course }) {
       </div>
       <div className="flex items-center gap-4">
         <Badge tone={course.published ? 'success' : 'default'}>
-          {course.published ? 'Publié' : 'Brouillon'}
+          {course.published ? t('teacherDashboard.published') : t('teacherDashboard.draft')}
         </Badge>
         <Link
           to={`/teacher/courses/${course.id}/edit`}
           className="inline-flex min-h-touch items-center font-sans text-sm font-semibold text-ink underline"
         >
-          Modifier
+          {t('teacherDashboard.edit')}
         </Link>
       </div>
     </li>

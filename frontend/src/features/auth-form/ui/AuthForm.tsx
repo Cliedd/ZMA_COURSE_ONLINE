@@ -39,7 +39,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
         }
         const res = await authApi.login(email, password)
         setSession(res)
-        toast.success(`Bienvenue ${res.email || ''} ! Vous êtes connecté.`, 'Connexion réussie')
+        toast.success(t('auth.welcomeToastBody', { email: res.email || '' }), t('auth.welcomeToastTitle'))
         navigate(params.get('returnTo') || '/dashboard', { replace: true })
       } else if (mode === 'register') {
         if (!password || password.length < 8) {
@@ -47,20 +47,20 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
           return
         }
         await authApi.register(email, password)
-        toast.success('Votre compte a été créé avec succès ! Connectez-vous.', 'Inscription réussie')
+        toast.success(t('auth.registerToastBody'), t('auth.registerToastTitle'))
         setMode('login')
       } else {
         await authApi.forgotPassword(email)
         setForgotSuccess(true)
-        toast.success('Si cet e-mail existe, un lien de réinitialisation vous a été envoyé.', 'Demande envoyée')
+        toast.success(t('auth.forgotToastBody'), t('auth.forgotToastTitle'))
       }
     } catch (e) {
       if (e instanceof AppError && e.fieldErrors) {
         for (const [k, v] of Object.entries(e.fieldErrors)) setError(k as keyof Values, { message: v })
       } else {
-        const msg = e instanceof AppError ? e.message : 'Erreur de connexion'
+        const msg = e instanceof AppError ? e.message : t('auth.genericError')
         setFormError(msg)
-        toast.error(msg, 'Erreur')
+        toast.error(msg, t('auth.errorToastTitle'))
       }
     }
   })
@@ -69,27 +69,27 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
     <div>
       <h1 className="font-serif text-h1 text-ink">
         {mode === 'forgot'
-          ? 'Mot de passe oublié'
+          ? t('auth.forgotTitle')
           : t(mode === 'login' ? 'auth.loginTitle' : 'auth.registerTitle')}
       </h1>
 
       {mode === 'forgot' && (
         <p className="mt-2 font-sans text-sm text-ink-muted leading-relaxed">
-          Entrez votre adresse e-mail ci-dessous. Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe.
+          {t('auth.forgotBody')}
         </p>
       )}
 
       {forgotSuccess ? (
         <div className="mt-6 rounded-lg bg-success/10 border border-success/30 p-4 text-success">
-          <p className="font-semibold text-sm">E-mail envoyé avec succès !</p>
+          <p className="font-semibold text-sm">{t('auth.emailSentTitle')}</p>
           <p className="font-sans text-xs mt-1">
-            Veuillez consulter votre boîte de réception (et vos spams). Cliquez ensuite sur le lien reçu pour définir votre nouveau mot de passe.
+            {t('auth.emailSentBody')}
           </p>
           <button
             onClick={() => setMode('login')}
             className="mt-4 inline-flex items-center font-sans text-xs font-semibold text-blue underline"
           >
-            Retour à la page de connexion
+            {t('auth.backToLogin')}
           </button>
         </div>
       ) : (
@@ -120,7 +120,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
                 onClick={() => setMode('forgot')}
                 className="font-sans text-xs font-semibold text-accent-ink hover:underline"
               >
-                Mot de passe oublié ?
+                {t('auth.forgotLink')}
               </button>
             </div>
           )}
@@ -129,7 +129,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
 
           <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
             {mode === 'forgot'
-              ? 'Envoyer le lien de réinitialisation'
+              ? t('auth.sendResetLink')
               : t(mode === 'login' ? 'auth.login' : 'auth.register')}
           </Button>
         </form>
@@ -150,7 +150,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
       <p className="mt-6 text-center font-sans text-sm text-ink-muted">
         {mode === 'forgot' ? (
           <button onClick={() => setMode('login')} className="font-semibold text-blue hover:underline">
-            Retour à la connexion
+            {t('auth.backToLogin')}
           </button>
         ) : (
           <>

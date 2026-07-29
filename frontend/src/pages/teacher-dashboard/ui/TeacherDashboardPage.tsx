@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Skeleton } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import { useAuthStore } from '@/entities/session'
@@ -19,18 +20,19 @@ function averageRating(courses: { rating: number | null }[]): string {
 }
 
 export function TeacherDashboardPage() {
+  const { t } = useTranslation()
   const { email } = useAuthStore()
   const { data: courses = [], isLoading, isError } = useTeacherCourses(email ?? undefined)
 
   return (
     <div>
-      <Breadcrumb items={[{ label: 'Mes cours' }]} />
+      <Breadcrumb items={[{ label: t('teacherDashboard.breadcrumb') }]} />
       <div className="container py-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-serif text-h1 text-ink">Tableau de bord enseignant</h1>
+            <h1 className="font-serif text-h1 text-ink">{t('teacherDashboard.title')}</h1>
             <p className="mt-1 font-sans text-body text-ink-muted">
-              Gérez vos cours et suivez vos statistiques.
+              {t('teacherDashboard.subtitle')}
             </p>
           </div>
           <Link
@@ -38,21 +40,21 @@ export function TeacherDashboardPage() {
             className="inline-flex min-h-touch items-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
-            Créer un cours
+            {t('teacherDashboard.newCourse')}
           </Link>
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           <div className="border border-line bg-surface p-5">
-            <p className="font-sans text-eyebrow text-ink-muted">Cours</p>
+            <p className="font-sans text-eyebrow text-ink-muted">{t('teacherDashboard.statCourses')}</p>
             <p className="mt-1 font-serif text-h2 text-ink">{isLoading ? '—' : courses.length}</p>
           </div>
           <div className="border border-line bg-surface p-5">
-            <p className="font-sans text-eyebrow text-ink-muted">Étudiants</p>
+            <p className="font-sans text-eyebrow text-ink-muted">{t('teacherDashboard.statStudents')}</p>
             <p className="mt-1 font-serif text-h2 text-ink">{isLoading ? '—' : totalStudents(courses)}</p>
           </div>
           <div className="border border-line bg-surface p-5">
-            <p className="font-sans text-eyebrow text-ink-muted">Note moyenne</p>
+            <p className="font-sans text-eyebrow text-ink-muted">{t('teacherDashboard.statRating')}</p>
             <p className="mt-1 font-serif text-h2 text-ink">{isLoading ? '—' : averageRating(courses)}</p>
           </div>
         </div>
@@ -69,19 +71,19 @@ export function TeacherDashboardPage() {
           ) : isError ? (
             <div className="border border-line bg-surface p-8 text-center">
               <p className="font-sans text-body text-danger">
-                Impossible de charger vos cours pour le moment.
+                {t('teacherDashboard.loadError')}
               </p>
             </div>
           ) : courses.length === 0 ? (
             <div className="border border-line bg-surface p-12 text-center">
               <p className="font-serif text-h3 text-ink">
-                Vous n&apos;avez pas encore créé de cours.
+                {t('teacherDashboard.empty')}
               </p>
               <Link
                 to="/teacher/courses/new"
                 className="mt-4 inline-flex min-h-touch items-center rounded bg-ink px-5 font-sans text-sm font-semibold text-paper"
               >
-                Créer un cours
+                {t('teacherDashboard.newCourse')}
               </Link>
             </div>
           ) : (

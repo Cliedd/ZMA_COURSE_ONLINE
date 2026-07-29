@@ -1,6 +1,31 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
+import { setLocale, type Locale } from '@/shared/config/i18n'
+
+/** Sélecteur de langue FR/EN du pied de page. */
+function FooterLocaleSwitch() {
+  const { t, i18n: i18nInstance } = useTranslation()
+  const current = (i18nInstance.language?.slice(0, 2) as Locale) || 'fr'
+
+  return (
+    <div className="flex items-center gap-1" role="group" aria-label={t('localeSwitch.label')}>
+      {(['fr', 'en'] as const).map((loc) => (
+        <button
+          key={loc}
+          type="button"
+          onClick={() => setLocale(loc)}
+          aria-pressed={current === loc}
+          className={`rounded px-2 py-1 font-sans text-xs font-bold uppercase transition-colors ${
+            current === loc ? 'bg-ink text-paper' : 'text-ink-muted hover:text-ink'
+          }`}
+        >
+          {loc}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 export function Footer() {
   const { t } = useTranslation()
@@ -46,9 +71,12 @@ export function Footer() {
       </div>
 
       <div className="border-t border-line">
-        <p className="container py-4 font-sans text-sm text-ink-faint">
-          © {year} {t('brand.name')} — {t('footer.rights')}
-        </p>
+        <div className="container flex flex-wrap items-center justify-between gap-3 py-4">
+          <p className="font-sans text-sm text-ink-faint">
+            © {year} {t('brand.name')} — {t('footer.rights')}
+          </p>
+          <FooterLocaleSwitch />
+        </div>
       </div>
     </footer>
   )

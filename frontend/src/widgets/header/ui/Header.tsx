@@ -1,4 +1,4 @@
-import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield } from 'lucide-react'
+import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield, Languages } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu, MenuContent, MenuItem, MenuTrigger, toast } from '@/shared/ui'
@@ -6,6 +6,27 @@ import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 import { MobileNav } from './MobileNav'
 import { ThemeToggle } from '@/shared/theme'
 import { useAuthStore } from '@/entities/session'
+import { setLocale, type Locale } from '@/shared/config/i18n'
+
+/** Petit sélecteur de langue FR/EN, aligné sur le style du bascule de thème. */
+function LocaleSwitch() {
+  const { t, i18n: i18nInstance } = useTranslation()
+  const current = (i18nInstance.language?.slice(0, 2) as Locale) || 'fr'
+  const other: Locale = current === 'fr' ? 'en' : 'fr'
+
+  return (
+    <button
+      type="button"
+      onClick={() => setLocale(other)}
+      aria-label={t('localeSwitch.switchTo', { lang: t(`localeSwitch.${other}`) })}
+      title={t('localeSwitch.switchTo', { lang: t(`localeSwitch.${other}`) })}
+      className="flex min-h-touch min-w-touch items-center justify-center gap-1 rounded-full border border-line px-2.5 font-sans text-xs font-bold uppercase text-ink hover:border-ink/40 transition-colors"
+    >
+      <Languages className="h-3.5 w-3.5" aria-hidden="true" />
+      {current}
+    </button>
+  )
+}
 
 function TrainingsMenu() {
   const { t } = useTranslation()
@@ -40,7 +61,7 @@ function UserMenu() {
 
   const handleLogout = () => {
     logout()
-    toast.info('Vous êtes déconnecté. À bientôt !', 'Déconnexion')
+    toast.info(t('nav.logoutToastBody'), t('nav.logoutToastTitle'))
     navigate('/')
   }
 
@@ -62,21 +83,21 @@ function UserMenu() {
           <p className="font-sans text-xs font-semibold text-ink truncate">{email}</p>
           <div className="mt-1 inline-flex items-center gap-1 rounded bg-blue/10 px-2 py-0.5 font-sans text-[10px] font-bold text-blue uppercase">
             <Shield className="h-3 w-3" />
-            {role || 'STUDENT'}
+            {role || t('nav.roleStudent')}
           </div>
         </div>
 
         <MenuItem asChild>
           <Link to="/dashboard" className="flex items-center gap-2.5 py-2">
             <LayoutDashboard className="h-4 w-4 text-ink-muted" />
-            <span>Tableau de bord</span>
+            <span>{t('nav.dashboard')}</span>
           </Link>
         </MenuItem>
 
         <MenuItem asChild>
           <Link to="/my-courses" className="flex items-center gap-2.5 py-2">
             <BookOpen className="h-4 w-4 text-ink-muted" />
-            <span>Mes cours</span>
+            <span>{t('nav.myCourses')}</span>
           </Link>
         </MenuItem>
 
@@ -84,7 +105,7 @@ function UserMenu() {
           <MenuItem asChild>
             <Link to="/teacher" className="flex items-center gap-2.5 py-2">
               <UserIcon className="h-4 w-4 text-ink-muted" />
-              <span>Espace Enseignant</span>
+              <span>{t('nav.teacherSpace')}</span>
             </Link>
           </MenuItem>
         )}
@@ -93,7 +114,7 @@ function UserMenu() {
           <MenuItem asChild>
             <Link to="/admin" className="flex items-center gap-2.5 py-2">
               <Shield className="h-4 w-4 text-ink-muted" />
-              <span>Administration</span>
+              <span>{t('nav.administration')}</span>
             </Link>
           </MenuItem>
         )}
@@ -101,7 +122,7 @@ function UserMenu() {
         <MenuItem asChild>
           <Link to="/settings" className="flex items-center gap-2.5 py-2">
             <Settings className="h-4 w-4 text-ink-muted" />
-            <span>Paramètres</span>
+            <span>{t('nav.settingsLink')}</span>
           </Link>
         </MenuItem>
 
@@ -113,7 +134,7 @@ function UserMenu() {
             className="flex w-full items-center gap-2.5 py-2 text-danger hover:bg-danger/10"
           >
             <LogOut className="h-4 w-4" />
-            <span>Se déconnecter</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </MenuItem>
       </MenuContent>
@@ -150,6 +171,7 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <LocaleSwitch />
           <ThemeToggle />
           {authenticated ? (
             <UserMenu />
