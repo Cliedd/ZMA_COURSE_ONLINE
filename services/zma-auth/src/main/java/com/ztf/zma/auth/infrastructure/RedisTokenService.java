@@ -25,9 +25,11 @@ public class RedisTokenService {
     private static final String REFRESH_PREFIX    = "refresh:";
     private static final String RESET_PREFIX      = "reset:";
     private static final String VERIFY_PREFIX     = "verify:";
+    private static final String MFA_CHALLENGE_PREFIX     = "mfa-challenge:";
     private static final long   REFRESH_TTL_DAYS  = 30;
     private static final long   RESET_TTL_MINUTES = 60;
     private static final long   VERIFY_TTL_HOURS  = 24;
+    private static final long   MFA_CHALLENGE_TTL_MINUTES = 5;
 
     private final StringRedisTemplate redis;
     private final Map<String, String> fallbackStore = new ConcurrentHashMap<>();
@@ -157,5 +159,45 @@ public class RedisTokenService {
             redis.delete(VERIFY_PREFIX + token);
         } catch (Exception ignored) {}
         fallbackStore.remove(VERIFY_PREFIX + token);
+    }
+
+    // ── MFA Challenge Tokens (login paused pending TOTP code) ────────────────
+    //
+    // Issued by /login once the password step succeeds for an mfaEnabled
+    // account, in place of a real access/refresh token pair. Short TTL and
+    // single-use: /mfa/verify consumes it on success, and it is never
+    // sufficient on its own to authenticate (still requires the correct
+    // TOTP code, which is itself rate-limited — see AuthController).
+
+    public String createMfaChallengeToken(String email) {
+        String challengeToken = UUID.randomUUID().toString();
+        try {
+            redis.opsForValue().set(
+                MFA_CHALLENGE_PREFIX + challengeToken,
+                email,
+                Duration.ofMinutes(MFA_CHALLENGE_TTL_MINUTES)
+            );
+        } catch (Exception e) {
+            log.warn("Redis unavailable for createMfaChallengeToken, using in-memory store");
+            fallbackStore.put(MFA_CHALLENGE_PREFIX + challengeToken, email);
+        }
+        return challengeToken;
+    }
+
+    public Optional<String> getEmailByMfaChallengeToken(String challengeToken) {
+        try {
+            String email = redis.opsForValue().get(MFA_CHALLENGE_PREFIX + challengeToken);
+            if (email != null) return Optional.of(email);
+        } catch (Exception e) {
+            log.warn("Redis unavailable for getEmailByMfaChallengeToken, using in-memory store");
+        }
+        return Optional.ofNullable(fallbackStore.get(MFA_CHALLENGE_PREFIX + challengeToken));
+    }
+
+    public void invalidateMfaChallengeToken(String challengeToken) {
+        try {
+            redis.delete(MFA_CHALLENGE_PREFIX + challengeToken);
+        } catch (Exception ignored) {}
+        fallbackStore.remove(MFA_CHALLENGE_PREFIX + challengeToken);
     }
 }

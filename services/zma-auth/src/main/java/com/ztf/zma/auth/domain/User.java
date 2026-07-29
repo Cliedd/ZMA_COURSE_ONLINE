@@ -34,6 +34,18 @@ public class User {
             columnDefinition = "timestamp with time zone default now()")
     private Instant createdAt = Instant.now();
 
+    /**
+     * TOTP MFA (RFC 6238), opt-in for ADMIN/TEACHER accounts. Only becomes true
+     * once the user has confirmed setup with a valid code — see
+     * AuthController#mfaVerify. While false, mfaSecret may hold a "pending"
+     * (unconfirmed) secret from an in-progress /mfa/setup call.
+     */
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean mfaEnabled = false;
+
+    @Column(name = "mfa_secret")
+    private String mfaSecret;
+
     // ── Getters & Setters ─────────────────────────────────────────────────────
 
     public String getId() { return id; }
@@ -59,4 +71,10 @@ public class User {
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public boolean isMfaEnabled() { return mfaEnabled; }
+    public void setMfaEnabled(boolean mfaEnabled) { this.mfaEnabled = mfaEnabled; }
+
+    public String getMfaSecret() { return mfaSecret; }
+    public void setMfaSecret(String mfaSecret) { this.mfaSecret = mfaSecret; }
 }

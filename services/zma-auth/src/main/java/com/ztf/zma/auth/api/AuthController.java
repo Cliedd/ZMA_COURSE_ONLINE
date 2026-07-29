@@ -37,6 +37,10 @@ public class AuthController {
     private final MailService         mailService;
     private final UsersServiceClient  usersServiceClient;
     private final RateLimiterService  rateLimiter;
+    private final MfaService          mfaService;
+
+    private static final int  MFA_MAX_ATTEMPTS = 5;
+    private static final Duration MFA_WINDOW   = Duration.ofMinutes(10);
 
     public AuthController(UserRepository userRepository,
                           JwtUtils jwtUtils,
@@ -44,7 +48,8 @@ public class AuthController {
                           RedisTokenService redisTokenService,
                           MailService mailService,
                           UsersServiceClient usersServiceClient,
-                          RateLimiterService rateLimiter) {
+                          RateLimiterService rateLimiter,
+                          MfaService mfaService) {
         this.userRepository    = userRepository;
         this.jwtUtils          = jwtUtils;
         this.passwordEncoder   = passwordEncoder;
@@ -52,6 +57,7 @@ public class AuthController {
         this.mailService       = mailService;
         this.usersServiceClient = usersServiceClient;
         this.rateLimiter       = rateLimiter;
+        this.mfaService        = mfaService;
     }
 
     // ── Register ──────────────────────────────────────────────────────────────
@@ -135,7 +141,7 @@ public class AuthController {
         description = "Rate-limited per IP. Rejects Google-only accounts, wrong credentials " +
                       "and suspended accounts.")
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request,
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request,
                               HttpServletRequest httpRequest) {
         String ip = getClientIp(httpRequest);
 
@@ -159,10 +165,19 @@ public class AuthController {
         // Reset counter on successful login
         rateLimiter.reset("login", ip);
 
+        // MFA-enabled accounts (opt-in, ADMIN/TEACHER only — see MfaService/docs):
+        // password step succeeded, but no tokens are issued yet. A short-lived
+        // challenge token is returned instead; the client must complete
+        // POST /mfa/verify with {challengeToken, code} to obtain real tokens.
+        if (user.isMfaEnabled()) {
+            String challengeToken = redisTokenService.createMfaChallengeToken(user.getEmail());
+            return ResponseEntity.ok(new MfaChallengeResponse(true, challengeToken));
+        }
+
         String token        = jwtUtils.generateToken(user.getEmail(), user.getRole());
         String refreshToken = redisTokenService.createRefreshToken(user.getEmail());
-        return new AuthResponse(token, refreshToken, user.getEmail(), user.getRole(),
-                                user.getId(), jwtUtils.getExpirationMs() / 1000);
+        return ResponseEntity.ok(new AuthResponse(token, refreshToken, user.getEmail(), user.getRole(),
+                                user.getId(), jwtUtils.getExpirationMs() / 1000));
     }
 
     // ── Logout ────────────────────────────────────────────────────────────────
@@ -209,6 +224,105 @@ public class AuthController {
         String newRefreshToken = redisTokenService.createRefreshToken(user.getEmail());
         return new AuthResponse(newToken, newRefreshToken, user.getEmail(), user.getRole(),
                                 user.getId(), jwtUtils.getExpirationMs() / 1000);
+    }
+
+    // ── MFA (TOTP, RFC 6238) ─────────────────────────────────────────────────
+    //
+    // Product decision: MFA is opt-in for ADMIN/TEACHER accounts, not mandatory.
+    // They CAN enable it via /mfa/setup, and once enabled the login challenge
+    // above kicks in for them, but existing admin/teacher accounts are not
+    // force-enrolled at deploy time (there is no account-recovery flow yet for
+    // a lost authenticator device, so forcing this on would risk lockouts).
+    // STUDENT accounts are not blocked from calling /mfa/setup either — the
+    // roadmap names admins/professors as the target audience, but there is no
+    // security reason to gate TOTP behind role, so it is left available to any
+    // authenticated user.
+    //
+    // Google OAuth2 accounts (provider == "GOOGLE") are untouched by this flow:
+    // Google's own 2FA is a separate concern and the /login MFA check here only
+    // ever applies to the local email/password login path.
+
+    @Operation(summary = "Begin TOTP MFA setup",
+        description = "Generates a new secret and returns an otpauth:// URI (render as a QR " +
+                      "code) for the current user. mfaEnabled stays false until confirmed via " +
+                      "POST /mfa/verify with the first code. Calling this again replaces any " +
+                      "unconfirmed pending secret.")
+    @PostMapping("/mfa/setup")
+    public ResponseEntity<MfaSetupResponse> mfaSetup(@AuthenticationPrincipal String email) {
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var key = mfaService.generateSecret();
+        user.setMfaSecret(key.getKey());
+        // mfaEnabled intentionally left false — confirmed only by /mfa/verify.
+        userRepository.save(user);
+
+        String otpAuthUri = mfaService.getOtpAuthUri(key, user.getEmail());
+        return ResponseEntity.ok(new MfaSetupResponse(key.getKey(), otpAuthUri, MfaService.ISSUER, user.getEmail()));
+    }
+
+    @Operation(summary = "Verify a TOTP code — confirms setup, or completes an MFA login",
+        description = "Two uses in one endpoint, disambiguated by request shape: a request " +
+                      "with a challengeToken completes a login that was paused for MFA " +
+                      "(unauthenticated call, issues real tokens on success); a request without " +
+                      "one confirms a pending /mfa/setup for the current authenticated user " +
+                      "(sets mfaEnabled=true on success). Login-completion attempts are rate " +
+                      "limited per IP exactly like /login.")
+    @PostMapping("/mfa/verify")
+    @Transactional
+    public ResponseEntity<?> mfaVerify(@Valid @RequestBody MfaVerifyRequest request,
+                                       @AuthenticationPrincipal String principalEmail,
+                                       HttpServletRequest httpRequest) {
+
+        if (StringUtils.hasText(request.challengeToken())) {
+            // ── Completing a login paused for MFA ───────────────────────────
+            String ip = getClientIp(httpRequest);
+            if (rateLimiter.isRateLimited("mfa-verify", ip, MFA_MAX_ATTEMPTS, MFA_WINDOW)) {
+                throw new RuntimeException("Too many MFA attempts. Try again in 10 minutes.");
+            }
+
+            String email = redisTokenService.getEmailByMfaChallengeToken(request.challengeToken())
+                .orElseThrow(() -> new RuntimeException("Invalid or expired MFA challenge"));
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (!mfaService.verifyCode(user.getMfaSecret(), request.code())) {
+                throw new RuntimeException("Invalid MFA code");
+            }
+            if (user.isSuspended()) {
+                redisTokenService.invalidateMfaChallengeToken(request.challengeToken());
+                throw new RuntimeException("Account is suspended");
+            }
+
+            rateLimiter.reset("mfa-verify", ip);
+            redisTokenService.invalidateMfaChallengeToken(request.challengeToken());
+
+            String token        = jwtUtils.generateToken(user.getEmail(), user.getRole());
+            String refreshToken = redisTokenService.createRefreshToken(user.getEmail());
+            return ResponseEntity.ok(new AuthResponse(token, refreshToken, user.getEmail(), user.getRole(),
+                                    user.getId(), jwtUtils.getExpirationMs() / 1000));
+        }
+
+        // ── Confirming a pending /mfa/setup ─────────────────────────────────
+        if (principalEmail == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        User user = userRepository.findByEmail(principalEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getMfaSecret() == null) {
+            throw new RuntimeException("No pending MFA setup for this account");
+        }
+        if (!mfaService.verifyCode(user.getMfaSecret(), request.code())) {
+            throw new RuntimeException("Invalid MFA code");
+        }
+
+        user.setMfaEnabled(true);
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of("mfaEnabled", true));
     }
 
     // ── Forgot Password ───────────────────────────────────────────────────────

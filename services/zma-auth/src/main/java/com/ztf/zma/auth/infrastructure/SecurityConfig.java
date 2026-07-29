@@ -64,6 +64,11 @@ public class SecurityConfig {
                     "/api/v1/auth/forgot-password",
                     "/api/v1/auth/reset-password",
                     "/api/v1/auth/verify-email",
+                    // permitAll: also serves the unauthenticated "completing an MFA
+                    // login" case (challengeToken proves the password step already
+                    // succeeded). The "confirming /mfa/setup" case checks the
+                    // authenticated principal itself inside the controller.
+                    "/api/v1/auth/mfa/verify",
                     "/login/**",
                     "/oauth2/**",
                     "/actuator/health",

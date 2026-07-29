@@ -68,6 +68,8 @@ public class GlobalExceptionHandler {
                  "Invalid or expired refresh token",
                  "Invalid or expired reset token",
                  "Invalid or expired verification token",
+                 "Invalid or expired MFA challenge",
+                 "Invalid MFA code",
                  "Account is suspended"                   -> HttpStatus.UNAUTHORIZED;
             case "Email already in use"                   -> HttpStatus.CONFLICT;
             case "Please log in with Google"              -> HttpStatus.BAD_REQUEST;
