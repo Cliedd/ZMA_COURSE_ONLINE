@@ -25,6 +25,7 @@ const MyCoursesPage = lazy(() => import('@/pages/my-courses').then((m) => ({ def
 const CertificatesPage = lazy(() => import('@/pages/certificates').then((m) => ({ default: m.CertificatesPage })))
 const SettingsPage = lazy(() => import('@/pages/settings').then((m) => ({ default: m.SettingsPage })))
 const CheckoutPage = lazy(() => import('@/pages/checkout').then((m) => ({ default: m.CheckoutPage })))
+const CheckoutReturnPage = lazy(() => import('@/pages/checkout-return').then((m) => ({ default: m.CheckoutReturnPage })))
 const CoursePlayer = lazy(() => import('@/pages/learning').then((m) => ({ default: m.CoursePlayer })))
 const ChatPage = lazy(() => import('@/pages/chat/ChatPage').then((m) => ({ default: m.ChatPage })))
 const TeacherDashboardPage = lazy(() => import('@/pages/teacher-dashboard').then((m) => ({ default: m.TeacherDashboardPage })))
@@ -94,6 +95,7 @@ export function AppRoutes() {
             <Route path="/certificates" element={<RequireAuth><CertificatesPage /></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
             <Route path="/checkout/:courseId" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
+            <Route path="/checkout/return" element={<RequireAuth><CheckoutReturnPage /></RequireAuth>} />
             <Route path="/chat/:courseId" element={<RequireAuth><ChatPage /></RequireAuth>} />
             <Route path="/teacher" element={<RequireAuth><TeacherDashboardPage /></RequireAuth>} />
             <Route path="/teacher/courses/new" element={<RequireAuth><CourseWizardPage /></RequireAuth>} />

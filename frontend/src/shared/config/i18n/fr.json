@@ -206,11 +206,27 @@
     "promo": "Code promo",
     "apply": "Appliquer",
     "pay": "Payer",
-    "paying": "Paiement…",
+    "paying": "Redirection…",
     "success": "Paiement réussi ! Accès débloqué.",
     "goCourse": "Accéder au cours",
     "lifetime": "Accès à vie",
-    "notFound": "Cours introuvable"
+    "notFound": "Cours introuvable",
+    "choosePaymentMethod": "Choisissez un moyen de paiement",
+    "methodCard": "Carte bancaire",
+    "methodCardHint": "Visa, Mastercard",
+    "methodPaypal": "PayPal",
+    "methodCinetpay": "Mobile Money",
+    "methodCinetpayHint": "Orange Money, MTN, Moov et autres",
+    "securePayment": "Paiement sécurisé — vos coordonnées bancaires ne transitent jamais par nos serveurs.",
+    "return": {
+      "checking": "Vérification du paiement…",
+      "success": "Paiement confirmé ! Votre accès est débloqué.",
+      "pending": "Paiement en cours de confirmation. Cela peut prendre quelques instants.",
+      "cancelled": "Paiement annulé. Vous pouvez réessayer à tout moment.",
+      "failed": "Le paiement n'a pas abouti. Contactez-nous si le problème persiste.",
+      "backToCourse": "Retour au cours",
+      "goDashboard": "Aller à mon tableau de bord"
+    }
   },
   "certificates": {
     "title": "Mes certificats",

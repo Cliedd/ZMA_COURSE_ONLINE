@@ -206,11 +206,27 @@
     "promo": "Promo code",
     "apply": "Apply",
     "pay": "Pay",
-    "paying": "Paying…",
+    "paying": "Redirecting…",
     "success": "Payment successful! Access unlocked.",
     "goCourse": "Go to course",
     "lifetime": "Lifetime access",
-    "notFound": "Course not found"
+    "notFound": "Course not found",
+    "choosePaymentMethod": "Choose a payment method",
+    "methodCard": "Card",
+    "methodCardHint": "Visa, Mastercard",
+    "methodPaypal": "PayPal",
+    "methodCinetpay": "Mobile Money",
+    "methodCinetpayHint": "Orange Money, MTN, Moov and others",
+    "securePayment": "Secure payment — your card details never touch our servers.",
+    "return": {
+      "checking": "Verifying payment…",
+      "success": "Payment confirmed! Your access is unlocked.",
+      "pending": "Payment confirmation in progress. This can take a moment.",
+      "cancelled": "Payment cancelled. You can try again anytime.",
+      "failed": "The payment didn't go through. Contact us if this persists.",
+      "backToCourse": "Back to course",
+      "goDashboard": "Go to my dashboard"
+    }
   },
   "certificates": {
     "title": "My certificates",
