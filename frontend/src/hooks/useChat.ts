@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chatApi } from '../services/api';
 import { useAuthStore } from '@/entities/session';
 import { chatSocket, type ConnectionStatus, type TypingEvent } from '../lib/chatSocket';
-import type { ChatRoomRequest, ChatMessage } from '../types';
+import type { ChatRoomRequest, ChatMessage, ReactionSummary } from '../types';
 
 export function useChatRoom(courseId: string) {
   return useQuery({
@@ -114,6 +114,13 @@ export function useNotifyTyping(roomId: string | undefined) {
   };
 }
 
+export interface SendMessagePayload {
+  content?: string;
+  parentMessageId?: string;
+  attachmentMediaId?: string;
+  attachmentType?: string;
+}
+
 /**
  * Sends over the live socket when connected — the backend broadcasts the
  * saved message back to every subscriber, including us. Falls back to REST
@@ -124,14 +131,63 @@ export function useSendMessage(roomId: string | undefined) {
   const email = useAuthStore(s => s.email);
   const status = useChatConnectionStatus();
   return useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async (payload: SendMessagePayload) => {
       if (!roomId || !email) throw new Error('Not ready');
       const senderName = email.split('@')[0] ?? email;
+      const { content, parentMessageId, attachmentMediaId, attachmentType } = payload;
       if (status === 'connected') {
-        chatSocket.send(roomId, senderName, content);
+        chatSocket.send(roomId, senderName, content ?? '', { parentMessageId, attachmentMediaId, attachmentType });
       } else {
-        await chatApi.sendMessage(roomId, { senderEmail: email, senderName, content });
+        await chatApi.sendMessage(roomId, {
+          senderEmail: email, senderName, content, parentMessageId, attachmentMediaId, attachmentType,
+        });
       }
+    },
+  });
+}
+
+/**
+ * Live emoji-reaction summaries per message, keyed by messageId. Fed purely
+ * by the WS broadcast — there is no bulk-fetch endpoint, each toggle
+ * broadcasts the full updated summary for that message.
+ */
+export function useChatReactions(roomId: string | undefined) {
+  const queryClient = useQueryClient();
+  const token = useAuthStore(s => s.token);
+
+  const query = useQuery({
+    queryKey: ['chat-reactions', roomId],
+    queryFn: () => Promise.resolve({} as Record<string, ReactionSummary>),
+    enabled: !!roomId,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (!roomId || !token) return;
+    const unsubscribe = chatSocket.subscribeToReactions(roomId, token, (summary) => {
+      queryClient.setQueryData<Record<string, ReactionSummary>>(['chat-reactions', roomId], (prev = {}) => ({
+        ...prev,
+        [summary.messageId]: summary,
+      }));
+    });
+    return unsubscribe;
+  }, [roomId, token, queryClient]);
+
+  return query.data ?? {};
+}
+
+export function useToggleReaction(roomId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
+      if (!roomId) throw new Error('Not ready');
+      return chatApi.toggleReaction(roomId, messageId, emoji);
+    },
+    onSuccess: (summary) => {
+      queryClient.setQueryData<Record<string, ReactionSummary>>(['chat-reactions', roomId], (prev = {}) => ({
+        ...prev,
+        [summary.messageId]: summary,
+      }));
     },
   });
 }

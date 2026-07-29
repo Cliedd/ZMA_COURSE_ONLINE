@@ -1,5 +1,5 @@
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs'
-import type { ChatMessage } from '../types'
+import type { ChatMessage, ReactionSummary } from '../types'
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected'
 
@@ -18,6 +18,7 @@ class ChatSocket {
   private client: Client | null = null
   private roomSubs = new Map<string, StompSubscription>()
   private typingSubs = new Map<string, StompSubscription>()
+  private reactionSubs = new Map<string, StompSubscription>()
   private statusListeners = new Set<(status: ConnectionStatus) => void>()
   private status: ConnectionStatus = 'disconnected'
 
@@ -48,7 +49,7 @@ class ChatSocket {
   }
 
   private teardownIfIdle() {
-    if (this.roomSubs.size === 0 && this.typingSubs.size === 0 && this.client) {
+    if (this.roomSubs.size === 0 && this.typingSubs.size === 0 && this.reactionSubs.size === 0 && this.client) {
       this.client.deactivate()
       this.client = null
       this.setStatus('disconnected')
@@ -93,10 +94,33 @@ class ChatSocket {
     }
   }
 
-  send(roomId: string, senderName: string, content: string) {
+  subscribeToReactions(roomId: string, token: string, onReaction: (summary: ReactionSummary) => void): () => void {
+    this.ensureConnected(token)
+    const client = this.client!
+    const subscribe = () => {
+      const sub = client.subscribe(`/topic/rooms/${roomId}/reactions`, (frame: IMessage) => {
+        onReaction(JSON.parse(frame.body) as ReactionSummary)
+      })
+      this.reactionSubs.set(roomId, sub)
+    }
+    if (client.connected) subscribe()
+    else client.onConnect = () => { this.setStatus('connected'); subscribe() }
+
+    return () => {
+      this.reactionSubs.get(roomId)?.unsubscribe()
+      this.reactionSubs.delete(roomId)
+      this.teardownIfIdle()
+    }
+  }
+
+  send(roomId: string, senderName: string, content: string, extra?: {
+    parentMessageId?: string
+    attachmentMediaId?: string
+    attachmentType?: string
+  }) {
     this.client?.publish({
       destination: `/app/rooms/${roomId}/send`,
-      body: JSON.stringify({ senderName, content }),
+      body: JSON.stringify({ senderName, content, ...extra }),
     })
   }
 

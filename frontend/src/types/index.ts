@@ -161,6 +161,12 @@ export interface ChatMessage {
   sentAt: string;
   editedAt?: string | null;
   deletedAt?: string | null;
+  /** Non-null when this message is a reply within a thread */
+  parentMessageId?: string | null;
+  /** References a file uploaded via zma-media's presign flow */
+  attachmentMediaId?: string | null;
+  /** e.g. "image"/"audio"/"file" */
+  attachmentType?: string | null;
 }
 
 export interface ChatRoomRequest {
@@ -172,7 +178,17 @@ export interface ChatRoomRequest {
 export interface ChatMessageRequest {
   senderEmail: string;
   senderName: string;
-  content: string;
+  content?: string;
+  parentMessageId?: string;
+  attachmentMediaId?: string;
+  attachmentType?: string;
+}
+
+/** Room-wide broadcast payload after a reaction toggle */
+export interface ReactionSummary {
+  messageId: string;
+  counts: Record<string, number>;
+  reactors: Record<string, string[]>;
 }
 
 // ─── Community ────────────────────────────────────────────────────────────────

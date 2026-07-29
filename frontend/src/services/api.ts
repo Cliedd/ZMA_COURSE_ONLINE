@@ -4,7 +4,7 @@ import type {
   LoginRequest, RegisterRequest,
   Enrollment, EnrollRequest, EnrollCheckResult, Certificate,
   Payment,
-  ChatRoom, ChatMessage, ChatRoomRequest, ChatMessageRequest,
+  ChatRoom, ChatMessage, ChatRoomRequest, ChatMessageRequest, ReactionSummary,
   Comment, CommentRequest, Notification,
   PresignResponse, Media,
 } from '../types';
@@ -127,6 +127,10 @@ export const chatApi = {
     api.patch<ChatMessage>(`/community/rooms/${roomId}/messages/${messageId}`, { content }).then(r => r.data),
   deleteMessage: (roomId: string, messageId: string) =>
     api.delete(`/community/rooms/${roomId}/messages/${messageId}`),
+  getThread: (roomId: string, messageId: string) =>
+    api.get<ChatMessage[]>(`/community/rooms/${roomId}/messages/${messageId}/thread`).then(r => r.data),
+  toggleReaction: (roomId: string, messageId: string, emoji: string) =>
+    api.post<ReactionSummary>(`/community/rooms/${roomId}/messages/${messageId}/reactions`, { emoji }).then(r => r.data),
 };
 
 // ─── Community (comments) ─────────────────────────────────────────────────────
