@@ -18,7 +18,8 @@ public class ChatMessage {
     private String senderEmail;
     private String senderName;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    /** Blank/null allowed when the message carries only an attachment */
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private LocalDateTime sentAt;
@@ -28,6 +29,15 @@ public class ChatMessage {
 
     /** Soft-delete timestamp — non-null means deleted */
     private LocalDateTime deletedAt;
+
+    /** Non-null when this message is a reply within a thread */
+    private String parentMessageId;
+
+    /** References a file uploaded via zma-media's presign flow; not validated server-side */
+    private String attachmentMediaId;
+
+    /** Client-supplied hint, e.g. "image"/"audio"/"file" */
+    private String attachmentType;
 
     @PrePersist
     protected void onCreate() {
@@ -52,4 +62,10 @@ public class ChatMessage {
     public void setEditedAt(LocalDateTime editedAt) { this.editedAt = editedAt; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
     public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
+    public String getParentMessageId() { return parentMessageId; }
+    public void setParentMessageId(String parentMessageId) { this.parentMessageId = parentMessageId; }
+    public String getAttachmentMediaId() { return attachmentMediaId; }
+    public void setAttachmentMediaId(String attachmentMediaId) { this.attachmentMediaId = attachmentMediaId; }
+    public String getAttachmentType() { return attachmentType; }
+    public void setAttachmentType(String attachmentType) { this.attachmentType = attachmentType; }
 }

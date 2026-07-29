@@ -1,7 +1,9 @@
 package com.ztf.zma.community.service;
 
 import com.ztf.zma.community.domain.ChatMessage;
+import com.ztf.zma.community.domain.ChatMessageReaction;
 import com.ztf.zma.community.domain.ChatRoom;
+import com.ztf.zma.community.repository.ChatMessageReactionRepository;
 import com.ztf.zma.community.repository.ChatMessageRepository;
 import com.ztf.zma.community.repository.ChatRoomRepository;
 import org.springframework.data.domain.Page;
@@ -11,18 +13,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
 
-    private final ChatRoomRepository    roomRepository;
-    private final ChatMessageRepository messageRepository;
+    private final ChatRoomRepository            roomRepository;
+    private final ChatMessageRepository         messageRepository;
+    private final ChatMessageReactionRepository reactionRepository;
 
     public ChatService(ChatRoomRepository roomRepository,
-                       ChatMessageRepository messageRepository) {
-        this.roomRepository    = roomRepository;
-        this.messageRepository = messageRepository;
+                       ChatMessageRepository messageRepository,
+                       ChatMessageReactionRepository reactionRepository) {
+        this.roomRepository     = roomRepository;
+        this.messageRepository  = messageRepository;
+        this.reactionRepository = reactionRepository;
     }
 
     @Transactional
@@ -48,15 +56,79 @@ public class ChatService {
     @Transactional
     public ChatMessage sendMessage(String roomId, String senderEmail,
                                    String senderName, String content) {
+        return sendMessage(roomId, senderEmail, senderName, content, null, null, null);
+    }
+
+    @Transactional
+    public ChatMessage sendMessage(String roomId, String senderEmail, String senderName, String content,
+                                   String parentMessageId, String attachmentMediaId, String attachmentType) {
         roomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
+
+        boolean hasContent = content != null && !content.isBlank();
+        boolean hasAttachment = attachmentMediaId != null && !attachmentMediaId.isBlank();
+        if (!hasContent && !hasAttachment) {
+            throw new IllegalArgumentException("Message must have content or an attachment");
+        }
 
         ChatMessage msg = new ChatMessage();
         msg.setRoomId(roomId);
         msg.setSenderEmail(senderEmail);
         msg.setSenderName(senderName);
-        msg.setContent(content);
+        msg.setContent(hasContent ? content : "");
+        msg.setParentMessageId(parentMessageId);
+        msg.setAttachmentMediaId(attachmentMediaId);
+        msg.setAttachmentType(attachmentType);
         return messageRepository.save(msg);
+    }
+
+    /** Replies to a message, ordered oldest-first */
+    public List<ChatMessage> getThread(String parentMessageId) {
+        return messageRepository.findByParentMessageIdOrderBySentAtAsc(parentMessageId);
+    }
+
+    /**
+     * Toggles an emoji reaction from a user on a message: adding the same
+     * emoji again removes it. Returns the updated room-wide summary.
+     */
+    @Transactional
+    public ReactionSummary toggleReaction(String messageId, String userEmail, String emoji) {
+        messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+
+        reactionRepository.findByMessageIdAndEmojiAndUserEmail(messageId, emoji, userEmail)
+                .ifPresentOrElse(
+                        reactionRepository::delete,
+                        () -> {
+                            ChatMessageReaction reaction = new ChatMessageReaction();
+                            reaction.setMessageId(messageId);
+                            reaction.setEmoji(emoji);
+                            reaction.setUserEmail(userEmail);
+                            reactionRepository.save(reaction);
+                        }
+                );
+
+        return buildReactionSummary(messageId);
+    }
+
+    private ReactionSummary buildReactionSummary(String messageId) {
+        List<ChatMessageReaction> reactions = reactionRepository.findByMessageId(messageId);
+
+        Map<String, List<String>> reactors = reactions.stream()
+                .collect(Collectors.groupingBy(
+                        ChatMessageReaction::getEmoji,
+                        LinkedHashMap::new,
+                        Collectors.mapping(ChatMessageReaction::getUserEmail, Collectors.toList())
+                ));
+        Map<String, Long> counts = reactors.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> (long) e.getValue().size(),
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+
+        return new ReactionSummary(messageId, counts, reactors);
     }
 
     /** Paginated messages (newest first) */

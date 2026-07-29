@@ -3,6 +3,7 @@ package com.ztf.zma.community.api;
 import com.ztf.zma.community.domain.ChatMessage;
 import com.ztf.zma.community.domain.ChatRoom;
 import com.ztf.zma.community.service.ChatService;
+import com.ztf.zma.community.service.ReactionSummary;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -62,10 +63,35 @@ public class ChatController {
                 roomId,
                 auth.getName(),
                 body.getOrDefault("senderName", auth.getName()),
-                body.get("content")
+                body.get("content"),
+                body.get("parentMessageId"),
+                body.get("attachmentMediaId"),
+                body.get("attachmentType")
         );
         messagingTemplate.convertAndSend("/topic/rooms/" + roomId, saved);
         return saved;
+    }
+
+    /** Replies to a message, ordered oldest-first */
+    @Operation(summary = "Get the thread of replies to a message")
+    @GetMapping("/{roomId}/messages/{messageId}/thread")
+    public List<ChatMessage> getThread(
+            @PathVariable String roomId,
+            @PathVariable String messageId) {
+        return chatService.getThread(messageId);
+    }
+
+    /** Toggle an emoji reaction on a message — adding the same emoji again removes it */
+    @Operation(summary = "Toggle a reaction on a chat message")
+    @PostMapping("/{roomId}/messages/{messageId}/reactions")
+    public ReactionSummary toggleReaction(
+            @PathVariable String roomId,
+            @PathVariable String messageId,
+            @RequestBody Map<String, String> body,
+            Authentication auth) {
+        ReactionSummary summary = chatService.toggleReaction(messageId, auth.getName(), body.get("emoji"));
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/reactions", summary);
+        return summary;
     }
 
     /** Paginated messages — page=0, size=50 default */

@@ -2,6 +2,7 @@ package com.ztf.zma.community.api;
 
 import com.ztf.zma.community.domain.ChatMessage;
 import com.ztf.zma.community.service.ChatService;
+import com.ztf.zma.community.service.ReactionSummary;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,8 +34,22 @@ public class ChatWebSocketController {
     public void send(@DestinationVariable String roomId, Map<String, String> body, Principal principal) {
         String senderEmail = principal.getName();
         String senderName = body.getOrDefault("senderName", senderEmail);
-        ChatMessage saved = chatService.sendMessage(roomId, senderEmail, senderName, body.get("content"));
+        ChatMessage saved = chatService.sendMessage(
+                roomId,
+                senderEmail,
+                senderName,
+                body.get("content"),
+                body.get("parentMessageId"),
+                body.get("attachmentMediaId"),
+                body.get("attachmentType")
+        );
         messagingTemplate.convertAndSend("/topic/rooms/" + roomId, saved);
+    }
+
+    @MessageMapping("/rooms/{roomId}/reactions")
+    public void react(@DestinationVariable String roomId, Map<String, String> body, Principal principal) {
+        ReactionSummary summary = chatService.toggleReaction(body.get("messageId"), principal.getName(), body.get("emoji"));
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/reactions", summary);
     }
 
     @MessageMapping("/rooms/{roomId}/typing")
