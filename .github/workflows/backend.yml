@@ -9,12 +9,18 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
+      # zma-media's TranscodingServiceTest genuinely shells out to real
+      # ffmpeg/ffprobe (by design — the whole point of that test is proving
+      # transcoding actually works, not mocking it away). ubuntu-latest
+      # doesn't ship ffmpeg preinstalled.
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       # Compiles every module declared in the root pom.xml (all 8 services).
       - name: Compile all modules
         run: mvn -B compile
