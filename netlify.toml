@@ -7,6 +7,27 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
 
+# Backend Railway (zma-gateway) — doit précéder le fallback SPA ci-dessous,
+# sinon ce dernier intercepte tous les appels /api/v1/* et renvoie
+# index.html (200 OK) au lieu du JSON attendu.
+[[redirects]]
+  from = "/api/v1/*"
+  to = "https://zma-gateway-production.up.railway.app/api/v1/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/oauth2/*"
+  to = "https://zma-gateway-production.up.railway.app/oauth2/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/login/oauth2/*"
+  to = "https://zma-gateway-production.up.railway.app/login/oauth2/:splat"
+  status = 200
+  force = true
+
 # SPA : toutes les routes servent index.html (React Router côté client).
 [[redirects]]
   from = "/*"
