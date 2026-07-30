@@ -1,0 +1,28 @@
+# Railway deploy Dockerfile for zma-community — mirrors the root Dockerfile's build
+# logic but bakes SERVICE_NAME in directly instead of relying on Railway
+# passing a Docker build ARG through, which isn't exposed in the CLI's
+# service-config schema. Build context must be the repo root (this file
+# COPYs services/*/pom.xml the same way the shared root Dockerfile does).
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
+WORKDIR /workspace
+COPY pom.xml .
+COPY services/zma-gateway/pom.xml     services/zma-gateway/pom.xml
+COPY services/zma-auth/pom.xml        services/zma-auth/pom.xml
+COPY services/zma-users/pom.xml       services/zma-users/pom.xml
+COPY services/zma-catalog/pom.xml     services/zma-catalog/pom.xml
+COPY services/zma-media/pom.xml       services/zma-media/pom.xml
+COPY services/zma-enrollment/pom.xml  services/zma-enrollment/pom.xml
+COPY services/zma-payment/pom.xml     services/zma-payment/pom.xml
+COPY services/zma-community/pom.xml   services/zma-community/pom.xml
+RUN mvn dependency:go-offline -q 2>/dev/null || true
+COPY services/ services/
+RUN mvn -pl services/zma-community -am package -DskipTests -q
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /workspace/services/zma-community/target/*.jar app.jar
+ENTRYPOINT ["java", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-jar", "app.jar"]
