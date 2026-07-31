@@ -47,6 +47,9 @@ public class SecurityConfig {
     @Value("${google.oauth.public-base-url:http://localhost:8080}")
     private String googlePublicBaseUrl;
 
+    @Value("${frontend.url:http://localhost}")
+    private String frontendUrl;
+
     public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler,
                           JwtAuthFilter jwtAuthFilter) {
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
@@ -133,6 +136,11 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .oauth2Login(oauth2 -> oauth2
                 .successHandler(oAuth2SuccessHandler)
+                // Spring's default failure target ("/login?error") is resolved
+                // relative to the request as zma-auth sees it — the private
+                // Railway hostname behind the gateway proxy, which a real
+                // browser can never reach. Must be an absolute, public URL.
+                .failureUrl(frontendUrl + "/auth/login?error=oauth")
             );
         return http.build();
     }
