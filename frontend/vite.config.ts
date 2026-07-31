@@ -41,7 +41,16 @@ export default defineConfig({
       workbox: {
         // Ne jamais mettre en cache l'authentification ou les paiements — doivent
         // toujours atteindre le réseau, même en mode offline (échec explicite sinon).
-        navigateFallbackDenylist: [/^\/api\/v1\/auth/, /^\/api\/v1\/payments/],
+        // /oauth2 et /login/oauth2 doivent aussi passer en direct : ce sont des
+        // navigations plein-page vers Google puis vers le callback backend — si le
+        // service worker les intercepte, il sert l'app shell en cache (404 React
+        // Router) au lieu de laisser la requête atteindre le gateway.
+        navigateFallbackDenylist: [
+          /^\/api\/v1\/auth/,
+          /^\/api\/v1\/payments/,
+          /^\/oauth2/,
+          /^\/login\/oauth2/,
+        ],
         runtimeCaching: [
           {
             // Catalogue de cours : network-first avec repli cache de courte durée,
