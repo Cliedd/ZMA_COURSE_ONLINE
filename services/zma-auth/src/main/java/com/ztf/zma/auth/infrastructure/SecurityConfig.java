@@ -39,6 +39,14 @@ public class SecurityConfig {
     @Value("${google.oauth.scope:profile,email}")
     private String googleScope;
 
+    // The {baseUrl} template resolves from the request as zma-auth sees it —
+    // which, behind the gateway's internal proxy call, is the private
+    // Railway hostname (zma-auth.railway.internal:8081), not the public URL
+    // registered in Google Cloud Console. Hardcoding the public base avoids
+    // depending on forwarded-header propagation through the proxy chain.
+    @Value("${google.oauth.public-base-url:http://localhost:8080}")
+    private String googlePublicBaseUrl;
+
     public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler,
                           JwtAuthFilter jwtAuthFilter) {
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
@@ -63,7 +71,7 @@ public class SecurityConfig {
                 .clientSecret(googleClientSecret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+                .redirectUri(googlePublicBaseUrl + "/login/oauth2/code/google")
                 .scope(googleScope.split(","))
                 .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
                 .tokenUri("https://www.googleapis.com/oauth2/v4/token")
