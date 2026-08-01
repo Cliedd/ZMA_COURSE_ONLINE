@@ -188,6 +188,28 @@
         "body": "Refine your artistry, prepare for auditions, and work toward a degree."
       }
     },
+    "audience": {
+      "eyebrow": "Who it's for",
+      "title": "Lessons for every age and goal",
+      "items": {
+        "children": {
+          "title": "Children",
+          "body": "Playful, foundational lessons that spark a lifelong interest in music, very early."
+        },
+        "teenagers": {
+          "title": "Teenagers",
+          "body": "Build skill and confidence through creative exploration and group playing."
+        },
+        "adults": {
+          "title": "Adults",
+          "body": "Refine your technique, express your passion, and keep progressing at your own pace."
+        },
+        "private": {
+          "title": "Private lessons",
+          "body": "One-to-one teaching, tailored to your goals, schedule and pace."
+        }
+      }
+    },
     "disciplines": {
       "eyebrow": "What you can study",
       "title": "Ten disciplines, one standard of excellence",
