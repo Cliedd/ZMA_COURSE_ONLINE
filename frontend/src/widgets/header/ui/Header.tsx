@@ -38,10 +38,10 @@ function TrainingsMenu() {
       </MenuTrigger>
       <MenuContent className="min-w-80">
         {[...DEPARTMENTS, ...LEVELS].map((entry) => (
-          <MenuItem key={entry.label} asChild>
+          <MenuItem key={entry.value} asChild>
             <Link to={entry.to}>
-              <span className="text-ink">{entry.label}</span>
-              <span className="ml-auto text-sm text-ink-faint">{entry.hint}</span>
+              <span className="text-ink">{t(entry.labelKey)}</span>
+              <span className="ml-auto text-sm text-ink-faint">{t(entry.hintKey)}</span>
             </Link>
           </MenuItem>
         ))}

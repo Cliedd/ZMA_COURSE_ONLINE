@@ -14,15 +14,16 @@ function isSupportedLocale(value: string | null): value is Locale {
 
 function readStoredLocale(): Locale {
   const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(LOCALE_STORAGE_KEY) : null
-  return isSupportedLocale(raw) ? raw : 'fr'
+  return isSupportedLocale(raw) ? raw : 'en'
 }
 
-/** Français et anglais (chantier 5). La langue initiale est relue depuis localStorage,
- * avec repli sur le français si rien n'est stocké. */
+/** Anglais et français (chantier 5). L'anglais est la langue par défaut/primaire ; la
+ * langue initiale est relue depuis localStorage, avec repli sur l'anglais si rien n'est
+ * stocké. */
 void i18next.use(initReactI18next).init({
   resources: { fr: { translation: fr }, en: { translation: en } },
   lng: readStoredLocale(),
-  fallbackLng: 'fr',
+  fallbackLng: 'en',
   interpolation: { escapeValue: false },
   returnNull: false,
 })
@@ -35,7 +36,7 @@ export function setLocale(next: Locale): void {
   void i18next.changeLanguage(next)
 }
 
-const locale = (): string => i18next.language || 'fr'
+const locale = (): string => i18next.language || 'en'
 
 export function formatPrice(amount: number): string {
   return new Intl.NumberFormat(locale(), {

@@ -30,7 +30,7 @@ describe('CertificateVerifyPage', () => {
 
     renderAt('/certificates/verify/ZTF-2026-000123')
 
-    expect(await screen.findByText('Certificat authentique')).toBeInTheDocument()
+    expect(await screen.findByText('Certificate authentic')).toBeInTheDocument()
     expect(screen.getByText('Piano classique & harmonie')).toBeInTheDocument()
   })
 
@@ -39,7 +39,7 @@ describe('CertificateVerifyPage', () => {
 
     renderAt('/certificates/verify/INCONNU')
 
-    expect(await screen.findByText('Certificat introuvable')).toBeInTheDocument()
+    expect(await screen.findByText('Certificate not found')).toBeInTheDocument()
   })
 
   it("permet de rechercher un certificat via le formulaire quand aucun numéro n'est dans l'URL", async () => {
@@ -53,10 +53,10 @@ describe('CertificateVerifyPage', () => {
     renderAt('/certificates/verify')
     expect(screen.queryByText('Certificat authentique')).not.toBeInTheDocument()
 
-    await userEvent.type(screen.getByLabelText('Numéro de certificat'), 'ZTF-9')
-    await userEvent.click(screen.getByRole('button', { name: 'Vérifier' }))
+    await userEvent.type(screen.getByLabelText('Certificate number'), 'ZTF-9')
+    await userEvent.click(screen.getByRole('button', { name: 'Verify' }))
 
-    expect(await screen.findByText('Certificat authentique')).toBeInTheDocument()
+    expect(await screen.findByText('Certificate authentic')).toBeInTheDocument()
     expect(screen.getByText('Guitare jazz')).toBeInTheDocument()
   })
 })

@@ -17,9 +17,16 @@ export default {
         warning: 'var(--warning)',
         danger: 'var(--danger)',
         info: 'var(--info)',
+        dept: {
+          1: 'var(--dept-1)',
+          2: 'var(--dept-2)',
+          3: 'var(--dept-3)',
+          4: 'var(--dept-4)',
+          5: 'var(--dept-5)',
+        },
       },
       fontFamily: {
-        serif: ['"Source Serif 4 Variable"', 'Georgia', 'serif'],
+        serif: ['"Playfair Display Variable"', 'Georgia', 'serif'],
         sans: ['"Inter Variable"', 'system-ui', 'sans-serif'],
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },

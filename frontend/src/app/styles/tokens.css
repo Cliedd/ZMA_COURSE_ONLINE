@@ -20,6 +20,14 @@
   --danger: #A3281E;
   --info: #0050A0;
 
+  /* Accents par département — un ton par filière (rotation rouge/bleu/rose/or/vert),
+     à l'esprit de la charte du confrère, vérifiés par tokens.contrast.test.ts. */
+  --dept-1: #B3261E; /* rouge */
+  --dept-2: #1D4FA8; /* bleu */
+  --dept-3: #A31E64; /* rose */
+  --dept-4: #8A5A00; /* or */
+  --dept-5: #1F6B4E; /* vert */
+
   --radius: 2px;
   --shadow-overlay: 0 8px 24px -8px rgb(18 36 61 / 0.18);
   --duration: 180ms;
@@ -47,6 +55,12 @@
   --warning: #F09010;
   --danger: #E8776A;
   --info: #4DA3E0;
+
+  --dept-1: #E8776A;
+  --dept-2: #4DA3E0;
+  --dept-3: #E869B0;
+  --dept-4: #F0B429;
+  --dept-5: #4FBF8B;
 
   --shadow-overlay: 0 8px 24px -8px rgb(0 0 0 / 0.6);
 }

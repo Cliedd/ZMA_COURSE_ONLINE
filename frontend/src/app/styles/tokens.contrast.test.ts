@@ -29,7 +29,7 @@ describe('jetons du registre clair', () => {
   const t = readTokens(':root')
 
   it('définit tous les jetons attendus', () => {
-    for (const name of ['paper', 'surface', 'ink', 'ink-muted', 'ink-faint', 'line', 'blue', 'accent', 'accent-ink', 'success', 'warning', 'danger', 'info']) {
+    for (const name of ['paper', 'surface', 'ink', 'ink-muted', 'ink-faint', 'line', 'blue', 'accent', 'accent-ink', 'success', 'warning', 'danger', 'info', 'dept-1', 'dept-2', 'dept-3', 'dept-4', 'dept-5']) {
       expect(t[name], `jeton --${name} manquant`).toBeDefined()
     }
   })
@@ -43,9 +43,21 @@ describe('jetons du registre clair', () => {
     ['warning', 4.5],
     ['danger', 4.5],
     ['info', 4.5],
+    ['dept-1', 4.5],
+    ['dept-2', 4.5],
+    ['dept-3', 4.5],
+    ['dept-4', 4.5],
+    ['dept-5', 4.5],
   ])('--%s atteint le seuil AA texte normal (%s:1) sur --paper', (name, min) => {
     expect(contrastRatio(t[name]!, t['paper']!)).toBeGreaterThanOrEqual(min)
   })
+
+  it.each(['dept-1', 'dept-2', 'dept-3', 'dept-4', 'dept-5'])(
+    '--%s reste lisible aussi sur --surface (blanc)',
+    (name) => {
+      expect(contrastRatio(t[name]!, t['surface']!)).toBeGreaterThanOrEqual(4.5)
+    },
+  )
 
   it('--ink-faint atteint le seuil gros texte (3:1) mais pas celui du texte normal', () => {
     const ratio = contrastRatio(t['ink-faint']!, t['paper']!)
@@ -72,6 +84,11 @@ describe('jetons du registre sombre', () => {
   it.each([
     ['scene-ink', 4.5],
     ['accent', 4.5],
+    ['dept-1', 4.5],
+    ['dept-2', 4.5],
+    ['dept-3', 4.5],
+    ['dept-4', 4.5],
+    ['dept-5', 4.5],
   ])('--%s atteint le seuil AA (%s:1) sur --scene', (name, min) => {
     expect(contrastRatio(t[name]!, t['scene']!)).toBeGreaterThanOrEqual(min)
   })

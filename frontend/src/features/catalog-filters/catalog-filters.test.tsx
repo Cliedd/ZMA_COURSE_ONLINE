@@ -23,24 +23,24 @@ function renderAt(initial = '/catalogue') {
 describe('useCatalogFilters + FilterBar', () => {
   it('lit les filtres depuis l\'URL', () => {
     renderAt('/catalogue?level=Master')
-    expect(screen.getByRole('button', { name: 'Master' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: "Master's" })).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('pose un niveau dans l\'URL au clic sur une puce', async () => {
     renderAt()
-    await userEvent.click(screen.getByRole('button', { name: 'Licence' }))
+    await userEvent.click(screen.getByRole('button', { name: "Bachelor's" }))
     expect(screen.getByTestId('search').textContent).toContain('level=Licence')
   })
 
   it('pose un département encodé dans l\'URL', async () => {
     renderAt()
-    await userEvent.click(screen.getByRole('button', { name: 'Interprétation' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Performance' }))
     expect(screen.getByTestId('search').textContent).toContain('department=Interpr')
   })
 
   it('retire le filtre au clic sur « Tous »', async () => {
     renderAt('/catalogue?level=Master')
-    const allButtons = screen.getAllByRole('button', { name: 'Tous' })
+    const allButtons = screen.getAllByRole('button', { name: 'All' })
     await userEvent.click(allButtons[0]!)
     expect(screen.getByTestId('search').textContent).not.toContain('level=')
   })

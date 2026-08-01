@@ -59,6 +59,6 @@ describe('ImmersiveLayout', () => {
     expect(screen.getByText('Contenu témoin')).toBeInTheDocument()
     expect(container.querySelector('[data-theme="dark"]')).not.toBeNull()
     // Sortie toujours visible (retour vers Mes cours).
-    expect(screen.getByRole('link', { name: /mes cours/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /my courses/i })).toBeInTheDocument()
   })
 })

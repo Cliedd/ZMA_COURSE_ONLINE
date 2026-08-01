@@ -24,27 +24,27 @@ describe('Header — visiteur', () => {
   it('affiche les entrées principales', () => {
     renderHeader()
     const nav = screen.getByRole('navigation', { name: /principale/i })
-    expect(within(nav).getByRole('button', { name: /Formations/ })).toBeInTheDocument()
-    expect(within(nav).getByRole('link', { name: /Enseignants/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /Courses/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('link', { name: /Teachers/ })).toBeInTheDocument()
   })
 
-  it('propose Connexion et Inscription', () => {
+  it('propose Log in et Sign up', () => {
     renderHeader()
-    expect(screen.getByRole('link', { name: 'Connexion' })).toHaveAttribute('href', '/auth/login')
-    expect(screen.getByRole('link', { name: "S'inscrire" })).toHaveAttribute('href', '/auth/register')
+    expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/auth/login')
+    expect(screen.getByRole('link', { name: 'Sign up' })).toHaveAttribute('href', '/auth/register')
   })
 
-  it('déploie le menu Formations et pointe vers des catalogues filtrés', async () => {
+  it('déploie le menu Courses et pointe vers des catalogues filtrés', async () => {
     renderHeader()
-    await userEvent.click(screen.getByRole('button', { name: /Formations/ }))
+    await userEvent.click(screen.getByRole('button', { name: /Courses/ }))
     const menu = await screen.findByRole('menu')
-    const item = within(menu).getByRole('menuitem', { name: /Interprétation/ })
+    const item = within(menu).getByRole('menuitem', { name: /Performance/ })
     expect(item).toHaveAttribute('href', '/catalogue?department=Interpr%C3%A9tation')
   })
 
   it('offre un lien d\'évitement en première position', () => {
     renderHeader()
-    expect(screen.getByRole('link', { name: 'Aller au contenu' })).toHaveAttribute('href', '#contenu')
+    expect(screen.getByRole('link', { name: 'Skip to content' })).toHaveAttribute('href', '#contenu')
   })
 
   it('n\'a aucune violation d\'accessibilité', async () => {
@@ -56,20 +56,20 @@ describe('Header — visiteur', () => {
 describe('Header — navigation mobile', () => {
   it('expose un déclencheur de menu, absent du frontend actuel', () => {
     renderHeader()
-    expect(screen.getByRole('button', { name: 'Ouvrir le menu' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument()
   })
 
   it('ouvre un tiroir contenant la navigation complète', async () => {
     renderHeader()
-    await userEvent.click(screen.getByRole('button', { name: 'Ouvrir le menu' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Open menu' }))
     const drawer = await screen.findByRole('dialog', { name: 'Navigation' })
-    expect(within(drawer).getByRole('link', { name: /Interprétation/ })).toBeInTheDocument()
-    expect(within(drawer).getByRole('link', { name: 'Connexion' })).toBeInTheDocument()
+    expect(within(drawer).getByRole('link', { name: /Performance/ })).toBeInTheDocument()
+    expect(within(drawer).getByRole('link', { name: 'Log in' })).toBeInTheDocument()
   })
 
   it('ferme le tiroir avec la touche Échap', async () => {
     renderHeader()
-    await userEvent.click(screen.getByRole('button', { name: 'Ouvrir le menu' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Open menu' }))
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })

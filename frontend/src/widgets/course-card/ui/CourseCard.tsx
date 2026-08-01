@@ -5,6 +5,7 @@ import { Card, CardMedia, CardBody, CardFooter, Picture } from '@/shared/ui'
 import { formatPrice, formatDuration } from '@/shared/config/i18n'
 import type { Course } from '@/entities/course'
 import { courseImage } from '../lib/courseImage'
+import { departmentLabel } from '@/shared/config/navigation'
 
 /**
  * Carte de cours, registre clair éditorial. Le nom, le prix et la note sont en
@@ -27,7 +28,7 @@ export function CourseCard({ course }: { course: Course }) {
         <CardBody className="flex flex-col gap-2">
           <span className="font-sans text-eyebrow font-bold uppercase text-accent-ink">
             {t(`level.${course.level}`, course.level)}
-            {course.department ? ` · ${course.department}` : ''}
+            {course.department ? ` · ${departmentLabel(t, course.department)}` : ''}
           </span>
           <h3 className="font-serif text-h3 leading-tight text-ink group-hover:underline decoration-accent-ink/40 underline-offset-4">
             {course.title}

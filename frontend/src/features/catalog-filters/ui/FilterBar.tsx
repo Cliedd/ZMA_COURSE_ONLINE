@@ -62,8 +62,8 @@ export function FilterBar({ filters, onSetFilter }: FilterBarProps) {
       <ChipRow label={t('catalogue.filtersDept')}>
         <Chip active={!filters.department} onClick={() => onSetFilter('department', undefined)}>{t('catalogue.all')}</Chip>
         {DEPARTMENTS.map((dept) => (
-          <Chip key={dept.label} active={filters.department === dept.label} onClick={() => onSetFilter('department', dept.label)}>
-            {dept.label}
+          <Chip key={dept.value} active={filters.department === dept.value} onClick={() => onSetFilter('department', dept.value)}>
+            {t(dept.labelKey)}
           </Chip>
         ))}
       </ChipRow>

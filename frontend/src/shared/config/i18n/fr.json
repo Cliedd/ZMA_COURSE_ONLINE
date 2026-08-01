@@ -29,7 +29,28 @@
     "settingsLink": "Paramètres",
     "logoutToastTitle": "Déconnexion",
     "logoutToastBody": "Vous êtes déconnecté. À bientôt !",
-    "roleStudent": "ÉTUDIANT"
+    "roleStudent": "ÉTUDIANT",
+    "departments": {
+      "interpretation": "Interprétation",
+      "composition": "Composition",
+      "technologies": "Technologies",
+      "pedagogie": "Pédagogie",
+      "musicologie": "Musicologie"
+    },
+    "departmentHints": {
+      "interpretation": "Piano · Guitare · Jazz · Chant",
+      "composition": "Écriture · Orchestration",
+      "technologies": "Production · Studio · Audio",
+      "pedagogie": "Formation des formateurs",
+      "musicologie": "Histoire de la musique · Management"
+    },
+    "levelHints": {
+      "licence": "180 ECTS · 3 ans",
+      "master": "120 ECTS · 2 ans",
+      "doctorat": "3 ans",
+      "certificat": "8 à 16 semaines",
+      "atelier": "Court · sans prérequis"
+    }
   },
   "breadcrumb": {
     "label": "Fil d'Ariane",
@@ -107,8 +128,108 @@
     "featuredAll": "Voir tout le catalogue",
     "whyEyebrow": "Pourquoi ZMA",
     "whyTitle": "Une académie unique en son genre",
+    "why": {
+      "why1t": "Exigence internationale",
+      "why1b": "Les méthodes et standards des grandes académies de Paris, Londres et Boston.",
+      "why2t": "Une identité musicale bien à vous",
+      "why2b": "Chaque étudiant maîtrise les standards mondiaux tout en développant sa propre voix.",
+      "why3t": "Professionnalisation dès le premier jour",
+      "why3b": "Stages, enregistrements en studio et représentations publiques dès la deuxième année."
+    },
     "ctaTitle": "Prêt à commencer votre parcours musical ?",
-    "ctaBody": "Rejoignez les musiciens qui se forment aux standards internationaux. Première leçon gratuite, sans carte bancaire."
+    "ctaBody": "Rejoignez les musiciens qui se forment aux standards internationaux. Première leçon gratuite, sans carte bancaire.",
+    "about": {
+      "eyebrow": "À propos",
+      "title": "Métier, discipline et vraies scènes",
+      "body": "La ZMA forme les musiciens comme le font les grandes académies depuis toujours : un accompagnement individuel, des fondamentaux exigeants et une confrontation précoce à un vrai public. Des promotions restreintes, des instruments sérieux et un corps enseignant qui se produit encore sur scène.",
+      "checklist": [
+        "Cours individuels avec des professionnels en activité",
+        "Promotions restreintes, accompagnement personnalisé",
+        "Studio et représentations publiques dès la première année",
+        "Un parcours de la première leçon jusqu'au doctorat"
+      ],
+      "stats": {
+        "stat1Value": "26",
+        "stat1Label": "Parcours diplômants",
+        "stat2Value": "180+",
+        "stat2Label": "Crédits ECTS disponibles",
+        "stat3Value": "1 200+",
+        "stat3Label": "Étudiants formés",
+        "stat4Value": "98 %",
+        "stat4Label": "Satisfaction des diplômés"
+      }
+    },
+    "programmesByLevel": {
+      "eyebrow": "Parcours par niveau",
+      "title": "Où que vous en soyez",
+      "beginner": {
+        "title": "Débutant",
+        "body": "Premières notes, premiers accords, premiers vrais progrès. Aucune expérience préalable requise."
+      },
+      "intermediate": {
+        "title": "Intermédiaire",
+        "body": "Consolidez votre technique, lisez couramment et commencez à jouer avec d'autres."
+      },
+      "advanced": {
+        "title": "Avancé",
+        "body": "Affinez votre art, préparez vos auditions et visez un diplôme."
+      }
+    },
+    "disciplines": {
+      "eyebrow": "Ce que vous pouvez étudier",
+      "title": "Dix filières, une seule exigence d'excellence",
+      "intro": "Du piano classique à la production musicale, chaque filière est enseignée avec la même rigueur."
+    },
+    "whyChooseUs": {
+      "eyebrow": "Pourquoi nous choisir",
+      "title": "Ce qui distingue la ZMA",
+      "features": {
+        "feature1Title": "Un corps enseignant qui se produit encore",
+        "feature1Body": "Chaque enseignant est un artiste ou un professionnel en activité, pas seulement un formateur.",
+        "feature2Title": "Des promotions restreintes et attentives",
+        "feature2Body": "Un faible ratio étudiants/enseignants garantit un vrai retour à chaque séance.",
+        "feature3Title": "Une vraie scène, dès le début",
+        "feature3Body": "Enregistrements en studio et représentations publiques dès la première année.",
+        "feature4Title": "Un parcours reconnu",
+        "feature4Body": "Du certificat au doctorat, sur la base de crédits ECTS transférables."
+      }
+    },
+    "teachersPreview": {
+      "eyebrow": "Notre corps enseignant",
+      "title": "Apprenez auprès de musiciens en activité",
+      "body": "Chaque enseignant de la ZMA joue, enregistre ou produit professionnellement — vous apprenez le métier auprès de celles et ceux qui le pratiquent encore."
+    },
+    "quote": {
+      "text": "L'excellence en musique n'est jamais un hasard. C'est une discipline choisie chaque jour, un métier affiné dans le silence, et le courage de continuer à écouter.",
+      "attribution": "Le corps enseignant de la ZMA"
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Questions fréquentes",
+      "intro": "Tout ce qu'il faut savoir avant de vous inscrire. Vous ne trouvez pas votre réponse ? Contactez-nous, nous serons ravis de vous aider.",
+      "items": {
+        "q1": "Quelles formations proposez-vous ?",
+        "a1": "Cinq départements — Interprétation, Composition, Technologies, Pédagogie et Musicologie — couvrant dix filières, des instruments classiques à la production musicale.",
+        "q2": "Faut-il des connaissances musicales préalables pour s'inscrire ?",
+        "a2": "Non. Notre parcours débutant part de vos premières notes. Les parcours intermédiaire et avancé s'adressent aux étudiants qui jouent déjà.",
+        "q3": "Quelle est la durée des séances ?",
+        "a3": "Les cours individuels durent généralement 45 à 60 minutes ; les séances d'ensemble et de studio varient selon le cours, d'un court atelier à un semestre complet.",
+        "q4": "Quels niveaux proposez-vous ?",
+        "a4": "Des ateliers courts en certificat, sans prérequis, jusqu'aux diplômes de licence, master et doctorat.",
+        "q5": "Puis-je suivre plusieurs cours à la fois ?",
+        "a5": "Oui. De nombreux étudiants combinent un instrument principal avec des options en composition, technologies ou musicologie.",
+        "q6": "Y a-t-il une leçon d'essai gratuite ?",
+        "a6": "Oui — chaque nouvel étudiant bénéficie d'une première leçon offerte, sans carte bancaire.",
+        "q7": "Proposez-vous des cours en ligne ou en présentiel ?",
+        "a7": "L'essentiel de la formation se déroule en présentiel dans nos studios, avec certains cours de théorie et de musicologie disponibles en ligne.",
+        "q8": "Que se passe-t-il une fois un parcours terminé ?",
+        "a8": "Vous recevez un certificat ou un diplôme vérifiable, et de nombreux diplômés poursuivent en tant qu'interprètes, enseignants ou producteurs."
+      }
+    },
+    "finalCta": {
+      "title": "Prêt à commencer votre parcours musical ?",
+      "body": "Rejoignez les musiciens qui se forment aux standards internationaux. Première leçon gratuite, sans carte bancaire."
+    }
   },
   "catalogue": {
     "shop": "Boutique de cours",

@@ -6,12 +6,12 @@ beforeAll(async () => {
 })
 
 describe('i18n', () => {
-  it('démarre en français', () => {
-    expect(i18n.language).toBe('fr')
+  it('démarre en anglais (langue par défaut)', () => {
+    expect(i18n.language).toBe('en')
   })
 
   it('traduit une clé existante', () => {
-    expect(i18n.t('nav.catalogue')).toBe('Formations')
+    expect(i18n.t('nav.catalogue')).toBe('Courses')
   })
 
   it('renvoie la clé pour une traduction manquante, sans planter', () => {
@@ -19,23 +19,28 @@ describe('i18n', () => {
   })
 
   it('expose les libellés de la navigation mobile', () => {
-    expect(i18n.t('nav.mobile.explore')).toBe('Explorer')
-    expect(i18n.t('nav.mobile.myCourses')).toBe('Mes cours')
+    expect(i18n.t('nav.mobile.explore')).toBe('Explore')
+    expect(i18n.t('nav.mobile.myCourses')).toBe('My courses')
   })
 
   it('expose les textes de la page 404', () => {
-    expect(i18n.t('notFound.title')).toContain('introuvable')
+    expect(i18n.t('notFound.title')).toContain("can't be found")
+  })
+
+  it('bascule vers le français et traduit correctement', async () => {
+    await i18n.changeLanguage('fr')
+    expect(i18n.t('nav.catalogue')).toBe('Formations')
+    await i18n.changeLanguage('en')
   })
 })
 
 describe('formatage', () => {
-  it('formate un prix en dollars, à la française', () => {
-    // Espace insécable étroit entre le nombre et le symbole en locale fr
-    expect(formatPrice(18)).toMatch(/18[\s  ]*\$/)
+  it('formate un prix en dollars, à l\'anglaise', () => {
+    expect(formatPrice(18)).toMatch(/\$18/)
   })
 
-  it('formate une date en français', () => {
-    expect(formatDate('2026-03-14T10:00:00Z')).toContain('mars')
+  it('formate une date en anglais', () => {
+    expect(formatDate('2026-03-14T10:00:00Z')).toContain('March')
   })
 
   it('formate une durée en heures', () => {

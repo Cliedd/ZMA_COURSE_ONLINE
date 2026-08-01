@@ -4,6 +4,7 @@ import { axe } from 'jest-axe'
 import { describe, it, expect } from 'vitest'
 import { Footer } from './Footer'
 import { DEPARTMENTS } from '@/shared/config/navigation'
+import { i18n } from '@/shared/config/i18n'
 
 function renderFooter() {
   return render(
@@ -16,7 +17,7 @@ function renderFooter() {
 describe('Footer', () => {
   it('affiche la marque et l\'année courante', () => {
     renderFooter()
-    expect(screen.getAllByText(/ZTF Music Académie/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/ZTF Music Academy/).length).toBeGreaterThan(0)
     expect(screen.getByText(new RegExp(String(new Date().getFullYear())))).toBeInTheDocument()
   })
 
@@ -24,7 +25,7 @@ describe('Footer', () => {
     renderFooter()
     const footer = screen.getByRole('contentinfo')
     for (const dept of DEPARTMENTS) {
-      expect(within(footer).getByRole('link', { name: dept.label })).toHaveAttribute('href', dept.to)
+      expect(within(footer).getByRole('link', { name: i18n.t(dept.labelKey) })).toHaveAttribute('href', dept.to)
     }
   })
 

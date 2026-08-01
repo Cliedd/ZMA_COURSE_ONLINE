@@ -25,13 +25,13 @@ beforeEach(() => {
 describe('NotFound', () => {
   it('explique la situation au lieu de rediriger en silence', () => {
     wrap(<NotFound />)
-    expect(screen.getByRole('heading', { name: /introuvable/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /can't be found/i })).toBeInTheDocument()
   })
 
   it('propose au moins deux sorties — exigence Zero Dead Ends du CDC', () => {
     wrap(<NotFound />)
-    expect(screen.getByRole('link', { name: /Retour à l'accueil/ })).toHaveAttribute('href', '/')
-    expect(screen.getByRole('link', { name: /Parcourir les formations/ })).toHaveAttribute('href', '/catalogue')
+    expect(screen.getByRole('link', { name: /Back to home/ })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: /Browse courses/ })).toHaveAttribute('href', '/catalogue')
   })
 
   it('n\'a aucune violation d\'accessibilité', async () => {

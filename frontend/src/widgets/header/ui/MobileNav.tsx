@@ -24,10 +24,10 @@ export function MobileNav() {
           <p className="eyebrow px-4 pt-4">{t('nav.catalogue')}</p>
           <ul>
             {DEPARTMENTS.map((entry) => (
-              <li key={entry.label}>
+              <li key={entry.value}>
                 <DialogClose asChild>
                   <Link to={entry.to} className="flex min-h-touch items-center border-b border-line px-4 text-body text-ink">
-                    {entry.label}
+                    {t(entry.labelKey)}
                   </Link>
                 </DialogClose>
               </li>
@@ -37,10 +37,10 @@ export function MobileNav() {
           <p className="eyebrow px-4 pt-5">{t('nav.diplomas')}</p>
           <ul>
             {LEVELS.map((entry) => (
-              <li key={entry.label}>
+              <li key={entry.value}>
                 <DialogClose asChild>
                   <Link to={entry.to} className="flex min-h-touch items-center border-b border-line px-4 text-body text-ink">
-                    {entry.label}
+                    {t(entry.labelKey)}
                   </Link>
                 </DialogClose>
               </li>

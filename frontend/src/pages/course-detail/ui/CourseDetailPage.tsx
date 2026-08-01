@@ -7,6 +7,7 @@ import { formatPrice, formatDuration } from '@/shared/config/i18n'
 import { useCourse, courseSkills, courseCurriculum, curriculumLessonCount } from '@/entities/course'
 import { slugify } from '@/shared/lib/slugify'
 import { courseImage } from '@/widgets/course-card/lib/courseImage'
+import { departmentLabel } from '@/shared/config/navigation'
 import { CourseSyllabus } from './CourseSyllabus'
 
 export function CourseDetailPage() {
@@ -33,7 +34,7 @@ export function CourseDetailPage() {
         </div>
         <div className="container max-w-3xl py-16">
           <span className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">
-            {t(`level.${course.level}`, course.level)}{course.department ? ` · ${course.department}` : ''}
+            {t(`level.${course.level}`, course.level)}{course.department ? ` · ${departmentLabel(t, course.department)}` : ''}
           </span>
           <h1 className="mt-4 font-serif text-h1 leading-tight text-scene-ink">{course.title}</h1>
           {course.shortDescription && <p className="mt-4 max-w-2xl font-sans text-body leading-relaxed text-scene-ink/70">{course.shortDescription}</p>}

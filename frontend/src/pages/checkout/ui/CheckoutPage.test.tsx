@@ -40,7 +40,7 @@ describe('CheckoutPage', () => {
     renderAt('/checkout/course-paid')
 
     expect(await screen.findByText('Guitare avancée')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Payer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Pay' })).toBeDisabled()
   })
 
   it('redirige vers la page hébergée du gateway une fois un moyen de paiement choisi', async () => {
@@ -57,8 +57,8 @@ describe('CheckoutPage', () => {
     renderAt('/checkout/course-paid')
     await screen.findByText('Guitare avancée')
 
-    await userEvent.click(screen.getByRole('radio', { name: /Carte bancaire/ }))
-    await userEvent.click(screen.getByRole('button', { name: 'Payer' }))
+    await userEvent.click(screen.getByRole('radio', { name: /Card/ }))
+    await userEvent.click(screen.getByRole('button', { name: 'Pay' }))
 
     // jsdom's window.location is a non-configurable own property that
     // resists both Object.defineProperty and vi.stubGlobal — real browser
@@ -80,8 +80,8 @@ describe('CheckoutPage', () => {
     // Pas de sélecteur de moyen de paiement pour un cours gratuit.
     expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Payer' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Pay' }))
 
-    expect(await screen.findByText('Paiement réussi ! Accès débloqué.')).toBeInTheDocument()
+    expect(await screen.findByText('Payment successful! Access unlocked.')).toBeInTheDocument()
   })
 })

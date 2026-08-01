@@ -29,7 +29,28 @@
     "settingsLink": "Settings",
     "logoutToastTitle": "Signed out",
     "logoutToastBody": "You have been signed out. See you soon!",
-    "roleStudent": "STUDENT"
+    "roleStudent": "STUDENT",
+    "departments": {
+      "interpretation": "Performance",
+      "composition": "Composition",
+      "technologies": "Technology",
+      "pedagogie": "Teacher Training",
+      "musicologie": "Musicology"
+    },
+    "departmentHints": {
+      "interpretation": "Piano · Guitar · Jazz · Voice",
+      "composition": "Writing · Orchestration",
+      "technologies": "Production · Studio · Audio",
+      "pedagogie": "Training the trainers",
+      "musicologie": "Music history · Management"
+    },
+    "levelHints": {
+      "licence": "180 ECTS · 3 years",
+      "master": "120 ECTS · 2 years",
+      "doctorat": "3 years",
+      "certificat": "8 to 16 weeks",
+      "atelier": "Short · no prerequisites"
+    }
   },
   "breadcrumb": {
     "label": "Breadcrumb",
@@ -107,8 +128,108 @@
     "featuredAll": "See the full catalogue",
     "whyEyebrow": "Why ZMA",
     "whyTitle": "An academy unlike any other",
+    "why": {
+      "why1t": "International standards",
+      "why1b": "The methods and standards of the great academies of Paris, London and Boston.",
+      "why2t": "A musical identity of your own",
+      "why2b": "Every student masters world-class standards while developing their own voice.",
+      "why3t": "Professional from day one",
+      "why3b": "Internships, studio recordings and public performances from the second year onward."
+    },
     "ctaTitle": "Ready to start your musical journey?",
-    "ctaBody": "Join musicians training to international standards. First lesson free, no card required."
+    "ctaBody": "Join musicians training to international standards. First lesson free, no card required.",
+    "about": {
+      "eyebrow": "About us",
+      "title": "Craft, discipline, and real stages",
+      "body": "ZMA trains musicians the way great academies always have: close mentorship, rigorous fundamentals, and early exposure to real audiences. Small cohorts, serious instruments, and a faculty that still performs.",
+      "checklist": [
+        "Individual lessons with performing professionals",
+        "Small cohorts, close mentorship",
+        "Studio time and public performances from year one",
+        "A path from first lesson to doctorate"
+      ],
+      "stats": {
+        "stat1Value": "26",
+        "stat1Label": "Degree paths",
+        "stat2Value": "180+",
+        "stat2Label": "ECTS credits available",
+        "stat3Value": "1,200+",
+        "stat3Label": "Students trained",
+        "stat4Value": "98%",
+        "stat4Label": "Graduate satisfaction"
+      }
+    },
+    "programmesByLevel": {
+      "eyebrow": "Programmes by level",
+      "title": "Wherever you're starting from",
+      "beginner": {
+        "title": "Beginner",
+        "body": "First notes, first chords, first real progress. No prior experience required."
+      },
+      "intermediate": {
+        "title": "Intermediate",
+        "body": "Solidify your technique, read fluently, and start performing with others."
+      },
+      "advanced": {
+        "title": "Advanced",
+        "body": "Refine your artistry, prepare for auditions, and work toward a degree."
+      }
+    },
+    "disciplines": {
+      "eyebrow": "What you can study",
+      "title": "Ten disciplines, one standard of excellence",
+      "intro": "From classical piano to music production, every discipline is taught with the same rigor."
+    },
+    "whyChooseUs": {
+      "eyebrow": "Why choose us",
+      "title": "What sets ZMA apart",
+      "features": {
+        "feature1Title": "Faculty who still perform",
+        "feature1Body": "Every teacher is an active performer or working professional, not just an instructor.",
+        "feature2Title": "Small, focused cohorts",
+        "feature2Body": "Low student-to-teacher ratios mean real feedback, every session.",
+        "feature3Title": "A real stage, early",
+        "feature3Body": "Studio recordings and public performances start in your first year.",
+        "feature4Title": "A recognized path",
+        "feature4Body": "Certificates through doctorate, built on ECTS credits that transfer."
+      }
+    },
+    "teachersPreview": {
+      "eyebrow": "Our faculty",
+      "title": "Learn from working musicians",
+      "body": "Every teacher at ZMA performs, records, or produces professionally — you learn the craft from people who still practice it."
+    },
+    "quote": {
+      "text": "Excellence in music is never an accident. It is discipline chosen every day, craft refined in silence, and the courage to keep listening.",
+      "attribution": "The ZMA faculty"
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Frequently asked questions",
+      "intro": "Everything you need to know before you enroll. Can't find your answer? Reach out — we're happy to help.",
+      "items": {
+        "q1": "What training do you offer?",
+        "a1": "Five departments — Performance, Composition, Technology, Teacher Training and Musicology — covering ten disciplines from classical instruments to music production.",
+        "q2": "Do I need prior musical knowledge to enrol?",
+        "a2": "No. Our beginner track starts from your first notes. Intermediate and advanced tracks are for students who already play.",
+        "q3": "How long are the sessions?",
+        "a3": "Individual lessons typically run 45 to 60 minutes; ensemble and studio sessions vary by course, from a short workshop to a full semester.",
+        "q4": "What levels do you offer?",
+        "a4": "From short certificate workshops with no prerequisites through Bachelor's, Master's, and Doctorate degrees.",
+        "q5": "Can I take more than one course at once?",
+        "a5": "Yes. Many students combine a primary instrument with electives in composition, technology, or musicology.",
+        "q6": "Is there a free trial lesson?",
+        "a6": "Yes — every new student gets a first lesson free, with no card required.",
+        "q7": "Do you offer online or in-person lessons?",
+        "a7": "Most core training happens in person in our studios, with select theory and musicology courses available online.",
+        "q8": "What happens after I complete a programme?",
+        "a8": "You receive a verifiable certificate or diploma, and many graduates go on to perform, teach, or produce professionally."
+      }
+    },
+    "finalCta": {
+      "title": "Ready to start your musical journey?",
+      "body": "Join musicians training to international standards. First lesson free, no card required."
+    }
   },
   "catalogue": {
     "shop": "Course shop",

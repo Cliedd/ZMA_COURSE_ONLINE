@@ -19,7 +19,7 @@ describe('CataloguePage', () => {
     ))
     renderWithProviders(<CataloguePage />, { route: '/catalogue' })
 
-    expect(screen.getByRole('heading', { name: 'Boutique de cours' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Course shop' })).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Piano classique' })).toBeInTheDocument()
   })
 
@@ -27,15 +27,15 @@ describe('CataloguePage', () => {
     mswServer.use(http.get(`${API}/courses`, () => HttpResponse.json(coursePage([]))))
     renderWithProviders(<CataloguePage />, { route: '/catalogue?level=Doctorat' })
 
-    expect(await screen.findByText(/Aucune formation ne correspond/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Réinitialiser/ })).toBeInTheDocument()
+    expect(await screen.findByText(/No course matches/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Reset filters/ })).toBeInTheDocument()
   })
 
   it('affiche un état d\'erreur avec réessai', async () => {
     mswServer.use(http.get(`${API}/courses`, () => HttpResponse.json({ message: 'Boom' }, { status: 500 })))
     renderWithProviders(<CataloguePage />, { route: '/catalogue' })
 
-    await waitFor(() => expect(screen.getByRole('button', { name: /Réessayer/ })).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: /Try again/ })).toBeInTheDocument())
   })
 
   it('débounce la recherche et interroge l\'API avec le paramètre q', async () => {
@@ -48,7 +48,7 @@ describe('CataloguePage', () => {
 
     await screen.findByRole('heading', { name: 'Piano classique' })
 
-    const searchInput = screen.getByRole('searchbox', { name: /Rechercher un cours/ })
+    const searchInput = screen.getByRole('searchbox', { name: /Search a course/ })
     await userEvent.type(searchInput, 'piano')
 
     // Pas de requête supplémentaire tant que le délai de debounce (~300ms) n'est pas écoulé.

@@ -11,7 +11,7 @@ describe('Breadcrumb', () => {
         <Breadcrumb items={[{ label: 'Formations', to: '/catalogue' }, { label: 'Piano classique' }]} />
       </MemoryRouter>,
     )
-    const nav = screen.getByRole('navigation', { name: "Fil d'Ariane" })
+    const nav = screen.getByRole('navigation', { name: 'Breadcrumb' })
     expect(within(nav).getAllByRole('listitem')).toHaveLength(3)
   })
 
@@ -28,7 +28,7 @@ describe('Breadcrumb', () => {
 
   it('ajoute toujours Accueil en tête', () => {
     render(<MemoryRouter><Breadcrumb items={[{ label: 'Formations' }]} /></MemoryRouter>)
-    expect(screen.getByRole('link', { name: 'Accueil' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
   })
 
   it('n\'a aucune violation d\'accessibilité', async () => {

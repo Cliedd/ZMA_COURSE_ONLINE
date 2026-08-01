@@ -43,8 +43,8 @@ export function Footer() {
           <p className="eyebrow">{t('footer.trainings')}</p>
           <ul className="mt-3 space-y-1.5">
             {DEPARTMENTS.map((entry) => (
-              <li key={entry.label}>
-                <Link to={entry.to} className="font-sans text-sm text-ink-muted hover:text-ink">{entry.label}</Link>
+              <li key={entry.value}>
+                <Link to={entry.to} className="font-sans text-sm text-ink-muted hover:text-ink">{t(entry.labelKey)}</Link>
               </li>
             ))}
           </ul>
@@ -54,8 +54,8 @@ export function Footer() {
           <p className="eyebrow">{t('nav.diplomas')}</p>
           <ul className="mt-3 space-y-1.5">
             {LEVELS.map((entry) => (
-              <li key={entry.label}>
-                <Link to={entry.to} className="font-sans text-sm text-ink-muted hover:text-ink">{entry.label}</Link>
+              <li key={entry.value}>
+                <Link to={entry.to} className="font-sans text-sm text-ink-muted hover:text-ink">{t(entry.labelKey)}</Link>
               </li>
             ))}
           </ul>

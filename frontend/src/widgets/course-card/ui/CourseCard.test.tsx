@@ -22,7 +22,7 @@ describe('CourseCard', () => {
   it('affiche le titre et le niveau', () => {
     renderCard({ level: 'Licence', department: 'Interprétation' })
     expect(screen.getByRole('heading', { name: /Piano classique/ })).toBeInTheDocument()
-    expect(screen.getByText(/Licence · Interprétation/)).toBeInTheDocument()
+    expect(screen.getByText(/Bachelor's · Performance/)).toBeInTheDocument()
   })
 
   it('affiche le prix quand il est positif', () => {
@@ -32,7 +32,7 @@ describe('CourseCard', () => {
 
   it('affiche « Aperçu gratuit » quand le cours n\'a pas de note', () => {
     renderCard({ rating: null })
-    expect(screen.getByText('Aperçu gratuit')).toBeInTheDocument()
+    expect(screen.getByText('Free preview')).toBeInTheDocument()
   })
 
   it('affiche la note quand elle existe', () => {

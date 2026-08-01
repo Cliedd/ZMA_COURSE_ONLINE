@@ -6,19 +6,10 @@ import { DepartmentsSection } from './DepartmentsSection'
 import { FeaturedCourses } from './FeaturedCourses'
 
 const WHY = [
-  { icon: Award, n: '01', titleKey: 'why1t', bodyKey: 'why1b' },
-  { icon: Globe2, n: '02', titleKey: 'why2t', bodyKey: 'why2b' },
-  { icon: TrendingUp, n: '03', titleKey: 'why3t', bodyKey: 'why3b' },
+  { icon: Award, n: '01', titleKey: 'home.why.why1t', bodyKey: 'home.why.why1b' },
+  { icon: Globe2, n: '02', titleKey: 'home.why.why2t', bodyKey: 'home.why.why2b' },
+  { icon: TrendingUp, n: '03', titleKey: 'home.why.why3t', bodyKey: 'home.why.why3b' },
 ] as const
-
-const WHY_TEXT: Record<string, string> = {
-  why1t: 'Exigence internationale',
-  why1b: 'Les méthodes et standards des grandes académies de Paris, Londres et Boston.',
-  why2t: 'Identité musicale',
-  why2b: 'Chaque étudiant maîtrise les standards mondiaux et développe sa propre identité.',
-  why3t: 'Professionnalisation tôt',
-  why3b: 'Stages, enregistrements en studio et diffusion publique dès la deuxième année.',
-}
 
 export function HomePage() {
   const { t } = useTranslation()
@@ -42,8 +33,8 @@ export function HomePage() {
                 </span>
                 <div>
                   <p className="font-mono text-sm text-ink-faint">{n}</p>
-                  <h3 className="font-serif text-h3 text-ink">{WHY_TEXT[titleKey]}</h3>
-                  <p className="mt-1 font-sans text-sm leading-relaxed text-ink-muted">{WHY_TEXT[bodyKey]}</p>
+                  <h3 className="font-serif text-h3 text-ink">{t(titleKey)}</h3>
+                  <p className="mt-1 font-sans text-sm leading-relaxed text-ink-muted">{t(bodyKey)}</p>
                 </div>
               </li>
             ))}

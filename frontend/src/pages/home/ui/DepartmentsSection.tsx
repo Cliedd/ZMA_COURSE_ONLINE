@@ -19,13 +19,13 @@ export function DepartmentsSection() {
 
       <ul className="mt-10 grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {DEPARTMENTS.map((dept) => (
-          <li key={dept.label}>
+          <li key={dept.value}>
             <Link
               to={dept.to}
               className="flex min-h-touch flex-col justify-between gap-6 bg-surface p-6 transition-colors duration-brand ease-brand hover:bg-paper"
             >
-              <span className="font-serif text-h3 text-ink">{dept.label}</span>
-              <span className="font-sans text-sm text-ink-muted">{dept.hint}</span>
+              <span className="font-serif text-h3 text-ink">{t(dept.labelKey)}</span>
+              <span className="font-sans text-sm text-ink-muted">{t(dept.hintKey)}</span>
             </Link>
           </li>
         ))}

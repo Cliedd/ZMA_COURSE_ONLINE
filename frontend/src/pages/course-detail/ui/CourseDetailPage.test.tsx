@@ -30,12 +30,12 @@ describe('CourseDetailPage', () => {
     expect(await screen.findByRole('heading', { name: /Piano classique/ })).toBeInTheDocument()
     expect(screen.getByText('Lire une partition')).toBeInTheDocument()
     expect(screen.getByText('Fondations')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Acheter ce cours' })).toHaveAttribute('href', '/checkout/c1')
+    expect(screen.getByRole('link', { name: 'Buy this course' })).toHaveAttribute('href', '/checkout/c1')
   })
 
   it('affiche un état introuvable en cas d\'erreur', async () => {
     mswServer.use(http.get(`${API}/courses/slug/inconnu`, () => HttpResponse.json({ message: 'x' }, { status: 404 })))
     renderAt('inconnu')
-    expect(await screen.findByText(/introuvable/)).toBeInTheDocument()
+    expect(await screen.findByText(/can't be found/)).toBeInTheDocument()
   })
 })
