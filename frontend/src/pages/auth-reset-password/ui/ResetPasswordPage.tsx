@@ -47,14 +47,17 @@ export function ResetPasswordPage() {
   })
 
   return (
-    <div className="w-full max-w-md rounded-xl border border-line bg-paper p-8 shadow-sm">
-      <h1 className="font-serif text-h2 text-ink">{t('resetPassword.title')}</h1>
-      <p className="mt-2 font-sans text-sm text-ink-muted leading-relaxed">
-        {t('resetPassword.subtitle')}
-      </p>
+    <div className="w-full border border-line bg-surface p-8 shadow-overlay sm:p-10">
+      <div className="text-center">
+        <img src="/brand/ztf-logo.png" alt={t('brand.name')} width={132} height={44} className="mx-auto h-11 w-auto object-contain" />
+        <h1 className="mt-6 font-serif text-h1 text-ink">{t('resetPassword.title')}</h1>
+        <p className="mt-2 font-sans text-sm text-ink-muted leading-relaxed">
+          {t('resetPassword.subtitle')}
+        </p>
+      </div>
 
       {!token ? (
-        <div className="mt-6 rounded-lg bg-danger/10 border border-danger/30 p-4 text-danger">
+        <div className="mt-8 border border-danger/30 bg-danger/10 p-4 text-danger">
           <p className="font-semibold text-sm">{t('resetPassword.invalidTitle')}</p>
           <p className="font-sans text-xs mt-1">
             {t('resetPassword.invalidBody')}
@@ -84,7 +87,7 @@ export function ResetPasswordPage() {
 
           {formError && <p role="alert" className="font-sans text-sm text-danger">{formError}</p>}
 
-          <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
+          <Button type="submit" size="lg" disabled={isSubmitting} className="w-full bg-blue text-paper hover:opacity-90">
             {t('resetPassword.submit')}
           </Button>
         </form>

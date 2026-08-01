@@ -290,7 +290,9 @@
   },
   "auth": {
     "loginTitle": "Connexion",
+    "loginSubtitle": "Connectez-vous pour poursuivre votre parcours d'apprentissage.",
     "registerTitle": "Créer un compte",
+    "registerSubtitle": "Créez votre compte et démarrez votre parcours musical.",
     "email": "Adresse électronique",
     "password": "Mot de passe",
     "login": "Se connecter",

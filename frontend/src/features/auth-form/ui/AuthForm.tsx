@@ -66,21 +66,41 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
   })
 
   return (
-    <div>
-      <h1 className="font-serif text-h1 text-ink">
-        {mode === 'forgot'
-          ? t('auth.forgotTitle')
-          : t(mode === 'login' ? 'auth.loginTitle' : 'auth.registerTitle')}
-      </h1>
-
-      {mode === 'forgot' && (
+    <div className="w-full border border-line bg-surface p-8 shadow-overlay sm:p-10">
+      <div className="text-center">
+        <img src="/brand/ztf-logo.png" alt={t('brand.name')} width={132} height={44} className="mx-auto h-11 w-auto object-contain" />
+        <h1 className="mt-6 font-serif text-h1 text-ink">
+          {mode === 'forgot'
+            ? t('auth.forgotTitle')
+            : t(mode === 'login' ? 'auth.loginTitle' : 'auth.registerTitle')}
+        </h1>
         <p className="mt-2 font-sans text-sm text-ink-muted leading-relaxed">
-          {t('auth.forgotBody')}
+          {mode === 'forgot'
+            ? t('auth.forgotBody')
+            : t(mode === 'login' ? 'auth.loginSubtitle' : 'auth.registerSubtitle')}
         </p>
+      </div>
+
+      {mode !== 'forgot' && (
+        <>
+          <a
+            href="/oauth2/authorization/google"
+            className="mt-8 flex min-h-touch w-full items-center justify-center gap-3 border border-line bg-paper font-sans text-sm font-semibold text-ink transition-colors duration-brand ease-brand hover:bg-line/40"
+          >
+            <GoogleIcon className="h-4 w-4" aria-hidden />
+            {t('auth.google')}
+          </a>
+
+          <div className="my-6 flex items-center gap-3 text-ink-faint">
+            <span className="h-px flex-1 bg-line" />
+            <span className="font-sans text-sm">{t('auth.or')}</span>
+            <span className="h-px flex-1 bg-line" />
+          </div>
+        </>
       )}
 
       {forgotSuccess ? (
-        <div className="mt-6 rounded-lg bg-success/10 border border-success/30 p-4 text-success">
+        <div className="mt-8 border border-success/30 bg-success/10 p-4 text-success">
           <p className="font-semibold text-sm">{t('auth.emailSentTitle')}</p>
           <p className="font-sans text-xs mt-1">
             {t('auth.emailSentBody')}
@@ -93,9 +113,9 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
           </button>
         </div>
       ) : (
-        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5" noValidate>
+        <form onSubmit={onSubmit} className={mode === 'forgot' ? 'mt-8 flex flex-col gap-5' : 'flex flex-col gap-5'} noValidate>
           <Field name="email" label={t('auth.email')} error={errors.email && t(errors.email.message ?? '')}>
-            <Input type="email" autoComplete="email" placeholder="nom@exemple.com" {...register('email')} />
+            <Input type="email" autoComplete="email" placeholder="name@example.com" {...register('email')} />
           </Field>
 
           {mode !== 'forgot' && (
@@ -127,24 +147,12 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
 
           {formError && <p role="alert" className="font-sans text-sm text-danger">{formError}</p>}
 
-          <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
+          <Button type="submit" size="lg" disabled={isSubmitting} className="w-full bg-blue text-paper hover:opacity-90">
             {mode === 'forgot'
               ? t('auth.sendResetLink')
               : t(mode === 'login' ? 'auth.login' : 'auth.register')}
           </Button>
         </form>
-      )}
-
-      {mode !== 'forgot' && (
-        <>
-          <div className="my-6 flex items-center gap-3 text-ink-faint">
-            <span className="h-px flex-1 bg-line" /><span className="font-sans text-sm">{t('auth.or')}</span><span className="h-px flex-1 bg-line" />
-          </div>
-
-          <a href="/oauth2/authorization/google" className="flex min-h-touch w-full items-center justify-center rounded border border-line font-sans text-sm font-semibold text-ink hover:bg-paper">
-            {t('auth.google')}
-          </a>
-        </>
       )}
 
       <p className="mt-6 text-center font-sans text-sm text-ink-muted">
@@ -162,5 +170,16 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
         )}
       </p>
     </div>
+  )
+}
+
+function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" {...props}>
+      <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
+      <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29A11.96 11.96 0 0 0 0 12c0 1.93.46 3.76 1.29 5.38l3.98-3.09z" />
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.94 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
+    </svg>
   )
 }
