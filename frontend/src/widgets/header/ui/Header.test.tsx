@@ -39,7 +39,10 @@ describe('Header — visiteur', () => {
     await userEvent.click(screen.getByRole('button', { name: /Courses/ }))
     const menu = await screen.findByRole('menu')
     const item = within(menu).getByRole('menuitem', { name: /Performance/ })
-    expect(item).toHaveAttribute('href', '/catalogue?department=Interpr%C3%A9tation')
+    expect(item).toHaveAttribute(
+      'href',
+      `/catalogue?department=${encodeURIComponent('Interprétation et Pratique Instrumentale')}`,
+    )
   })
 
   it('offre un lien d\'évitement en première position', () => {
