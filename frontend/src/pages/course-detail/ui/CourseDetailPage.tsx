@@ -1,14 +1,22 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Star, Check } from 'lucide-react'
+import { Star, Check, ShoppingCart } from 'lucide-react'
 import { Skeleton, Picture } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import { formatPrice, formatDuration } from '@/shared/config/i18n'
 import { useCourse, courseSkills, courseCurriculum, curriculumLessonCount } from '@/entities/course'
 import { slugify } from '@/shared/lib/slugify'
 import { courseImage } from '@/widgets/course-card/lib/courseImage'
-import { departmentLabel } from '@/shared/config/navigation'
+import { DEPARTMENTS, departmentLabel } from '@/shared/config/navigation'
+import { cn } from '@/shared/lib/cn'
 import { CourseSyllabus } from './CourseSyllabus'
+
+const DEPT_DOT = ['bg-dept-1', 'bg-dept-2', 'bg-dept-3', 'bg-dept-4', 'bg-dept-5'] as const
+
+function deptDotClass(value?: string | null): string {
+  const idx = DEPARTMENTS.findIndex((d) => d.value === value)
+  return DEPT_DOT[idx >= 0 ? idx % DEPT_DOT.length : 0] ?? DEPT_DOT[0]
+}
 
 export function CourseDetailPage() {
   const { t } = useTranslation()
@@ -33,7 +41,10 @@ export function CourseDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/85 to-scene/40" />
         </div>
         <div className="container max-w-3xl py-16">
-          <span className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">
+          <span className="flex items-center gap-2 font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">
+            {course.department && (
+              <span className={cn('inline-block h-1.5 w-1.5 shrink-0 rounded-full', deptDotClass(course.department))} aria-hidden />
+            )}
             {t(`level.${course.level}`, course.level)}{course.department ? ` · ${departmentLabel(t, course.department)}` : ''}
           </span>
           <h1 className="mt-4 font-serif text-h1 leading-tight text-scene-ink">{course.title}</h1>
@@ -80,18 +91,41 @@ export function CourseDetailPage() {
         </div>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="border border-line bg-surface p-6">
-            <p className="font-serif text-display leading-none text-ink">
-              {course.price > 0 ? formatPrice(course.price) : t('course.free')}
-            </p>
-            <Link to={`/checkout/${course.id}`} className="mt-5 flex min-h-touch items-center justify-center rounded bg-ink px-5 font-sans text-sm font-semibold text-paper">
-              {t('course.buy')}
-            </Link>
-            <p className="mt-3 text-center font-sans text-sm text-ink-faint">{t('course.lifetime')}</p>
+          <div className="border-2 border-ink bg-surface">
+            <div className="border-b border-line p-6">
+              <p className="font-serif text-display leading-none text-ink">
+                {course.price > 0 ? formatPrice(course.price) : t('course.free')}
+              </p>
+              <Link
+                to={`/checkout/${course.id}`}
+                className="mt-5 flex min-h-touch items-center justify-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper transition-colors duration-brand ease-brand hover:bg-ink/90"
+              >
+                <ShoppingCart className="h-4 w-4" aria-hidden />
+                {t('course.buy')}
+              </Link>
+              <p className="mt-3 text-center font-sans text-sm text-ink-faint">{t('course.lifetime')}</p>
+            </div>
+
+            <ul className="divide-y divide-line font-sans text-sm">
+              <SummaryRow label={t('catalogue.filtersLevel')} value={t(`level.${course.level}`, course.level)} />
+              {course.department && <SummaryRow label={t('catalogue.filtersDept')} value={departmentLabel(t, course.department)} />}
+              {course.durationHours > 0 && <SummaryRow label={t('course.duration')} value={formatDuration(course.durationHours)} />}
+              {lessonTotal > 0 && <SummaryRow label={t('course.syllabus')} value={t('course.lessons', { count: lessonTotal })} />}
+              {course.ects != null && course.ects > 0 && <SummaryRow label="ECTS" value={String(course.ects)} />}
+            </ul>
           </div>
         </aside>
       </div>
     </div>
+  )
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <li className="flex items-center justify-between gap-3 px-6 py-3">
+      <span className="text-ink-faint">{label}</span>
+      <span className="font-semibold text-ink">{value}</span>
+    </li>
   )
 }
 
