@@ -21,7 +21,7 @@ export function TeachersPage() {
 
       <div className="relative h-56 overflow-hidden sm:h-72">
         <Picture image={IMAGES.campus} sizes="100vw" priority className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-scene/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-scene via-scene/80 to-scene/30" />
         <div className="container absolute inset-0 flex flex-col justify-end pb-10">
           <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-scene-accent">
             {t('nav.teachers')}
