@@ -294,7 +294,9 @@
   },
   "auth": {
     "loginTitle": "Log in",
+    "loginSubtitle": "Log in to continue your learning journey.",
     "registerTitle": "Create an account",
+    "registerSubtitle": "Create your account and start your musical journey.",
     "email": "Email address",
     "password": "Password",
     "login": "Log in",
