@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Award, Globe2, TrendingUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { HomeHero } from './HomeHero'
+import { AboutSection } from './AboutSection'
+import { ProgrammesByLevelSection } from './ProgrammesByLevelSection'
 import { DepartmentsSection } from './DepartmentsSection'
 import { FeaturedCourses } from './FeaturedCourses'
 
@@ -17,6 +19,8 @@ export function HomePage() {
   return (
     <div className="overflow-x-hidden">
       <HomeHero />
+      <AboutSection />
+      <ProgrammesByLevelSection />
       <DepartmentsSection />
       <FeaturedCourses />
 
