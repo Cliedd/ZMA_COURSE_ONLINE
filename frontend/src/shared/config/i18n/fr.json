@@ -88,7 +88,11 @@
     "newsletterSuccessTitle": "Inscription confirmée",
     "newsletterSuccessBody": "Merci — nous revenons vers vous bientôt.",
     "newsletterErrorBody": "Saisissez une adresse e-mail valide.",
+    "newsletterToastTitle": "Inscription confirmée",
+    "newsletterToastBody": "Merci — nous vous tiendrons informé(e) des actualités et nouvelles formations.",
+    "newsletterCtaAria": "S'abonner à la newsletter",
     "contactAddress": "Rue de la Cavantine 16, 1080 Molenbeek-Saint-Jean, Belgique",
+    "address": "Rue de la Cavantine 16, 1080 Molenbeek-Saint-Jean, Belgique",
     "contactEmail": "ztfmusic@academydemusic.com",
     "contactPhone": "+352 661 700 892",
     "social": "Suivez-nous"

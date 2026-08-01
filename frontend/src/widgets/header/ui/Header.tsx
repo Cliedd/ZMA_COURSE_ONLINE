@@ -28,32 +28,29 @@ function LocaleSwitch() {
   )
 }
 
-/** Rotation d'accents par département — un ton par filière, cf. tokens.css --dept-1..5. */
-const DEPT_ACCENTS = ['bg-dept-1', 'bg-dept-2', 'bg-dept-3', 'bg-dept-4', 'bg-dept-5']
+/** Puces d'accent décoratives, une par département — jamais utilisées comme couleur de texte. */
+const DEPT_DOT_CLASSES = ['bg-dept-1', 'bg-dept-2', 'bg-dept-3', 'bg-dept-4', 'bg-dept-5']
 
 function TrainingsMenu() {
   const { t } = useTranslation()
   return (
     <Menu>
-      <MenuTrigger className="font-sans text-sm font-semibold uppercase tracking-wide text-ink">
+      <MenuTrigger className="font-semibold text-ink transition-colors duration-brand ease-brand hover:text-blue data-[state=open]:text-blue">
         {t('nav.catalogue')}
         <ChevronDown className="h-3.5 w-3.5" aria-hidden />
       </MenuTrigger>
       <MenuContent className="min-w-80">
-        <p className="eyebrow px-3 pb-1.5 pt-2">{t('footer.trainings')}</p>
+        <p className="eyebrow px-3 pb-1 pt-2 text-ink-faint">{t('footer.trainings')}</p>
         {DEPARTMENTS.map((entry, i) => (
           <MenuItem key={entry.value} asChild>
             <Link to={entry.to}>
-              <span className={`h-2 w-2 shrink-0 ${DEPT_ACCENTS[i % DEPT_ACCENTS.length]}`} aria-hidden />
+              <span className={`h-2 w-2 shrink-0 rounded-full ${DEPT_DOT_CLASSES[i % DEPT_DOT_CLASSES.length]}`} aria-hidden />
               <span className="text-ink">{t(entry.labelKey)}</span>
               <span className="ml-auto text-sm text-ink-faint">{t(entry.hintKey)}</span>
             </Link>
           </MenuItem>
         ))}
-
-        <div className="my-1.5 border-t border-line" />
-
-        <p className="eyebrow px-3 pb-1.5 pt-1">{t('nav.diplomas')}</p>
+        <p className="eyebrow px-3 pb-1 pt-3 text-ink-faint">{t('nav.diplomas')}</p>
         {LEVELS.map((entry) => (
           <MenuItem key={entry.value} asChild>
             <Link to={entry.to}>
@@ -164,7 +161,7 @@ export function Header() {
   const authenticated = useAuthStore((s) => s.isAuthenticated())
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-paper/90 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-line bg-paper/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-paper/85">
       <a
         href="#contenu"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded focus:bg-ink focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:text-paper"
@@ -172,22 +169,22 @@ export function Header() {
         {t('nav.skipToContent')}
       </a>
 
-      <div className="container flex min-h-touch items-center gap-6 py-2.5">
+      <div className="container flex min-h-touch items-center gap-5 py-2">
         <Link to="/" className="shrink-0" aria-label={t('brand.name')}>
-          <img src="/brand/ztf-logo.png" alt={t('brand.name')} width={132} height={44} className="h-10 w-auto" />
+          <img src="/brand/ztf-logo.png" alt={t('brand.name')} width={132} height={44} className="h-11 w-auto" />
         </Link>
 
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
           <TrainingsMenu />
           <Link
             to="/teachers"
-            className="flex min-h-touch items-center rounded px-3 font-sans text-sm font-semibold uppercase tracking-wide text-ink transition-colors duration-brand ease-brand hover:text-blue"
+            className="flex min-h-touch items-center rounded px-3 font-sans text-sm font-semibold text-ink transition-colors duration-brand ease-brand hover:text-blue"
           >
             {t('nav.teachers')}
           </Link>
           <Link
             to="/certificates/verify"
-            className="flex min-h-touch items-center rounded px-3 font-sans text-sm font-semibold uppercase tracking-wide text-ink transition-colors duration-brand ease-brand hover:text-blue"
+            className="flex min-h-touch items-center rounded px-3 font-sans text-sm font-semibold text-ink transition-colors duration-brand ease-brand hover:text-blue"
           >
             {t('nav.diplomas')}
           </Link>
@@ -208,7 +205,7 @@ export function Header() {
               </Link>
               <Link
                 to="/auth/register"
-                className="hidden min-h-touch items-center rounded bg-blue px-4 font-sans text-sm font-semibold text-paper transition-opacity duration-brand ease-brand hover:opacity-90 sm:flex"
+                className="hidden min-h-touch items-center rounded bg-ink px-4 font-sans text-sm font-semibold text-paper transition-colors duration-brand ease-brand hover:bg-blue sm:flex"
               >
                 {t('nav.register')}
               </Link>
