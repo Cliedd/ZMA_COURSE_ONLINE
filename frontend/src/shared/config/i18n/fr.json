@@ -175,6 +175,28 @@
         "body": "Affinez votre art, préparez vos auditions et visez un diplôme."
       }
     },
+    "audience": {
+      "eyebrow": "Pour qui",
+      "title": "Des cours pour chaque âge et chaque objectif",
+      "items": {
+        "children": {
+          "title": "Enfants",
+          "body": "Des cours ludiques et fondateurs qui éveillent très tôt le goût de la musique."
+        },
+        "teenagers": {
+          "title": "Adolescents",
+          "body": "Développez compétence et confiance par l'exploration créative et le jeu en groupe."
+        },
+        "adults": {
+          "title": "Adultes",
+          "body": "Affinez votre technique, exprimez votre passion et progressez à votre rythme."
+        },
+        "private": {
+          "title": "Cours particuliers",
+          "body": "Un enseignement individuel, adapté à vos objectifs, votre emploi du temps et votre rythme."
+        }
+      }
+    },
     "disciplines": {
       "eyebrow": "Ce que vous pouvez étudier",
       "title": "Dix filières, une seule exigence d'excellence",
