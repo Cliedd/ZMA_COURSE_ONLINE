@@ -1,6 +1,11 @@
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Search } from 'lucide-react'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import { CourseGrid } from '@/widgets/course-grid'
+import { Picture } from '@/shared/ui'
+import { IMAGES } from '@/shared/config/images/manifest'
+import { useDebouncedValue } from '@/shared/lib/useDebouncedValue'
 import { useCourses } from '@/entities/course'
 import { useCatalogFilters, FilterBar } from '@/features/catalog-filters'
 
@@ -15,24 +20,66 @@ export function CataloguePage() {
   const totalPages = data?.totalPages ?? 0
   const currentPage = (filters.page ?? 0) + 1
 
+  // État local pour une saisie réactive ; la valeur débouncée seule est répercutée dans l'URL,
+  // pour éviter une requête API à chaque frappe (spec § 6 règle 5 : l'URL reste la source de vérité).
+  const [searchInput, setSearchInput] = useState(filters.q ?? '')
+  const debouncedSearch = useDebouncedValue(searchInput, 300)
+  const isFirstRun = useRef(true)
+
+  useEffect(() => {
+    setSearchInput(filters.q ?? '')
+  }, [filters.q])
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false
+      return
+    }
+    setFilter('q', debouncedSearch || undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- ne réagit qu'à la valeur débouncée
+  }, [debouncedSearch])
+
   return (
     <div>
       <Breadcrumb items={[{ label: t('catalogue.shop') }]} />
 
-      <div className="container py-10">
-        <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent-ink">{t('catalogue.shop')}</p>
-        <h1 className="mt-3 font-serif text-h1 text-ink">{t('catalogue.title')}</h1>
-        <p className="mt-3 max-w-2xl font-sans text-body leading-relaxed text-ink-muted">{t('catalogue.subtitle')}</p>
+      {/* En-tête sombre (scène) : titre, décompte, recherche */}
+      <section data-theme="dark" className="relative isolate overflow-hidden bg-scene text-scene-ink">
+        <div className="absolute inset-0 -z-10">
+          <Picture image={IMAGES.heroEnsemble} alt="" priority sizes="100vw" className="h-full w-full object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-scene via-scene/90 to-scene/70" />
+        </div>
+        <div className="container py-14 text-center md:py-20">
+          <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">{t('catalogue.shop')}</p>
+          <h1 className="mt-3 font-serif text-h1 text-scene-ink">{t('catalogue.title')}</h1>
+          <p className="mt-4 font-serif text-display leading-none text-scene-ink">
+            {isLoading ? '…' : total}
+          </p>
+          <p className="mt-2 font-sans text-sm text-scene-ink/70">
+            {!isLoading && !isError && t('catalogue.results', { count: total })}
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl font-sans text-body leading-relaxed text-scene-ink/70">{t('catalogue.subtitle')}</p>
 
-        <div className="mt-8">
+          <div className="relative mx-auto mt-8 max-w-lg">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-scene-ink/50" aria-hidden />
+            <input
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder={t('catalogue.search')}
+              aria-label={t('catalogue.search')}
+              className="min-h-touch w-full rounded border border-scene-ink/20 bg-scene-surface pl-9 pr-3 font-sans text-body text-scene-ink placeholder:text-scene-ink/50 focus:border-accent focus:outline-none"
+            />
+          </div>
+        </div>
+      </section>
+
+      <div className="container py-10">
+        <div className="mt-2">
           <FilterBar filters={filters} onSetFilter={setFilter} />
         </div>
 
-        {!isLoading && !isError && (
-          <p className="mt-6 font-sans text-sm text-ink-muted">{t('catalogue.results', { count: total })}</p>
-        )}
-
-        <div className="mt-6">
+        <div className="mt-8">
           {isError ? (
             <ErrorState onRetry={() => refetch()} />
           ) : (
