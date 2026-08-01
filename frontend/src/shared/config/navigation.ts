@@ -14,34 +14,34 @@ export interface NavEntry {
 
 export const DEPARTMENTS: NavEntry[] = [
   {
-    value: 'Interprétation',
+    value: 'Interprétation et Pratique Instrumentale',
     labelKey: 'nav.departments.interpretation',
     hintKey: 'nav.departmentHints.interpretation',
-    to: `/catalogue?department=${encodeURIComponent('Interprétation')}`,
+    to: `/catalogue?department=${encodeURIComponent('Interprétation et Pratique Instrumentale')}`,
   },
   {
-    value: 'Composition',
+    value: 'Composition, Écriture et Théorie Musicale',
     labelKey: 'nav.departments.composition',
     hintKey: 'nav.departmentHints.composition',
-    to: '/catalogue?department=Composition',
+    to: `/catalogue?department=${encodeURIComponent('Composition, Écriture et Théorie Musicale')}`,
   },
   {
-    value: 'Technologies',
+    value: 'Technologies Musicales et Production Audiovisuelle',
     labelKey: 'nav.departments.technologies',
     hintKey: 'nav.departmentHints.technologies',
-    to: '/catalogue?department=Technologies',
+    to: `/catalogue?department=${encodeURIComponent('Technologies Musicales et Production Audiovisuelle')}`,
   },
   {
-    value: 'Pédagogie',
+    value: 'Pédagogie Musicale et Formation des Formateurs',
     labelKey: 'nav.departments.pedagogie',
     hintKey: 'nav.departmentHints.pedagogie',
-    to: `/catalogue?department=${encodeURIComponent('Pédagogie')}`,
+    to: `/catalogue?department=${encodeURIComponent('Pédagogie Musicale et Formation des Formateurs')}`,
   },
   {
-    value: 'Musicologie',
+    value: 'Musicologie, Patrimoine et Management Culturel',
     labelKey: 'nav.departments.musicologie',
     hintKey: 'nav.departmentHints.musicologie',
-    to: '/catalogue?department=Musicologie',
+    to: `/catalogue?department=${encodeURIComponent('Musicologie, Patrimoine et Management Culturel')}`,
   },
 ]
 

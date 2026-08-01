@@ -20,7 +20,7 @@ describe('CourseCard', () => {
   })
 
   it('affiche le titre et le niveau', () => {
-    renderCard({ level: 'Licence', department: 'Interprétation' })
+    renderCard({ level: 'Licence', department: 'Interprétation et Pratique Instrumentale' })
     expect(screen.getByRole('heading', { name: /Piano classique/ })).toBeInTheDocument()
     expect(screen.getByText(/Bachelor's · Performance/)).toBeInTheDocument()
   })
