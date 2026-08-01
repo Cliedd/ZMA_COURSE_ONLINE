@@ -20,10 +20,14 @@ export function CourseGrid({ courses, loading = false, skeletonCount = 6, emptyS
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <div key={i} className="border border-line bg-surface">
             <Skeleton className="aspect-[16/10] w-full" />
-            <div className="flex flex-col gap-3 p-4">
+            <div className="flex flex-col gap-2 p-4">
               <Skeleton className="h-3 w-24" />
               <Skeleton className="h-5 w-3/4" />
               <Skeleton className="h-3 w-1/2" />
+            </div>
+            <div className="flex items-baseline justify-between border-t border-line p-4">
+              <Skeleton className="h-5 w-16" />
+              <Skeleton className="h-4 w-10" />
             </div>
           </div>
         ))}
