@@ -74,11 +74,24 @@
   "footer": {
     "trainings": "Formations",
     "academy": "Académie",
+    "support": "Assistance",
     "student": "Étudiant",
     "legal": "Mentions légales",
     "privacy": "Confidentialité",
     "terms": "Conditions générales",
-    "rights": "Tous droits réservés"
+    "rights": "Tous droits réservés",
+    "blurb": "ZTF Music Academy forme des musiciens à travers des formations intensives et par projets en interprétation, composition, technologies musicales, pédagogie et musicologie.",
+    "newsletterHeading": "Restez informé·e",
+    "newsletterHint": "Recevez nos actualités et nouvelles formations par e-mail.",
+    "newsletterPlaceholder": "Votre e-mail…",
+    "newsletterCta": "S'abonner",
+    "newsletterSuccessTitle": "Inscription confirmée",
+    "newsletterSuccessBody": "Merci — nous revenons vers vous bientôt.",
+    "newsletterErrorBody": "Saisissez une adresse e-mail valide.",
+    "contactAddress": "Rue de la Cavantine 16, 1080 Molenbeek-Saint-Jean, Belgique",
+    "contactEmail": "ztfmusic@academydemusic.com",
+    "contactPhone": "+352 661 700 892",
+    "social": "Suivez-nous"
   },
   "level": {
     "Licence": "Licence",
