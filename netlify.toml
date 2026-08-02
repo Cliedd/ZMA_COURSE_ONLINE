@@ -10,7 +10,11 @@
   # deploys — they just don't produce a deploy entry at all.
   # git diff --quiet exits 1 (build proceeds) when there are differences,
   # 0 (skip) when there are none — see https://docs.netlify.com/configure-builds/ignore-builds/
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- frontend netlify.toml"
+  # IMPORTANT: because `base = "frontend"`, Netlify runs this command with
+  # its working directory already set to frontend/ — so paths here are
+  # relative to frontend/, NOT the repo root. "." = frontend itself,
+  # "../netlify.toml" = this file at the repo root.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ../netlify.toml"
 
 [build.environment]
   NODE_VERSION = "20"
