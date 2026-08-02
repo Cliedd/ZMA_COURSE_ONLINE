@@ -20,9 +20,9 @@ export function QuoteBannerSection() {
           image={IMAGES.studioMixing}
           alt=""
           sizes="100vw"
-          className="absolute inset-0 h-full w-full object-cover opacity-50"
+          className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/75 to-scene/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/55 to-scene/15" />
         <div className="relative z-10 max-w-3xl px-6 py-14 sm:px-10 sm:py-20">
           <span aria-hidden className="block font-serif italic leading-[0.55] text-scene-accent" style={{ fontSize: '5rem' }}>
             &#8220;

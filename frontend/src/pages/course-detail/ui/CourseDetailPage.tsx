@@ -37,8 +37,8 @@ export function CourseDetailPage() {
       {/* En-tête sombre (scène) */}
       <section data-theme="dark" className="relative isolate overflow-hidden bg-scene text-scene-ink">
         <div className="absolute inset-0 -z-10">
-          <Picture image={courseImage(course)} alt="" priority sizes="100vw" className="h-full w-full object-cover opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/85 to-scene/40" />
+          <Picture image={courseImage(course)} alt="" priority sizes="100vw" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/65 to-scene/20" />
         </div>
         <div className="container max-w-3xl py-16">
           <span className="flex items-center gap-2 font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">

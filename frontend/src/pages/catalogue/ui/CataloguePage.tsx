@@ -48,8 +48,8 @@ export function CataloguePage() {
       {/* En-tête sombre (scène) : titre, décompte, recherche */}
       <section data-theme="dark" className="relative isolate overflow-hidden bg-scene text-scene-ink">
         <div className="absolute inset-0 -z-10">
-          <Picture image={IMAGES.heroEnsemble} alt="" priority sizes="100vw" className="h-full w-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-scene via-scene/90 to-scene/70" />
+          <Picture image={IMAGES.heroEnsemble} alt="" priority sizes="100vw" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-scene via-scene/70 to-scene/40" />
         </div>
         <div className="container py-14 text-center md:py-20">
           <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.22em] text-accent">{t('catalogue.shop')}</p>

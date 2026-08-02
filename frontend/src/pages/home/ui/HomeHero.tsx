@@ -19,8 +19,8 @@ export function HomeHero() {
   return (
     <section className="relative isolate overflow-hidden bg-paper text-ink">
       <div className="absolute inset-0 -z-10">
-        <Picture image={IMAGES.heroEnsemble} alt="" priority sizes="100vw" className="h-full w-full object-cover opacity-55" />
-        <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/90 to-paper/45" />
+        <Picture image={IMAGES.heroEnsemble} alt="" priority sizes="100vw" className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/75 to-paper/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/10 to-transparent" />
       </div>
 
