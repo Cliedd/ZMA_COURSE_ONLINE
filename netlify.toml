@@ -3,11 +3,17 @@
   command = "npm run build"
   publish = "dist"
   # Only build when frontend/ or this file itself changed. Backend-only
-  # commits (services/, Railway, etc.) are correctly skipped by Netlify's
-  # own change-detection, but that surfaces as a red "error" deploy in the
-  # UI. This `ignore` check makes Netlify decide to skip *before* it ever
-  # tries to build, so backend-only commits no longer show as failed/error
-  # deploys — they just don't produce a deploy entry at all.
+  # commits (services/, Railway, etc.) don't affect this site, so skip the
+  # build attempt entirely instead of wasting build minutes on a build
+  # Netlify would cancel anyway.
+  # NOTE (verified via the Netlify API on 2026-08-02): Netlify's deploy
+  # list still reports these skips as state "error" with error_message
+  # "Canceled build due to no content change" — the same way it already
+  # reported them by default, with or without this `ignore` command. That
+  # red/error labeling for benign no-op skips appears to be fixed platform
+  # behavior, not something netlify.toml can change. This `ignore` command
+  # is still worth keeping: it stops a real build from being attempted on
+  # commits that can't possibly need one.
   # git diff --quiet exits 1 (build proceeds) when there are differences,
   # 0 (skip) when there are none — see https://docs.netlify.com/configure-builds/ignore-builds/
   # IMPORTANT: because `base = "frontend"`, Netlify runs this command with
