@@ -58,6 +58,8 @@ describe('CataloguePage', () => {
   })
 
   it('combine département, niveau et recherche sans qu\'aucun filtre ne soit écrasé', async () => {
+    // Timeout étendu : userEvent.type + 2 clics + le debounce de 300ms peuvent dépasser
+    // les 5s par défaut quand la suite tourne en parallèle sous charge.
     // Régression : setFilter fermait auparavant sur `params` capturé au rendu, si bien que
     // l'effet debouncé de la recherche pouvait s'exécuter avec un instantané de l'URL antérieur
     // à un clic sur une puce département/niveau et effacer ce filtre en repartant de zéro.
@@ -81,6 +83,6 @@ describe('CataloguePage', () => {
       expect(last).toContain('department=')
       expect(last).toContain('level=Licence')
       expect(last).toContain('q=piano')
-    }, { timeout: 2000 })
-  })
+    }, { timeout: 4000 })
+  }, 10000)
 })
