@@ -36,8 +36,8 @@ public interface CourseRepository extends JpaRepository<Course, String> {
         SELECT c FROM Course c
         WHERE c.status = com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED
           AND c.deletedAt IS NULL
-          AND (:department IS NULL OR LOWER(c.department) = LOWER(:department))
-          AND (:level IS NULL OR LOWER(c.level) = LOWER(:level))
+          AND (CAST(:department AS string) IS NULL OR LOWER(c.department) = LOWER(CAST(:department AS string)))
+          AND (CAST(:level AS string) IS NULL OR LOWER(c.level) = LOWER(CAST(:level AS string)))
           AND (LOWER(c.title) LIKE LOWER(CONCAT('%',:q,'%'))
             OR LOWER(c.shortDescription) LIKE LOWER(CONCAT('%',:q,'%'))
             OR LOWER(c.description) LIKE LOWER(CONCAT('%',:q,'%')))
