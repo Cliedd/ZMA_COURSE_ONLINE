@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
@@ -43,5 +43,24 @@ describe('useCatalogFilters + FilterBar', () => {
     const allButtons = screen.getAllByRole('button', { name: 'All' })
     await userEvent.click(allButtons[0]!)
     expect(screen.getByTestId('search').textContent).not.toContain('level=')
+  })
+
+  // Régression : deux setFilter() déclenchés coup sur coup, sans qu'un rendu ne s'intercale
+  // entre les deux (ex. deux clics très rapprochés), ne doivent PAS s'écraser l'un l'autre.
+  // Avant le correctif, setFilter fermait sur `params` capturé au rendu ; la seconde mise à
+  // jour repartait d'un instantané périmé et effaçait silencieusement la première.
+  it('combine département + niveau même quand les deux mises à jour sont déclenchées avant tout re-rendu', () => {
+    renderAt()
+    const deptButton = screen.getByRole('button', { name: 'Performance' })
+    const levelButton = screen.getByRole('button', { name: "Bachelor's" })
+
+    act(() => {
+      fireEvent.click(deptButton)
+      fireEvent.click(levelButton)
+    })
+
+    const search = screen.getByTestId('search').textContent ?? ''
+    expect(search).toContain('department=Interpr')
+    expect(search).toContain('level=Licence')
   })
 })

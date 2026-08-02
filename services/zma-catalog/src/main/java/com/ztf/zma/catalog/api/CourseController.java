@@ -60,7 +60,7 @@ public class CourseController {
         Pageable pageable = PageRequest.of(page, Math.min(size, 100),
                                            Sort.by("title").ascending());
         if (q != null && !q.isBlank()) {
-            return courseService.search(q.trim(), pageable);
+            return courseService.search(q.trim(), department, level, pageable);
         }
         return courseService.listPublished(department, level, pageable);
     }

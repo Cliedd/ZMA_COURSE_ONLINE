@@ -28,16 +28,24 @@ public interface CourseRepository extends JpaRepository<Course, String> {
     Page<Course> findByStatusAndDepartmentIgnoreCaseAndLevelIgnoreCaseAndDeletedAtIsNull(
         CourseStatus status, String department, String level, Pageable pageable);
 
-    // Full-text search on title + short description + description (published + not deleted)
+    // Full-text search on title + short description + description (published + not deleted),
+    // additionally narrowed by department/level when provided (:department / :level are NULL
+    // when not filtering — see CourseService#search) so a text search combines with the other
+    // active filters (AND) instead of silently discarding them.
     @Query("""
         SELECT c FROM Course c
         WHERE c.status = com.ztf.zma.catalog.domain.CourseStatus.PUBLISHED
           AND c.deletedAt IS NULL
+          AND (:department IS NULL OR LOWER(c.department) = LOWER(:department))
+          AND (:level IS NULL OR LOWER(c.level) = LOWER(:level))
           AND (LOWER(c.title) LIKE LOWER(CONCAT('%',:q,'%'))
             OR LOWER(c.shortDescription) LIKE LOWER(CONCAT('%',:q,'%'))
             OR LOWER(c.description) LIKE LOWER(CONCAT('%',:q,'%')))
         """)
-    Page<Course> search(@Param("q") String query, Pageable pageable);
+    Page<Course> search(@Param("q") String query,
+                         @Param("department") String department,
+                         @Param("level") String level,
+                         Pageable pageable);
 
     // All courses (published + unpublished, not deleted) — for admin
     Page<Course> findByDeletedAtIsNull(Pageable pageable);

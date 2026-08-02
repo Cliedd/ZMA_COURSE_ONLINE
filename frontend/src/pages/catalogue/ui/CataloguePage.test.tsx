@@ -56,4 +56,31 @@ describe('CataloguePage', () => {
 
     await waitFor(() => expect(receivedQueries).toContain('piano'), { timeout: 2000 })
   })
+
+  it('combine département, niveau et recherche sans qu\'aucun filtre ne soit écrasé', async () => {
+    // Régression : setFilter fermait auparavant sur `params` capturé au rendu, si bien que
+    // l'effet debouncé de la recherche pouvait s'exécuter avec un instantané de l'URL antérieur
+    // à un clic sur une puce département/niveau et effacer ce filtre en repartant de zéro.
+    const receivedSearches: string[] = []
+    mswServer.use(http.get(`${API}/courses`, ({ request }) => {
+      receivedSearches.push(new URL(request.url).search)
+      return HttpResponse.json(coursePage([]))
+    }))
+    renderWithProviders(<CataloguePage />, { route: '/catalogue' })
+
+    await screen.findByText(/No course matches/)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Performance' }))
+    await userEvent.click(screen.getByRole('button', { name: "Bachelor's" }))
+
+    const searchInput = screen.getByRole('searchbox', { name: /Search a course/ })
+    await userEvent.type(searchInput, 'piano')
+
+    await waitFor(() => {
+      const last = receivedSearches[receivedSearches.length - 1] ?? ''
+      expect(last).toContain('department=')
+      expect(last).toContain('level=Licence')
+      expect(last).toContain('q=piano')
+    }, { timeout: 2000 })
+  })
 })

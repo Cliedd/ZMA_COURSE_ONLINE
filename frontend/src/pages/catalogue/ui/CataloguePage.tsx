@@ -36,8 +36,10 @@ export function CataloguePage() {
       return
     }
     setFilter('q', debouncedSearch || undefined)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- ne réagit qu'à la valeur débouncée
-  }, [debouncedSearch])
+    // `setFilter` est maintenant stable (useCatalogFilters ne referme plus sur `params`),
+    // donc l'inclure ici ne provoque pas de ré-exécutions superflues — plus besoin de
+    // suppression de lint pour masquer une dépendance manquante.
+  }, [debouncedSearch, setFilter])
 
   return (
     <div>

@@ -244,6 +244,31 @@ class CourseCatalogTest {
         assertThat(content).extracting(c -> c.get("title")).contains("Cours Requête Vide");
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    void searchCombinesWithDepartmentAndLevelInsteadOfDroppingThem() {
+        // Regression test: the search branch of the controller used to ignore department/level
+        // entirely once `q` was set, so a text search silently widened the result set instead
+        // of narrowing it — the department/level filter appeared to "disappear" client-side.
+        Map<String, Object> matching = createCourse("combo.teacher@zma.test",
+                "Improvisation Modale Avancée", "Jazz", "Master");
+        publish((String) matching.get("id"), "combo.teacher@zma.test");
+
+        // Same search term, but a different department/level — must NOT match once filtered.
+        Map<String, Object> sameTextWrongDept = createCourse("combo.teacher2@zma.test",
+                "Improvisation Modale Classique", "Musique", "Licence");
+        publish((String) sameTextWrongDept.get("id"), "combo.teacher2@zma.test");
+
+        ResponseEntity<Map> resp = rest.getForEntity(
+                url("/api/v1/courses?q=Improvisation&department=Jazz&level=Master&page=0&size=50"), Map.class);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) resp.getBody().get("content");
+
+        assertThat(content).extracting(c -> c.get("title"))
+                .contains("Improvisation Modale Avancée")
+                .doesNotContain("Improvisation Modale Classique");
+    }
+
     // ── 6. Preview lessons ───────────────────────────────────────────────────
 
     @Test

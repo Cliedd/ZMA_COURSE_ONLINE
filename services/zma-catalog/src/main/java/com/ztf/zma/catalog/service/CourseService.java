@@ -58,8 +58,12 @@ public class CourseService {
         return courseRepository.findByDeletedAtIsNull(pageable);
     }
 
-    public Page<Course> search(String query, Pageable pageable) {
-        return courseRepository.search(query, pageable);
+    public Page<Course> search(String query, String department, String level, Pageable pageable) {
+        // Text search must combine (AND) with department/level when they're also active —
+        // pass null rather than "" so the repository's "(:x IS NULL OR ...)" clause is a no-op.
+        String dept = StringUtils.hasText(department) ? department : null;
+        String lvl  = StringUtils.hasText(level) ? level : null;
+        return courseRepository.search(query, dept, lvl, pageable);
     }
 
     // ── Single course ─────────────────────────────────────────────────────────
