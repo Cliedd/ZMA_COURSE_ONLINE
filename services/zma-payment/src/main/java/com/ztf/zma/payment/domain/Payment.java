@@ -6,8 +6,14 @@ import java.time.Instant;
 @Entity
 @Table(name = "payments")
 public class Payment {
+    /** Assigned by the application (PaymentService, before Stripe session
+     *  creation) so it can be embedded as Stripe's client_reference_id and
+     *  in the success/cancel return URLs — no @GeneratedValue here:
+     *  Hibernate 6's built-in UUID generator overwrites any id set before
+     *  save(), which silently orphaned every payment (Stripe held one UUID,
+     *  the persisted row got a different one, so the webhook lookup and
+     *  GET /payments/{id} right after checkout always 404'd). */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(nullable = false)
@@ -25,9 +31,9 @@ public class Payment {
     @Column(nullable = false)
     private Double amount;
 
-    /** XAF, USD, EUR… */
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'XAF'")
-    private String currency = "XAF";
+    /** USD, XAF, EUR… — every price displayed by the frontend today is USD. */
+    @Column(nullable = false, columnDefinition = "varchar(10) default 'USD'")
+    private String currency = "USD";
 
     /** PENDING | SUCCESS | FAILED | REFUNDED */
     @Column(nullable = false)

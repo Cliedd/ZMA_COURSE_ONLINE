@@ -65,7 +65,13 @@ public class PaymentService {
         String title   = "";
         String level   = "";
         String teacherEmail = null;
-        String currency = "XAF";
+        // Every displayed price is USD — frontend's formatPrice() hardcodes
+        // currency: 'USD' and the catalog has no per-course currency field.
+        // Charging XAF here (a stale default from an earlier design) meant
+        // the amount shown to the buyer ($450) and the amount actually
+        // charged by Stripe (450 XAF, a zero-decimal currency ≈ $0.75)
+        // diverged by ~600x — confirmed live in a real test checkout.
+        String currency = "USD";
 
         if (courseInfo != null) {
             amount  = courseInfo.get("price")    != null ? ((Number) courseInfo.get("price")).doubleValue() : 0.0;

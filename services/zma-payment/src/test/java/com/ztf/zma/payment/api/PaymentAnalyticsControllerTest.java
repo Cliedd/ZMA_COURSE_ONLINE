@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,6 +40,7 @@ class PaymentAnalyticsControllerTest extends AbstractIntegrationTest {
 
     private Payment successPayment(String studentId, String courseId, String teacherEmail, double amount) {
         Payment p = new Payment();
+        p.setId(UUID.randomUUID().toString());
         p.setStudentId(studentId);
         p.setCourseId(courseId);
         p.setTeacherEmail(teacherEmail);

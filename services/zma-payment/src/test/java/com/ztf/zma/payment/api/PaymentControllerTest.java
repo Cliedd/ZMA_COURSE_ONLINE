@@ -20,6 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,6 +98,7 @@ class PaymentControllerTest extends AbstractIntegrationTest {
     @Test
     void webhook_acceptsRequestWithValidSignature_andConfirmsPayment() throws Exception {
         Payment p = new Payment();
+        p.setId(UUID.randomUUID().toString());
         p.setStudentId("student-1");
         p.setCourseId("course-1");
         p.setAmount(5000.0);
