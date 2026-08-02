@@ -234,6 +234,19 @@
         "feature4Body": "Certificates through doctorate, built on ECTS credits that transfer."
       }
     },
+    "countdown": {
+      "eyebrow": "Opening soon",
+      "title": "Courses launch in",
+      "readyTitle": "Courses are launching",
+      "body": "We're putting the final rigor into our first cohorts. Enrollment opens the moment the countdown reaches zero.",
+      "accessibleLabel": "Countdown to course launch",
+      "units": {
+        "days": "Days",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "seconds": "Seconds"
+      }
+    },
     "teachersPreview": {
       "eyebrow": "Our faculty",
       "title": "Learn from working musicians",
@@ -269,6 +282,13 @@
     "finalCta": {
       "title": "Ready to start your musical journey?",
       "body": "Join musicians training to international standards. First lesson free, no card required."
+    },
+    "signupCounter": {
+      "eyebrow": "Momentum",
+      "title": "Musicians already registered",
+      "body": "Join the founding cohort ahead of launch — no card required, first lesson free.",
+      "loading": "Counting our founding musicians…",
+      "error": "Count temporarily unavailable."
     }
   },
   "catalogue": {

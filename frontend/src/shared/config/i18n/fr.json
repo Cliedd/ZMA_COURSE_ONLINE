@@ -234,6 +234,19 @@
         "feature4Body": "Du certificat au doctorat, sur la base de crédits ECTS transférables."
       }
     },
+    "countdown": {
+      "eyebrow": "Ouverture prochaine",
+      "title": "Les cours sont disponibles dans",
+      "readyTitle": "Les cours sont lancés",
+      "body": "Nous mettons la dernière rigueur à la préparation de nos premières promotions. Les inscriptions ouvrent dès que le compte à rebours atteint zéro.",
+      "accessibleLabel": "Compte à rebours avant le lancement des cours",
+      "units": {
+        "days": "Jours",
+        "hours": "Heures",
+        "minutes": "Minutes",
+        "seconds": "Secondes"
+      }
+    },
     "teachersPreview": {
       "eyebrow": "Notre corps enseignant",
       "title": "Apprenez auprès de musiciens en activité",
@@ -269,6 +282,13 @@
     "finalCta": {
       "title": "Prêt à commencer votre parcours musical ?",
       "body": "Rejoignez les musiciens qui se forment aux standards internationaux. Première leçon gratuite, sans carte bancaire."
+    },
+    "signupCounter": {
+      "eyebrow": "Élan",
+      "title": "Musiciens déjà inscrits",
+      "body": "Rejoignez la promotion fondatrice avant le lancement — sans carte bancaire, première leçon gratuite.",
+      "loading": "Décompte de nos musiciens fondateurs…",
+      "error": "Décompte temporairement indisponible."
     }
   },
   "catalogue": {
