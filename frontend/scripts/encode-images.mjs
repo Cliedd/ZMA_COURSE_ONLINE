@@ -19,9 +19,22 @@ const WIDTHS = [400, 800, 1200, 1600]
 /** Étalonnage commun — ne pas modifier sans revoir l'ensemble de la photothèque. */
 function grade(pipeline) {
   return pipeline
-    .modulate({ saturation: 0.92, brightness: 1.02 })
-    .tint({ r: 255, g: 250, b: 242 })
+    .modulate({ saturation: 0.98, brightness: 1.02 })
     .linear(1.06, -8)
+    .composite([
+      {
+        input: {
+          create: {
+            width: 4,
+            height: 4,
+            channels: 4,
+            background: { r: 255, g: 250, b: 242, alpha: 0.12 },
+          },
+        },
+        blend: 'soft-light',
+        tile: true,
+      },
+    ])
 }
 
 await mkdir(OUTPUT_DIR, { recursive: true })
