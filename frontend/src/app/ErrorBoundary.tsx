@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
+import { reloadOnceForChunkError } from './lazyWithReload'
 
 interface State {
   hasError: boolean
@@ -11,6 +12,12 @@ interface State {
  * pour éviter l'écran blanc, et propose une sortie (Zero Dead Ends du CDC).
  * Une frontière d'erreur DOIT être un composant de classe — il n'existe pas
  * d'équivalent en hooks pour getDerivedStateFromError.
+ *
+ * Filet chunk périmé : lazyWithReload() (router.tsx) gère déjà le cas nominal
+ * d'un chunk de route disparu après déploiement. Ce composant reste le filet de
+ * secours si une telle erreur survient ailleurs (import dynamique hors routeur,
+ * échec réseau resurgissant pendant le rendu) — même logique de rechargement
+ * unique par onglet, pour ne jamais remplacer un vrai bug par une boucle.
  */
 export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   state: State = { hasError: false, message: '' }
@@ -22,6 +29,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   componentDidCatch(error: Error, info: ErrorInfo): void {
     // Point de branchement pour un futur rapport d'erreurs (Sentry, cf. CDC).
     console.error('Erreur de rendu non interceptée', error, info)
+    reloadOnceForChunkError(error)
   }
 
   render(): ReactNode {

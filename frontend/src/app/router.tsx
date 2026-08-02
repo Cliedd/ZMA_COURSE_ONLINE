@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NotFound } from './NotFound'
 import { RequireAuth } from './guards'
 import { OAuthCallbackPage } from './OAuthCallbackPage'
+import { lazyWithReload } from './lazyWithReload'
 import { PublicLayout } from '@/app/layouts/PublicLayout'
 import { AppLayout } from '@/app/layouts/AppLayout'
 import { AuthLayout } from '@/app/layouts/AuthLayout'
@@ -11,30 +12,33 @@ import { Skeleton } from '@/shared/ui'
 import { setOnUnauthorized } from '@/shared/api/http'
 
 // Chargement différé : l'espace admin ne pèse plus sur la première visite en 3G.
-const HomePage = lazy(() => import('@/pages/home').then((m) => ({ default: m.HomePage })))
-const CataloguePage = lazy(() => import('@/pages/catalogue').then((m) => ({ default: m.CataloguePage })))
-const CourseDetailPage = lazy(() => import('@/pages/course-detail').then((m) => ({ default: m.CourseDetailPage })))
-const TeachersPage = lazy(() => import('@/pages/teachers').then((m) => ({ default: m.TeachersPage })))
-const TeacherProfilePage = lazy(() => import('@/pages/teacher-profile').then((m) => ({ default: m.TeacherProfilePage })))
-const LoginPage = lazy(() => import('@/pages/auth-login').then((m) => ({ default: m.LoginPage })))
-const RegisterPage = lazy(() => import('@/pages/auth-register').then((m) => ({ default: m.RegisterPage })))
-const ResetPasswordPage = lazy(() => import('@/pages/auth-reset-password').then((m) => ({ default: m.ResetPasswordPage })))
+// lazyWithReload (et non lazy() nu) : si le chunk a été supprimé du serveur par un
+// déploiement pendant que l'onglet était ouvert, on recharge la page une fois au lieu
+// d'afficher l'écran d'erreur générique (« Failed to fetch dynamically imported module »).
+const HomePage = lazyWithReload(() => import('@/pages/home').then((m) => ({ default: m.HomePage })))
+const CataloguePage = lazyWithReload(() => import('@/pages/catalogue').then((m) => ({ default: m.CataloguePage })))
+const CourseDetailPage = lazyWithReload(() => import('@/pages/course-detail').then((m) => ({ default: m.CourseDetailPage })))
+const TeachersPage = lazyWithReload(() => import('@/pages/teachers').then((m) => ({ default: m.TeachersPage })))
+const TeacherProfilePage = lazyWithReload(() => import('@/pages/teacher-profile').then((m) => ({ default: m.TeacherProfilePage })))
+const LoginPage = lazyWithReload(() => import('@/pages/auth-login').then((m) => ({ default: m.LoginPage })))
+const RegisterPage = lazyWithReload(() => import('@/pages/auth-register').then((m) => ({ default: m.RegisterPage })))
+const ResetPasswordPage = lazyWithReload(() => import('@/pages/auth-reset-password').then((m) => ({ default: m.ResetPasswordPage })))
 
-const StudentDashboard = lazy(() => import('@/pages/dashboard').then((m) => ({ default: m.StudentDashboard })))
-const MyCoursesPage = lazy(() => import('@/pages/my-courses').then((m) => ({ default: m.MyCoursesPage })))
-const CertificatesPage = lazy(() => import('@/pages/certificates').then((m) => ({ default: m.CertificatesPage })))
-const SettingsPage = lazy(() => import('@/pages/settings').then((m) => ({ default: m.SettingsPage })))
-const CheckoutPage = lazy(() => import('@/pages/checkout').then((m) => ({ default: m.CheckoutPage })))
-const CheckoutReturnPage = lazy(() => import('@/pages/checkout-return').then((m) => ({ default: m.CheckoutReturnPage })))
-const CoursePlayer = lazy(() => import('@/pages/learning').then((m) => ({ default: m.CoursePlayer })))
-const ChatPage = lazy(() => import('@/pages/chat/ChatPage').then((m) => ({ default: m.ChatPage })))
-const TeacherDashboardPage = lazy(() => import('@/pages/teacher-dashboard').then((m) => ({ default: m.TeacherDashboardPage })))
-const CourseEditorPage = lazy(() => import('@/pages/teacher-course-edit').then((m) => ({ default: m.CourseEditorPage })))
-const CourseWizardPage = lazy(() => import('@/pages/teacher-course-new').then((m) => ({ default: m.CourseWizardPage })))
-const AdminOverviewPage = lazy(() => import('@/pages/admin-overview').then((m) => ({ default: m.AdminOverviewPage })))
-const AdminUsersPage = lazy(() => import('@/pages/admin-users').then((m) => ({ default: m.AdminUsersPage })))
-const AdminFinancePage = lazy(() => import('@/pages/admin-finance').then((m) => ({ default: m.AdminFinancePage })))
-const CertificateVerifyPage = lazy(() => import('@/pages/certificate-verify').then((m) => ({ default: m.CertificateVerifyPage })))
+const StudentDashboard = lazyWithReload(() => import('@/pages/dashboard').then((m) => ({ default: m.StudentDashboard })))
+const MyCoursesPage = lazyWithReload(() => import('@/pages/my-courses').then((m) => ({ default: m.MyCoursesPage })))
+const CertificatesPage = lazyWithReload(() => import('@/pages/certificates').then((m) => ({ default: m.CertificatesPage })))
+const SettingsPage = lazyWithReload(() => import('@/pages/settings').then((m) => ({ default: m.SettingsPage })))
+const CheckoutPage = lazyWithReload(() => import('@/pages/checkout').then((m) => ({ default: m.CheckoutPage })))
+const CheckoutReturnPage = lazyWithReload(() => import('@/pages/checkout-return').then((m) => ({ default: m.CheckoutReturnPage })))
+const CoursePlayer = lazyWithReload(() => import('@/pages/learning').then((m) => ({ default: m.CoursePlayer })))
+const ChatPage = lazyWithReload(() => import('@/pages/chat/ChatPage').then((m) => ({ default: m.ChatPage })))
+const TeacherDashboardPage = lazyWithReload(() => import('@/pages/teacher-dashboard').then((m) => ({ default: m.TeacherDashboardPage })))
+const CourseEditorPage = lazyWithReload(() => import('@/pages/teacher-course-edit').then((m) => ({ default: m.CourseEditorPage })))
+const CourseWizardPage = lazyWithReload(() => import('@/pages/teacher-course-new').then((m) => ({ default: m.CourseWizardPage })))
+const AdminOverviewPage = lazyWithReload(() => import('@/pages/admin-overview').then((m) => ({ default: m.AdminOverviewPage })))
+const AdminUsersPage = lazyWithReload(() => import('@/pages/admin-users').then((m) => ({ default: m.AdminUsersPage })))
+const AdminFinancePage = lazyWithReload(() => import('@/pages/admin-finance').then((m) => ({ default: m.AdminFinancePage })))
+const CertificateVerifyPage = lazyWithReload(() => import('@/pages/certificate-verify').then((m) => ({ default: m.CertificateVerifyPage })))
 
 /** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
  *  TeacherDashboard et CourseWizard (hérités, réécrits au chantier 3) pointent encore
