@@ -9,4 +9,3 @@ public class PaymentApplication {
         SpringApplication.run(PaymentApplication.class, args);
     }
 }
-// autodeploy verification 2026-08-02T02:29:26Z
