@@ -124,6 +124,9 @@ public class SecurityConfig {
                     // succeeded). The "confirming /mfa/setup" case checks the
                     // authenticated principal itself inside the controller.
                     "/api/v1/auth/mfa/verify",
+                    // Public marketing stat (aggregate count only, no personal data) —
+                    // used by the homepage sign-up counter ahead of course launch.
+                    "/api/v1/auth/users/count",
                     "/login/**",
                     "/oauth2/**",
                     "/actuator/health",
