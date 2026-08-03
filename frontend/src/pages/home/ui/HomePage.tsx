@@ -9,6 +9,8 @@ import { WhyChooseUsSection } from './WhyChooseUsSection'
 import { TeachersPreviewSection } from './TeachersPreviewSection'
 import { QuoteBannerSection } from './QuoteBannerSection'
 import { FAQSection } from './FAQSection'
+import { SignupCounterSection } from './SignupCounterSection'
+import { LaunchCountdownSection } from './LaunchCountdownSection'
 import { FinalCtaSection } from './FinalCtaSection'
 
 export function HomePage() {
@@ -25,6 +27,8 @@ export function HomePage() {
       <TeachersPreviewSection />
       <QuoteBannerSection />
       <FAQSection />
+      <SignupCounterSection />
+      <LaunchCountdownSection />
       <FinalCtaSection />
     </div>
   )
