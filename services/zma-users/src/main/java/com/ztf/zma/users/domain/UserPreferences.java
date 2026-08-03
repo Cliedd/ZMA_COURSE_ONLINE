@@ -18,7 +18,7 @@ public class UserPreferences {
     private String language = "fr";
 
     @Column(nullable = false)
-    private String timezone = "Africa/Douala";
+    private String timezone = "UTC";
 
     /** Receive email notifications for new courses, announcements */
     @Column(nullable = false)
