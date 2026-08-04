@@ -1,11 +1,17 @@
 /**
  * Inventaire des visuels du site.
  *
- * `source: 'ztf'`         — vraie photo de la ZTF Music Academy (fournies par
- *                           l'équipe, issues du site officiel).
- * `source: 'ztf-pending'` — emplacement réservé à du matériel réel encore absent
- *                           (ex. portrait d'un enseignant nommé). Tant qu'il manque,
- *                           la surface affiche un état vide plutôt qu'un visage inventé.
+ * `source: 'ztf'`          — vraie photo de la ZTF Music Academy (fournies par
+ *                            l'équipe, issues du site officiel).
+ * `source: 'ztf-pending'`  — emplacement réservé à du matériel réel encore absent
+ *                            (ex. portrait d'un enseignant nommé). Tant qu'il manque,
+ *                            la surface affiche un état vide plutôt qu'un visage inventé.
+ * `source: 'ai-generated'` — visuel généré via le pipeline Pollinations.ai décrit dans
+ *                            src/lib/images.ts, pour un département sans photo réelle
+ *                            disponible. Téléchargé une fois puis committé comme asset
+ *                            statique (jamais référencé en direct depuis Pollinations),
+ *                            et passé par le même étalonnage `images:encode` que les
+ *                            vraies photos pour rester visuellement cohérent avec elles.
  *
  * Les fichiers vivent dans public/images/<base>-<largeur>.<avif|webp|jpg>,
  * produits par `npm run images:encode` depuis public/images/_source/<base>.jpg.
@@ -21,7 +27,7 @@ export interface ImageEntry {
   width: number
   height: number
   alt: string
-  source: 'ztf' | 'ztf-pending'
+  source: 'ztf' | 'ztf-pending' | 'ai-generated'
 }
 
 export const IMAGE_WIDTHS = [400, 800, 1200, 1600] as const
@@ -152,6 +158,34 @@ export const IMAGES = {
     height: 800,
     alt: 'Portrait of a ZTF Music Academy teacher',
     source: 'ztf-pending',
+  },
+  broadcastStudio: {
+    base: 'broadcast-studio',
+    width: 940,
+    height: 627,
+    alt: 'A student operating a camera and vision-mixing desk in a broadcast studio',
+    source: 'ai-generated',
+  },
+  filmScoring: {
+    base: 'film-scoring',
+    width: 940,
+    height: 627,
+    alt: 'A composer working at a DAW with a film timeline on dual monitors',
+    source: 'ai-generated',
+  },
+  musicologyArchive: {
+    base: 'musicology-archive',
+    width: 940,
+    height: 627,
+    alt: 'A student researching scores and reference books in a music library archive',
+    source: 'ai-generated',
+  },
+  musicBusiness: {
+    base: 'music-business',
+    width: 940,
+    height: 627,
+    alt: 'A music-business professional reviewing a contract in a modern office',
+    source: 'ai-generated',
   },
 } as const satisfies Record<string, ImageEntry>
 
