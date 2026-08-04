@@ -8,7 +8,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      // Registration is done manually via the `virtual:pwa-register/react`
+      // hook (see src/app/UpdatePrompt.tsx) instead of the plugin's own
+      // injected script — autoUpdate swaps the service worker in the
+      // background silently, but a tab left open across a deploy keeps
+      // running old JS referencing since-deleted chunk files until it's
+      // told to reload. The hook surfaces `needRefresh` so we can prompt
+      // the user instead of leaving them on a silently-stale page.
+      injectRegister: null,
       includeAssets: ['brand/ztf-logo.png'],
       manifest: {
         name: 'ZTF Music Académie',

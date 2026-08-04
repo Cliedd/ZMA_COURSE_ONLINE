@@ -7,6 +7,7 @@ import { AppError } from '@/shared/api/http'
 import { connectSessionToHttp } from '@/entities/session'
 
 import { ToastContainer } from '@/shared/ui'
+import { UpdatePrompt } from './UpdatePrompt'
 
 // Branche la session au client HTTP partagé, une fois, au chargement du module app.
 connectSessionToHttp()
@@ -31,6 +32,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <ThemeProvider>
           {children}
           <ToastContainer />
+          <UpdatePrompt />
         </ThemeProvider>
       </I18nextProvider>
     </QueryClientProvider>

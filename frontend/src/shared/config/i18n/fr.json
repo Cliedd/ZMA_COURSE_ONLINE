@@ -71,6 +71,12 @@
     "retry": "Réessayer",
     "network": "Connexion impossible. Vérifiez votre réseau et réessayez."
   },
+  "update": {
+    "title": "Nouvelle version disponible",
+    "body": "Rechargez pour profiter de la dernière version du site.",
+    "reload": "Recharger maintenant",
+    "dismiss": "Plus tard"
+  },
   "footer": {
     "trainings": "Formations",
     "academy": "Académie",

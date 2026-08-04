@@ -71,6 +71,12 @@
     "retry": "Try again",
     "network": "Connection failed. Check your network and try again."
   },
+  "update": {
+    "title": "New version available",
+    "body": "Reload to get the latest version of the site.",
+    "reload": "Reload now",
+    "dismiss": "Later"
+  },
   "footer": {
     "trainings": "Courses",
     "academy": "Academy",
