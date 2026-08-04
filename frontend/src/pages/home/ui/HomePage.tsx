@@ -17,6 +17,8 @@ export function HomePage() {
   return (
     <div className="overflow-x-hidden">
       <HomeHero />
+      <SignupCounterSection />
+      <LaunchCountdownSection />
       <AboutSection />
       <ProgrammesByLevelSection />
       <DepartmentsSection />
@@ -27,8 +29,6 @@ export function HomePage() {
       <TeachersPreviewSection />
       <QuoteBannerSection />
       <FAQSection />
-      <SignupCounterSection />
-      <LaunchCountdownSection />
       <FinalCtaSection />
     </div>
   )

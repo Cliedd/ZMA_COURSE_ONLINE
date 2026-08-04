@@ -50,9 +50,8 @@ function useCountUp(target: number, active: boolean): number {
  * cours : met en avant le nombre réel d'inscrits (aucune donnée inventée).
  * L'animation de comptage démarre dès que la donnée arrive (montée du
  * composant) ; l'apparition visuelle (fondu) reste liée au scroll via
- * `BlurFade`. Section autonome, pensée pour cohabiter avec un futur compte à
- * rebours de lancement — non composée dans HomePage ici, à intégrer par
- * l'appelant.
+ * `BlurFade`. Placée juste après le hero pour rendre la preuve sociale visible
+ * sans scroll ; cohabite avec `LaunchCountdownSection` juste en dessous.
  */
 export function SignupCounterSection() {
   const { t } = useTranslation()

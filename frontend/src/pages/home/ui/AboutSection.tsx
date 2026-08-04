@@ -6,7 +6,8 @@ import { IMAGES } from '@/shared/config/images/manifest'
 const STAT_KEYS = ['stat1', 'stat2', 'stat3', 'stat4'] as const
 
 /** Section « About us » : présentation courte + checklist + bandeau de 4 statistiques,
- * registre clair. Deuxième section de la page d'accueil, juste après le hero sombre. */
+ * registre clair. Suit le hero, le compteur d'inscriptions et le compte à rebours de
+ * lancement dans la page d'accueil. */
 export function AboutSection() {
   const { t } = useTranslation()
   const checklist = t('home.about.checklist', { returnObjects: true }) as string[]

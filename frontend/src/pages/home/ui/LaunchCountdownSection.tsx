@@ -56,9 +56,9 @@ function useCountdown(target: Date): CountdownBreakdown {
 const UNITS = ['days', 'hours', 'minutes', 'seconds'] as const
 
 /** Section « compte à rebours » de la page d'accueil : annonce l'ouverture prochaine
- * de la boutique de cours, avant tout lancement réel. Section autonome, non câblée
- * dans HomePage.tsx (composition laissée au coordinateur pour éviter une collision
- * avec la section « compteur d'inscriptions » développée en parallèle). */
+ * de la boutique de cours, avant tout lancement réel. Placée juste après
+ * `SignupCounterSection`, tout en haut de la page (juste après le hero), pour que
+ * l'urgence soit visible sans scroll. */
 export function LaunchCountdownSection() {
   const { t } = useTranslation()
   const { days, hours, minutes, seconds, reached } = useCountdown(LAUNCH_AT)
