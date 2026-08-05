@@ -68,7 +68,17 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String debouches;
 
+    // Not populated by any write path (curriculum content lives in
+    // curriculumJson, a plain TEXT column). Left mapped for schema
+    // compatibility, but MUST stay @JsonIgnore: without it, Jackson calls
+    // getSections() while serializing every Course returned by the API —
+    // since this is LAZY and open-in-view is on, each call triggers its own
+    // "SELECT ... FROM sections WHERE course_id=?" round trip, turning a
+    // single paginated /api/v1/courses response into 1 + N extra queries
+    // (measured: ~1.5-2s baseline latency for a 20-course page vs a normal
+    // single-digit-ms query, confirmed via production load test 2026-08-05).
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Section> sections;
 
     // ── Getters / Setters ────────────────────────────────────────────────────
