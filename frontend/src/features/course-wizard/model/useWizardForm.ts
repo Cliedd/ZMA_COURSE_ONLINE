@@ -29,7 +29,10 @@ export const wizardSchema = z.object({
   price: z.preprocess(
     (value) => (value === '' || value === undefined || value === null ? undefined : Number(value)),
     z.number({ required_error: 'Le prix est obligatoire.', invalid_type_error: 'Veuillez saisir un prix valide.' })
-      .min(0, 'Le prix doit être positif ou nul.'),
+      // Le backend (CourseRequest.java) exige un prix strictement positif (@Positive) :
+      // aligner la validation ici évite un 422 tardif à l'étape 2, une fois le prix
+      // (champ de l'étape 1) hors de vue.
+      .positive('Le prix doit être strictement supérieur à 0.'),
   ),
   shortDescription: z.string().trim().min(1, 'La description courte est obligatoire.'),
   description: z.string().optional(),
