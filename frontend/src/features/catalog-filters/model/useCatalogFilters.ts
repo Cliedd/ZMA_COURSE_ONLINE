@@ -21,6 +21,19 @@ export function useCatalogFilters() {
   const paramsRef = useRef(params)
   paramsRef.current = params
 
+  // `setSearchParams` change elle-même d'identité à chaque changement d'URL (elle
+  // referme sur `searchParams`, cf. l'implémentation de react-router-dom : son
+  // `useCallback` a `searchParams` en dépendance). Sans cette ref, `setFilter`/`setPage`
+  // (ci-dessous, mémoïsés sur `setParams`) changeraient donc eux aussi d'identité à
+  // chaque navigation — y compris un simple clic de pagination — ce qui re-déclenche
+  // à tort tout effet qui les liste en dépendance (ex. la synchro de la recherche
+  // débouncée dans CataloguePage), lequel réapplique `setFilter('q', …)` et supprime
+  // `page` de l'URL au passage : le clic sur « page 2 » semblait alors « glitcher »
+  // et revenir silencieusement à la page 1. On isole donc `setParams` dans une ref
+  // pour que `setFilter`/`setPage`/`reset` restent des callbacks stables (deps vides).
+  const setParamsRef = useRef(setParams)
+  setParamsRef.current = setParams
+
   const filters: CourseFilters = useMemo(() => {
     const department = params.get('department') ?? undefined
     const level = params.get('level') ?? undefined
@@ -51,9 +64,9 @@ export function useCatalogFilters() {
       else next.delete(key)
       next.delete('page')
       paramsRef.current = next
-      setParams(next, { replace: false })
+      setParamsRef.current(next, { replace: false })
     },
-    [setParams],
+    [],
   )
 
   const setPage = useCallback(
@@ -62,16 +75,16 @@ export function useCatalogFilters() {
       if (page > 1) next.set('page', String(page))
       else next.delete('page')
       paramsRef.current = next
-      setParams(next, { replace: false })
+      setParamsRef.current(next, { replace: false })
     },
-    [setParams],
+    [],
   )
 
   const reset = useCallback(() => {
     const next = new URLSearchParams()
     paramsRef.current = next
-    setParams(next, { replace: false })
-  }, [setParams])
+    setParamsRef.current(next, { replace: false })
+  }, [])
 
   const hasActiveFilters = Boolean(filters.department || filters.level || filters.q)
 

@@ -107,7 +107,7 @@ function EmptyState({ onReset, showReset }: { onReset: () => void; showReset: bo
     <div className="border border-line bg-surface p-12 text-center">
       <p className="font-serif text-h3 text-ink">{t('catalogue.empty')}</p>
       {showReset && (
-        <button onClick={onReset} className="mt-4 inline-flex min-h-touch items-center rounded border border-ink px-5 font-sans text-sm font-semibold text-ink">
+        <button type="button" onClick={onReset} className="mt-4 inline-flex min-h-touch items-center rounded border border-ink px-5 font-sans text-sm font-semibold text-ink">
           {t('catalogue.emptyAction')}
         </button>
       )}
@@ -120,7 +120,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="border border-line bg-surface p-12 text-center">
       <p className="font-serif text-h3 text-ink">{t('error.title')}</p>
-      <button onClick={onRetry} className="mt-4 inline-flex min-h-touch items-center rounded bg-ink px-5 font-sans text-sm font-semibold text-paper">
+      <button type="button" onClick={onRetry} className="mt-4 inline-flex min-h-touch items-center rounded bg-ink px-5 font-sans text-sm font-semibold text-paper">
         {t('error.retry')}
       </button>
     </div>
@@ -135,6 +135,7 @@ function Pagination({ page, totalPages, onPage }: { page: number; totalPages: nu
         return (
           <button
             key={p}
+            type="button"
             onClick={() => onPage(p)}
             aria-current={p === page ? 'page' : undefined}
             className={p === page

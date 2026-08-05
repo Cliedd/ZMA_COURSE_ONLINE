@@ -85,4 +85,41 @@ describe('CataloguePage', () => {
       expect(last).toContain('q=piano')
     }, { timeout: 4000 })
   }, 10000)
+
+  it('clique sur la page 2 de la pagination et y reste (ne revient pas silencieusement à la page 1)', async () => {
+    // Régression : `setFilter` (mémoïsé sur `setParams` de react-router-dom, lui-même
+    // instable — son identité change à chaque navigation) changeait d'identité à
+    // chaque clic de pagination, ce qui re-déclenchait l'effet de synchro de la
+    // recherche débouncée dans CataloguePage. Cet effet rappelait `setFilter('q', …)`,
+    // qui supprime toujours `page` de l'URL — annulant le clic sur « page 2 » et
+    // ramenant silencieusement l'utilisateur à la page 1 (perçu comme un « glitch »/
+    // rafraîchissement). `setFilter`/`setPage` sont désormais des callbacks stables
+    // (deps vides), donc ce recul ne doit plus se produire.
+    const receivedPages: Array<string | null> = []
+    mswServer.use(http.get(`${API}/courses`, ({ request }) => {
+      receivedPages.push(new URL(request.url).searchParams.get('page'))
+      return HttpResponse.json({
+        content: [{ id: '1', slug: 'piano', title: 'Piano classique', price: 18, rating: 4.9 }],
+        totalElements: 24,
+        number: 0,
+        totalPages: 3,
+      })
+    }))
+    renderWithProviders(<CataloguePage />, { route: '/catalogue' })
+
+    await screen.findByRole('heading', { name: 'Piano classique' })
+
+    const pageTwoButton = await screen.findByRole('button', { name: '2' })
+    await userEvent.click(pageTwoButton)
+
+    // La requête pour la page 2 (index 0-based `page=1`) doit partir…
+    await waitFor(() => expect(receivedPages).toContain('1'))
+
+    // …et rester la dernière requête connue : pas de retour en douce à `page` absent
+    // (page 1) après le clic, même en laissant le temps à un éventuel effet parasite
+    // de se déclencher.
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    expect(receivedPages[receivedPages.length - 1]).toBe('1')
+    expect(screen.getByRole('button', { name: '2' })).toHaveAttribute('aria-current', 'page')
+  })
 })
