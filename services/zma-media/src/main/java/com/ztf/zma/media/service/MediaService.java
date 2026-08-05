@@ -28,19 +28,17 @@ public class MediaService {
 
     /** Allowed MIME types */
     private static final Set<String> ALLOWED_TYPES = Set.of(
-        "image/jpeg", "image/png", "image/webp", "image/gif",
-        "video/mp4", "video/webm", "video/quicktime",
+        "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif",
+        "video/mp4", "video/webm", "video/quicktime", "video/x-matroska",
+        "video/avi", "video/x-msvideo", "video/mkv", "video/3gpp", "video/ogg",
+        "video/x-flv", "video/mp2t", "video/x-m4v", "application/octet-stream",
         "application/pdf",
         "application/zip",
-        "audio/mpeg", "audio/wav"
+        "audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg"
     );
 
     /** Max file size: 2 GB */
     private static final long MAX_SIZE_BYTES = 2L * 1024 * 1024 * 1024;
-
-    private final MediaRepository mediaRepository;
-    private final StorageService  storageService;
-    private final ImageProcessingService imageProcessingService;
 
     public MediaService(MediaRepository mediaRepository, StorageService storageService,
                          ImageProcessingService imageProcessingService) {
@@ -58,8 +56,23 @@ public class MediaService {
     @Transactional
     public PresignUrlWithId requestUpload(String fileName, String contentType,
                                           long sizeBytes, String purpose, String uploadedBy) {
+        String normalizedType = contentType == null ? "" : contentType.split(";")[0].trim().toLowerCase();
+        if (normalizedType.isEmpty() || "application/octet-stream".equals(normalizedType)) {
+            String ext = fileName != null && fileName.contains(".") ?
+                fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase() : "";
+            normalizedType = switch (ext) {
+                case "mp4", "m4v" -> "video/mp4";
+                case "webm" -> "video/webm";
+                case "mov" -> "video/quicktime";
+                case "mkv" -> "video/x-matroska";
+                case "avi" -> "video/x-msvideo";
+                case "pdf" -> "application/pdf";
+                default -> normalizedType.isEmpty() ? "video/mp4" : normalizedType;
+            };
+        }
+
         // Validate file type
-        if (!ALLOWED_TYPES.contains(contentType.toLowerCase())) {
+        if (!ALLOWED_TYPES.contains(normalizedType)) {
             throw new RuntimeException("File type not allowed: " + contentType);
         }
         // Validate size

@@ -21,8 +21,47 @@ const uploadedMediaSchema = z.object({
 
 export type UploadedMedia = z.infer<typeof uploadedMediaSchema>
 
-/** Types vidéo acceptés par zma-media (MediaService.ALLOWED_TYPES, sous-ensemble vidéo). */
-export const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime']
+/** Extensions vidéo courantes acceptées. */
+export const ALLOWED_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'mkv', 'avi', 'm4v', '3gp', 'flv', 'ogv', 'ts']
+
+/** Types MIME vidéo explicites acceptés. */
+export const ALLOWED_VIDEO_TYPES = [
+  'video/mp4',
+  'video/webm',
+  'video/quicktime',
+  'video/x-matroska',
+  'video/avi',
+  'video/x-msvideo',
+  'video/mkv',
+  'video/3gpp',
+  'video/ogg',
+  'video/x-flv',
+  'video/mp2t',
+  'video/x-m4v',
+]
+
+export function isVideoFile(file: File): boolean {
+  if (file.type && (file.type.startsWith('video/') || ALLOWED_VIDEO_TYPES.includes(file.type.split(';')[0]!.trim().toLowerCase()))) {
+    return true
+  }
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+  return ALLOWED_VIDEO_EXTENSIONS.includes(ext)
+}
+
+export function inferVideoContentType(file: File): string {
+  const mime = file.type ? file.type.split(';')[0]!.trim().toLowerCase() : ''
+  if (mime && mime !== 'application/octet-stream') {
+    return mime
+  }
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+  switch (ext) {
+    case 'webm': return 'video/webm'
+    case 'mov': return 'video/quicktime'
+    case 'mkv': return 'video/x-matroska'
+    case 'avi': return 'video/x-msvideo'
+    default: return 'video/mp4'
+  }
+}
 
 /** MediaService.MAX_SIZE_BYTES (2 Go) */
 export const MAX_VIDEO_SIZE_BYTES = 2 * 1024 * 1024 * 1024
@@ -46,8 +85,7 @@ export async function uploadLessonVideo(
   file: File,
   { onProgress, signal }: UploadLessonVideoOptions = {},
 ): Promise<UploadedMedia> {
-  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
-  const contentType = file.type || (ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'mov' ? 'video/quicktime' : ext === 'txt' ? 'text/plain' : '')
+  const contentType = inferVideoContentType(file)
   const presigned = await post(
     '/media/presign',
     { fileName: file.name, contentType, sizeBytes: file.size, purpose: 'LESSON_VIDEO' },

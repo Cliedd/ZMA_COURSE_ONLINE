@@ -4,7 +4,7 @@ import { CheckCircle2, Loader2, Video, X } from 'lucide-react'
 import { Badge, Button, ProgressBar, toast } from '@/shared/ui'
 import { AppError } from '@/shared/api/http'
 import type { CurriculumLesson } from '@/entities/course'
-import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES, uploadLessonVideo } from '../api/mediaApi'
+import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES, isVideoFile, uploadLessonVideo } from '../api/mediaApi'
 
 interface LessonMediaUploadProps {
   lesson: CurriculumLesson
@@ -23,10 +23,7 @@ export function LessonMediaUpload({ lesson, onChange }: LessonMediaUploadProps) 
     if (!file) return
     setError(null)
 
-    const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
-    const isVideoType = ALLOWED_VIDEO_TYPES.includes(file.type) || ['mp4', 'webm', 'mov'].includes(ext)
-
-    if (!isVideoType) {
+    if (!isVideoFile(file)) {
       const msg = t('courseEditor.media.errorFormat')
       setError(msg)
       toast.error(msg)
@@ -46,7 +43,10 @@ export function LessonMediaUpload({ lesson, onChange }: LessonMediaUploadProps) 
       onChange({ ...lesson, mediaId: media.id })
       toast.success(t('courseEditor.media.uploadSuccess'))
     } catch (err) {
-      const msg = err instanceof AppError ? err.message : t('courseEditor.media.errorNetwork')
+      const serverMsg = err instanceof AppError ? err.message : null
+      const msg = serverMsg && serverMsg !== 'Une erreur est survenue.'
+        ? serverMsg
+        : t('courseEditor.media.errorNetwork')
       setError(msg)
       toast.error(msg)
     } finally {
