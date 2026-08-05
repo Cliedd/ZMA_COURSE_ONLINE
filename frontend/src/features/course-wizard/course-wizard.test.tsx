@@ -93,6 +93,6 @@ describe('CourseWizard Component', () => {
 
     // L'utilisateur reste à l'étape 2 avec un message d'erreur
     expect(screen.getByText(/étape 2\/2/i)).toBeInTheDocument()
-    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(await screen.findByText(/la description courte est obligatoire/i)).toBeInTheDocument()
   })
 })

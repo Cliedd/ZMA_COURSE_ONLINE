@@ -6,6 +6,8 @@ import { mswServer } from '@/test/msw'
 import { renderWithProviders } from '@/test/renderWithProviders'
 import { CoursePlayer } from './CoursePlayer'
 
+const API = 'http://localhost/api/v1'
+
 function renderPlayer(courseId: string) {
   return renderWithProviders(
     <Routes>
@@ -42,7 +44,7 @@ describe('CoursePlayer', () => {
 
   it('affiche le lecteur vidéo avec src et contrôles quand mediaId est présent', async () => {
     mswServer.use(
-      http.get('*/api/v1/courses/c2', () =>
+      http.get(`${API}/courses/c2`, () =>
         HttpResponse.json({
           id: 'c2',
           slug: 'guitare-101',
@@ -56,8 +58,8 @@ describe('CoursePlayer', () => {
           ]),
         }),
       ),
-      http.get('*/api/v1/enrollments/me', () => HttpResponse.json([])),
-      http.get('*/api/v1/media/media-88/url', () => HttpResponse.json({ url: '/api/v1/media/media-88/file' })),
+      http.get(`${API}/enrollments/me`, () => HttpResponse.json([])),
+      http.get(`${API}/media/media-88/url`, () => HttpResponse.json({ url: '/api/v1/media/media-88/file' })),
     )
 
     renderPlayer('c2')
