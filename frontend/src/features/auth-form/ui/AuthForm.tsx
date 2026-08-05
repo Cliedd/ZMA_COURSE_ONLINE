@@ -174,6 +174,9 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
 }
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
+  // Couleurs de la marque Google (logo officiel "G") : intentionnellement en dur,
+  // ce ne sont pas des jetons thémables du design system.
+  /* eslint-disable no-restricted-syntax */
   return (
     <svg viewBox="0 0 24 24" {...props}>
       <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
@@ -182,4 +185,5 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
       <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.94 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
     </svg>
   )
+  /* eslint-enable no-restricted-syntax */
 }

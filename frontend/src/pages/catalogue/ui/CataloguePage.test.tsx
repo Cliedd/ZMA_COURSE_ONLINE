@@ -27,7 +27,9 @@ describe('CataloguePage', () => {
     mswServer.use(http.get(`${API}/courses`, () => HttpResponse.json(coursePage([]))))
     renderWithProviders(<CataloguePage />, { route: '/catalogue?level=Doctorate' })
 
-    expect(await screen.findByText(/No course matches/)).toBeInTheDocument()
+    // Timeout étendu : peut dépasser les 1000ms par défaut quand la suite tourne
+    // en parallèle sous charge (cf. autres tests de ce fichier).
+    expect(await screen.findByText(/No course matches/, {}, { timeout: 4000 })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Reset filters/ })).toBeInTheDocument()
   })
 

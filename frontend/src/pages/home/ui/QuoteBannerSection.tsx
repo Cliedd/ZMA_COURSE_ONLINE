@@ -24,7 +24,7 @@ export function QuoteBannerSection() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/55 to-scene/15" />
         <div className="relative z-10 max-w-3xl px-6 py-14 sm:px-10 sm:py-20">
-          <span aria-hidden className="block font-serif italic leading-[0.55] text-scene-accent" style={{ fontSize: '5rem' }}>
+          <span aria-hidden className="block font-serif italic leading-[0.55] text-scene-accent text-[5rem]">
             &#8220;
           </span>
           <p className="mt-3.5 font-serif text-h2 leading-snug tracking-tight text-scene-ink">
