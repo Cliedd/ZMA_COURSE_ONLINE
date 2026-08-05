@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Input, Button } from '@/shared/ui'
-import type { CurriculumSection } from '@/entities/course'
+import type { CurriculumSection, CurriculumLesson } from '@/entities/course'
+import { LessonMediaUpload } from './LessonMediaUpload'
 
 function makeSectionId(): string {
   return `s${Date.now()}${Math.round(Math.random() * 1000)}`
@@ -12,10 +13,11 @@ interface SectionRowProps {
   onRemove: () => void
   onAddLesson: (lesson: string) => void
   onRemoveLesson: (index: number) => void
+  onChangeLesson: (index: number, lesson: CurriculumLesson) => void
 }
 
 /** Une section du programme : titre, liste de leçons, ajout/retrait local. */
-function SectionRow({ section, onRename, onRemove, onAddLesson, onRemoveLesson }: SectionRowProps) {
+function SectionRow({ section, onRename, onRemove, onAddLesson, onRemoveLesson, onChangeLesson }: SectionRowProps) {
   const [lessonDraft, setLessonDraft] = useState('')
 
   const addLesson = () => {
@@ -46,16 +48,19 @@ function SectionRow({ section, onRename, onRemove, onAddLesson, onRemoveLesson }
 
       <ul className="mt-3 flex flex-col gap-2">
         {section.lessons.map((lesson, index) => (
-          <li key={`${lesson}-${index}`} className="flex items-center justify-between gap-2 border-t border-line pt-2">
-            <span className="font-sans text-sm text-ink">{lesson}</span>
-            <button
-              type="button"
-              onClick={() => onRemoveLesson(index)}
-              aria-label="Supprimer la leçon"
-              className="inline-flex min-h-touch items-center px-2 font-sans text-sm text-danger"
-            >
-              ✕
-            </button>
+          <li key={`${lesson.title}-${index}`} className="flex flex-col gap-2 border-t border-line pt-2 sm:flex-row sm:items-center sm:justify-between">
+            <span className="font-sans text-sm text-ink">{lesson.title}</span>
+            <div className="flex items-center gap-2">
+              <LessonMediaUpload lesson={lesson} onChange={(next) => onChangeLesson(index, next)} />
+              <button
+                type="button"
+                onClick={() => onRemoveLesson(index)}
+                aria-label="Supprimer la leçon"
+                className="inline-flex min-h-touch items-center px-2 font-sans text-sm text-danger"
+              >
+                ✕
+              </button>
+            </div>
           </li>
         ))}
       </ul>
@@ -89,12 +94,20 @@ export function CurriculumEditor({ sections, onChange }: { sections: CurriculumS
     onChange(sections.filter((s) => s.id !== id))
   }
 
-  const addLesson = (id: string, lesson: string) => {
-    onChange(sections.map((s) => (s.id === id ? { ...s, lessons: [...s.lessons, lesson] } : s)))
+  const addLesson = (id: string, title: string) => {
+    onChange(sections.map((s) => (s.id === id ? { ...s, lessons: [...s.lessons, { title }] } : s)))
   }
 
   const removeLesson = (id: string, index: number) => {
     onChange(sections.map((s) => (s.id === id ? { ...s, lessons: s.lessons.filter((_, i) => i !== index) } : s)))
+  }
+
+  const changeLesson = (id: string, index: number, lesson: CurriculumLesson) => {
+    onChange(
+      sections.map((s) =>
+        s.id === id ? { ...s, lessons: s.lessons.map((l, i) => (i === index ? lesson : l)) } : s,
+      ),
+    )
   }
 
   return (
@@ -119,6 +132,7 @@ export function CurriculumEditor({ sections, onChange }: { sections: CurriculumS
             onRemove={() => removeSection(section.id)}
             onAddLesson={(lesson) => addLesson(section.id, lesson)}
             onRemoveLesson={(index) => removeLesson(section.id, index)}
+            onChangeLesson={(index, lesson) => changeLesson(section.id, index, lesson)}
           />
         ))}
       </ul>

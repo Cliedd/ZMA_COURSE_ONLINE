@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Play, Check, Lock } from 'lucide-react'
 import { Skeleton, ProgressBar } from '@/shared/ui'
 import { cn } from '@/shared/lib/cn'
-import { useCourseById, courseCurriculum, curriculumLessonCount } from '@/entities/course'
+import { useCourseById, courseCurriculum, curriculumLessonCount, lessonTitle } from '@/entities/course'
 import { useMyEnrollments, useUpdateProgress } from '@/entities/enrollment'
 
 export function CoursePlayer() {
@@ -42,7 +42,7 @@ export function CoursePlayer() {
         </div>
         <div className="p-6">
           <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.16em] text-accent">{course.title}</p>
-          <h1 className="mt-2 font-serif text-h2 text-scene-ink">{lessons[current] ?? course.title}</h1>
+          <h1 className="mt-2 font-serif text-h2 text-scene-ink">{lessons[current] ? lessonTitle(lessons[current]) : course.title}</h1>
           <button onClick={markComplete} disabled={!enrollment || updateProgress.isPending}
             className="mt-5 inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene disabled:opacity-50">
             <Check className="h-4 w-4" aria-hidden /> {t('player.complete')}
@@ -69,7 +69,7 @@ export function CoursePlayer() {
                       <button onClick={() => setCurrent(idx)}
                         className={cn('flex min-h-touch w-full items-center gap-2 border-b border-line/50 px-4 text-left font-sans text-sm', idx === current ? 'text-scene-ink' : 'text-scene-ink/55 hover:text-scene-ink')}>
                         <span className="shrink-0 text-accent">{isDone ? <Check className="h-3.5 w-3.5" aria-hidden /> : locked ? <Lock className="h-3.5 w-3.5 opacity-50" aria-hidden /> : <Play className="h-3.5 w-3.5" aria-hidden />}</span>
-                        {lesson}
+                        {lessonTitle(lesson)}
                       </button>
                     </li>
                   )

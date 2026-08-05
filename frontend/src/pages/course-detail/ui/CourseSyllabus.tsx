@@ -2,6 +2,7 @@ import { Play } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/shared/ui'
 import type { CurriculumSection } from '@/entities/course'
+import { lessonTitle } from '@/entities/course'
 
 /** Programme du cours en sections dépliables, registre « académique » : indice
  *  numéroté par section, compte de leçons, chevron `+` (primitive Accordion partagée). */
@@ -26,7 +27,7 @@ export function CourseSyllabus({ sections }: { sections: CurriculumSection[] }) 
               {section.lessons.map((lesson, i) => (
                 <li key={i} className="flex items-start gap-2.5 font-sans text-sm text-ink-muted">
                   <Play className="mt-0.5 h-3 w-3 shrink-0 fill-accent-ink text-accent-ink" aria-hidden />
-                  {lesson}
+                  {lessonTitle(lesson)}
                 </li>
               ))}
             </ul>

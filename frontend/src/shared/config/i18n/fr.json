@@ -458,6 +458,18 @@
     "draft": "Brouillon",
     "edit": "Modifier"
   },
+  "courseEditor": {
+    "media": {
+      "attach": "Attacher une vidéo",
+      "replace": "Remplacer la vidéo",
+      "remove": "Retirer la vidéo",
+      "attached": "Vidéo attachée",
+      "uploadSuccess": "Vidéo mise en ligne avec succès.",
+      "errorFormat": "Format non pris en charge. Utilisez MP4, WebM ou MOV.",
+      "errorSize": "Fichier trop volumineux. Taille maximale : 2 Go.",
+      "errorNetwork": "Échec de l'envoi. Vérifiez votre connexion et réessayez."
+    }
+  },
   "localeSwitch": {
     "label": "Langue",
     "fr": "Français",

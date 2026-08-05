@@ -57,7 +57,7 @@ describe('parseCourse', () => {
     const c = courseSchema.parse({ ...minimalCourse, curriculumJson: curriculum })
     const sections = courseCurriculum(c)
     expect(sections).toHaveLength(2)
-    expect(sections[0]!.lessons).toEqual(['A', 'B'])
+    expect(sections[0]!.lessons).toEqual([{ title: 'A', mediaId: null }, { title: 'B', mediaId: null }])
     expect(curriculumLessonCount(sections)).toBe(3)
   })
 })

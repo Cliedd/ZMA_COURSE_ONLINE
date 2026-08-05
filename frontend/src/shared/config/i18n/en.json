@@ -458,6 +458,18 @@
     "draft": "Draft",
     "edit": "Edit"
   },
+  "courseEditor": {
+    "media": {
+      "attach": "Attach video",
+      "replace": "Replace video",
+      "remove": "Remove video",
+      "attached": "Video attached",
+      "uploadSuccess": "Video uploaded successfully.",
+      "errorFormat": "Unsupported file type. Use MP4, WebM or MOV.",
+      "errorSize": "File too large. Maximum size is 2 GB.",
+      "errorNetwork": "Upload failed. Check your connection and try again."
+    }
+  },
   "localeSwitch": {
     "label": "Language",
     "fr": "French",
