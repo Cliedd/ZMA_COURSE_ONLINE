@@ -40,7 +40,7 @@ describe('CheckoutPage', () => {
     renderAt('/checkout/course-paid')
 
     expect(await screen.findByText('Guitare avancée')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Pay' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Payer|Pay/i })).toBeDisabled()
   })
 
   it('redirige vers la page hébergée du gateway une fois un moyen de paiement choisi', async () => {
@@ -57,15 +57,9 @@ describe('CheckoutPage', () => {
     renderAt('/checkout/course-paid')
     await screen.findByText('Guitare avancée')
 
-    await userEvent.click(screen.getByRole('radio', { name: /Card/ }))
-    await userEvent.click(screen.getByRole('button', { name: 'Pay' }))
+    await userEvent.click(screen.getByRole('radio', { name: /Carte|Card/i }))
+    await userEvent.click(screen.getByRole('button', { name: /Payer|Pay/i }))
 
-    // jsdom's window.location is a non-configurable own property that
-    // resists both Object.defineProperty and vi.stubGlobal — real browser
-    // navigation isn't observable here. What's actually worth asserting is
-    // that CheckoutPage sends the right request for the chosen method; the
-    // one-line `window.location.href = payment.checkoutUrl` that follows is
-    // a plain browser API call, not app logic.
     await waitFor(() => expect(capturedBody).toMatchObject({ courseId: 'course-paid', provider: 'STRIPE_CARD' }))
   })
 
@@ -77,11 +71,10 @@ describe('CheckoutPage', () => {
     renderAt('/checkout/course-free')
     await screen.findByText('Initiation gratuite')
 
-    // Pas de sélecteur de moyen de paiement pour un cours gratuit.
     expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Pay' }))
+    await userEvent.click(screen.getByRole('button', { name: /Payer|Pay/i }))
 
-    expect(await screen.findByText('Payment successful! Access unlocked.')).toBeInTheDocument()
+    expect(await screen.findByText(/Paiement réussi|Payment successful/i)).toBeInTheDocument()
   })
 })

@@ -27,36 +27,40 @@ export const wizardSchema = z.object({
   department: z.string().optional(),
   level: z.string().optional(),
   price: z.preprocess(
-    (value) => (value === '' || value === undefined || value === null ? undefined : Number(value)),
-    z.number({ required_error: 'Le prix est obligatoire.', invalid_type_error: 'Veuillez saisir un prix valide.' })
-      // Le backend (CourseRequest.java) exige un prix strictement positif (@Positive) :
-      // aligner la validation ici évite un 422 tardif à l'étape 2, une fois le prix
-      // (champ de l'étape 1) hors de vue.
-      .positive('Le prix doit être strictement supérieur à 0.'),
+    (value) => (value === '' || value === undefined || value === null || Number.isNaN(value) ? undefined : Number(value)),
+    z
+      .number({ required_error: 'Le prix est obligatoire.', invalid_type_error: 'Veuillez saisir un prix valide.' })
+      .positive('Le prix doit être strictly supérieur à 0.'),
   ),
   shortDescription: z.string().trim().min(1, 'La description courte est obligatoire.'),
   description: z.string().optional(),
   durationHours: optionalNumber('La durée doit être positive ou nulle.'),
   ects: optionalNumber('Les ECTS doivent être positifs ou nuls.'),
+  skills: z.string().optional(),
+  debouches: z.string().optional(),
 })
 
 export type WizardFormValues = z.infer<typeof wizardSchema>
 
 export type WizardStep = 1 | 2
 
-const BASICS_FIELDS = ['title', 'department', 'level', 'price'] as const
+export const STEP_FIELDS: Record<WizardStep, readonly (keyof WizardFormValues)[]> = {
+  1: ['title', 'department', 'level', 'price'],
+  2: ['shortDescription', 'description', 'durationHours', 'ects', 'skills', 'debouches'],
+}
 
 export interface UseWizardFormResult {
   form: UseFormReturn<WizardFormValues>
   step: WizardStep
-  goNext: () => Promise<void>
+  setStep: (step: WizardStep) => void
+  goNext: () => Promise<boolean>
   goPrevious: () => void
+  getStepForField: (fieldName: string) => WizardStep
 }
 
 /**
- * Porte le state du formulaire multi-étapes : un seul `useForm` partagé entre
- * les deux étapes (les valeurs saisies à l'étape 1 survivent au passage à
- * l'étape 2), plus l'étape courante et la navigation entre étapes.
+ * Porte le state du formulaire multi-étapes (2 étapes) : un seul `useForm` partagé entre
+ * les étapes, avec navigation et validation scoped par étape.
  */
 export function useWizardForm(): UseWizardFormResult {
   const form = useForm<WizardFormValues>({
@@ -65,21 +69,41 @@ export function useWizardForm(): UseWizardFormResult {
       title: '',
       department: '',
       level: '',
-      price: 0,
+      price: undefined as unknown as number,
       shortDescription: '',
       description: '',
       durationHours: undefined,
       ects: undefined,
+      skills: '',
+      debouches: '',
     },
   })
   const [step, setStep] = useState<WizardStep>(1)
 
-  const goNext = async () => {
-    const valid = await form.trigger(BASICS_FIELDS)
-    if (valid) setStep(2)
+  const goNext = async (): Promise<boolean> => {
+    const fieldsToValidate = STEP_FIELDS[step]
+    const valid = await form.trigger(fieldsToValidate as (keyof WizardFormValues)[])
+    if (valid && step < 2) {
+      setStep((prev) => (prev + 1) as WizardStep)
+      return true
+    }
+    return valid
   }
 
-  const goPrevious = () => setStep(1)
+  const goPrevious = () => {
+    if (step > 1) {
+      setStep((prev) => (prev - 1) as WizardStep)
+    }
+  }
 
-  return { form, step, goNext, goPrevious }
+  const getStepForField = (fieldName: string): WizardStep => {
+    for (const [s, fields] of Object.entries(STEP_FIELDS)) {
+      if ((fields as readonly string[]).includes(fieldName as keyof WizardFormValues)) {
+        return Number(s) as WizardStep
+      }
+    }
+    return 1
+  }
+
+  return { form, step, setStep, goNext, goPrevious, getStepForField }
 }

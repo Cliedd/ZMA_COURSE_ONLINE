@@ -23,7 +23,10 @@ export function LessonMediaUpload({ lesson, onChange }: LessonMediaUploadProps) 
     if (!file) return
     setError(null)
 
-    if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+    const isVideoType = ALLOWED_VIDEO_TYPES.includes(file.type) || ['mp4', 'webm', 'mov'].includes(ext)
+
+    if (!isVideoType) {
       const msg = t('courseEditor.media.errorFormat')
       setError(msg)
       toast.error(msg)

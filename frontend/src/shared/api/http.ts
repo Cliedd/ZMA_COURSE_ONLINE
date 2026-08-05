@@ -106,7 +106,13 @@ client.interceptors.response.use(
 )
 
 async function request<T>(config: AxiosRequestConfig, schema?: ZodType<T, ZodTypeDef, unknown>): Promise<T> {
-  const { data } = await client.request<unknown>(config)
+  const reqConfig = { ...config }
+  if (reqConfig.data instanceof FormData) {
+    const headers = { ...(reqConfig.headers as Record<string, string> | undefined) }
+    delete headers['Content-Type']
+    reqConfig.headers = headers
+  }
+  const { data } = await client.request<unknown>(reqConfig)
   if (!schema) return data as T
   const parsed = schema.safeParse(data)
   if (!parsed.success) {

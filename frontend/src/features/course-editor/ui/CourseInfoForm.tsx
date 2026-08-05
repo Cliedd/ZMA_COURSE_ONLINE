@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Field, Input, Button } from '@/shared/ui'
-import { COURSE_LEVELS } from '@/entities/course'
+import { COURSE_LEVELS, courseSkills, courseOutcomes } from '@/entities/course'
 import type { Course, CourseWriteRequest } from '@/entities/course'
 
 const schema = z.object({
@@ -14,6 +14,8 @@ const schema = z.object({
   department: z.string(),
   durationHours: z.coerce.number().optional(),
   ects: z.coerce.number().optional(),
+  skills: z.string().optional(),
+  debouches: z.string().optional(),
 })
 type Values = z.infer<typeof schema>
 
@@ -28,7 +30,7 @@ const DEPARTMENTS = [
   'Musicology, Heritage & Cultural Management',
 ]
 
-/** Formulaire des informations principales d'un cours (titre, description, tarif, niveau…). */
+/** Formulaire des informations principales d'un cours (titre, description, tarif, niveau, compétences, débouchés…). */
 export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (data: CourseWriteRequest) => void }) {
   const { register, handleSubmit, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
@@ -41,10 +43,19 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
       department: course.department,
       durationHours: course.durationHours,
       ects: course.ects ?? undefined,
+      skills: courseSkills(course).join('\n'),
+      debouches: courseOutcomes(course).join('\n'),
     },
   })
 
   const onSubmit = handleSubmit((values) => {
+    const skillsArray = values.skills
+      ? values.skills.split('\n').map((s) => s.trim()).filter(Boolean)
+      : []
+    const debouchesArray = values.debouches
+      ? values.debouches.split('\n').map((s) => s.trim()).filter(Boolean)
+      : []
+
     onSave({
       title: values.title,
       shortDescription: values.shortDescription,
@@ -54,6 +65,8 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
       department: values.department,
       durationHours: values.durationHours,
       ects: values.ects,
+      skillsJson: skillsArray.length > 0 ? JSON.stringify(skillsArray) : '',
+      debouches: debouchesArray.length > 0 ? debouchesArray.join(' | ') : '',
     })
   })
 
@@ -73,8 +86,16 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
         <textarea rows={6} className={textareaClass} {...register('description')} />
       </Field>
 
+      <Field name="skills" label="Compétences visées (une par ligne)">
+        <textarea rows={4} className={textareaClass} placeholder="Lecture de partition&#10;Accompagnement piano" {...register('skills')} />
+      </Field>
+
+      <Field name="debouches" label="Recommandations, prérequis & débouchés (un par ligne)">
+        <textarea rows={4} className={textareaClass} placeholder="Prérequis: Niveau intermédiaire&#10;Débouché: Accompagnateur" {...register('debouches')} />
+      </Field>
+
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field name="price" label="Prix (FCFA)" required error={errors.price?.message}>
+        <Field name="price" label="Prix (€)" required error={errors.price?.message}>
           <Input type="number" min={0} step="0.01" {...register('price')} />
         </Field>
 

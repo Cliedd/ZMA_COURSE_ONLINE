@@ -1,11 +1,127 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Play, Check, Lock } from 'lucide-react'
+import { Play, Check, Lock, VideoOff, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { Skeleton, ProgressBar } from '@/shared/ui'
+import { get } from '@/shared/api/http'
 import { cn } from '@/shared/lib/cn'
 import { useCourseById, courseCurriculum, curriculumLessonCount, lessonTitle } from '@/entities/course'
 import { useMyEnrollments, useUpdateProgress } from '@/entities/enrollment'
+
+interface VideoPlayerProps {
+  mediaId?: string | null
+  title?: string
+}
+
+export function VideoPlayer({ mediaId, title }: VideoPlayerProps) {
+  const { t } = useTranslation()
+  const [streamUrl, setStreamUrl] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const resolveMediaUrl = useCallback(async (id: string, signal?: AbortSignal) => {
+    setIsLoading(true)
+    setError(null)
+    setStreamUrl(null)
+
+    try {
+      const res = await get<{ url: string }>(`/media/${id}/url`, { signal })
+      if (res?.url) {
+        setStreamUrl(res.url)
+        setIsLoading(false)
+        return
+      }
+    } catch {
+      // Fall back to direct local streaming URL endpoint
+    }
+
+    if (!signal?.aborted) {
+      setStreamUrl(`/api/v1/media/${id}/file`)
+      setIsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!mediaId) {
+      setStreamUrl(null)
+      setIsLoading(false)
+      setError(null)
+      return
+    }
+
+    const controller = new AbortController()
+    void resolveMediaUrl(mediaId, controller.signal)
+
+    return () => {
+      controller.abort()
+    }
+  }, [mediaId, resolveMediaUrl])
+
+  if (!mediaId) {
+    return (
+      <div className="grid aspect-video place-items-center bg-scene-surface p-6 text-center">
+        <div>
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-accent/10 text-accent">
+            <VideoOff className="h-6 w-6" aria-hidden />
+          </span>
+          <p className="mt-3 font-sans text-sm font-medium text-scene-ink/70">
+            {t('player.noVideoAttached')}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="grid aspect-video place-items-center bg-scene-surface">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-accent" aria-hidden />
+          <p className="font-sans text-xs text-scene-ink/60">{t('player.loadingVideo')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="grid aspect-video place-items-center bg-scene-surface p-6 text-center">
+        <div className="flex flex-col items-center gap-3">
+          <AlertCircle className="h-8 w-8 text-danger" aria-hidden />
+          <p className="font-sans text-sm text-scene-ink/80">{error}</p>
+          <button
+            type="button"
+            onClick={() => mediaId && void resolveMediaUrl(mediaId)}
+            className="mt-2 inline-flex items-center gap-1.5 rounded bg-accent px-4 py-1.5 font-sans text-xs font-semibold text-scene"
+          >
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
+            {t('player.retry')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative aspect-video w-full overflow-hidden bg-black">
+      {streamUrl && (
+        <video
+          key={streamUrl}
+          data-testid="lesson-video-player"
+          controls
+          autoPlay={false}
+          preload="metadata"
+          aria-label={title || t('player.videoPlayer', 'Lecteur vidéo')}
+          className="h-full w-full object-contain"
+          onError={() => setError(t('player.videoError'))}
+        >
+          <source src={streamUrl} />
+          {t('player.unsupportedBrowser', 'Votre navigateur ne prend pas en charge la lecture de vidéos.')}
+        </video>
+      )}
+    </div>
+  )
+}
 
 export function CoursePlayer() {
   const { t } = useTranslation()
@@ -22,6 +138,7 @@ export function CoursePlayer() {
   if (isLoading) return <div className="container py-10"><Skeleton className="h-96 w-full" /></div>
   if (!course) return null
 
+  const activeLesson = lessons[current]
   const total = course.lessonCount || curriculumLessonCount(sections) || lessons.length
   const done = Math.round(((enrollment?.progress ?? 0) / 100) * total)
 
@@ -34,15 +151,10 @@ export function CoursePlayer() {
   return (
     <div className="grid gap-0 lg:grid-cols-[1fr_320px]">
       <main className="min-h-[60vh]">
-        <div className="grid aspect-video place-items-center bg-scene-surface">
-          <div className="text-center">
-            <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-accent text-scene"><Play className="h-6 w-6" aria-hidden /></span>
-            <p className="mt-3 font-sans text-sm text-scene-ink/60">{t('player.noVideo')}</p>
-          </div>
-        </div>
+        <VideoPlayer mediaId={activeLesson?.mediaId} title={activeLesson ? lessonTitle(activeLesson) : undefined} />
         <div className="p-6">
           <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.16em] text-accent">{course.title}</p>
-          <h1 className="mt-2 font-serif text-h2 text-scene-ink">{lessons[current] ? lessonTitle(lessons[current]) : course.title}</h1>
+          <h1 className="mt-2 font-serif text-h2 text-scene-ink">{activeLesson ? lessonTitle(activeLesson) : course.title}</h1>
           <button onClick={markComplete} disabled={!enrollment || updateProgress.isPending}
             className="mt-5 inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene disabled:opacity-50">
             <Check className="h-4 w-4" aria-hidden /> {t('player.complete')}

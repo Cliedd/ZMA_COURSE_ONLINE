@@ -46,9 +46,11 @@ export async function uploadLessonVideo(
   file: File,
   { onProgress, signal }: UploadLessonVideoOptions = {},
 ): Promise<UploadedMedia> {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+  const contentType = file.type || (ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'mov' ? 'video/quicktime' : ext === 'txt' ? 'text/plain' : '')
   const presigned = await post(
     '/media/presign',
-    { fileName: file.name, contentType: file.type, sizeBytes: file.size, purpose: 'LESSON_VIDEO' },
+    { fileName: file.name, contentType, sizeBytes: file.size, purpose: 'LESSON_VIDEO' },
     presignSchema,
   )
 
@@ -61,7 +63,7 @@ export async function uploadLessonVideo(
 
   if (/^https?:\/\//i.test(presigned.uploadUrl)) {
     await axios.put(presigned.uploadUrl, file, {
-      headers: { 'Content-Type': file.type },
+      headers: { 'Content-Type': contentType },
       signal,
       onUploadProgress: (e) => reportProgress(e.loaded, e.total),
     })

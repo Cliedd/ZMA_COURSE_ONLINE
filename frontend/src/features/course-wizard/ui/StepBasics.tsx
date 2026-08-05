@@ -23,7 +23,7 @@ export function StepBasics({ form }: { form: UseFormReturn<WizardFormValues> }) 
           Département
         </label>
         <select id="department" className={SELECT_CLASSES} {...register('department')}>
-          <option value="">—</option>
+          <option value="">— Sélectionner un département —</option>
           {DEPARTMENTS.map((department) => (
             <option key={department} value={department}>{department}</option>
           ))}
@@ -35,7 +35,7 @@ export function StepBasics({ form }: { form: UseFormReturn<WizardFormValues> }) 
           Niveau
         </label>
         <select id="level" className={SELECT_CLASSES} {...register('level')}>
-          <option value="">—</option>
+          <option value="">— Sélectionner un niveau —</option>
           {COURSE_LEVELS.map((level) => (
             <option key={level} value={level}>{level}</option>
           ))}
@@ -43,7 +43,13 @@ export function StepBasics({ form }: { form: UseFormReturn<WizardFormValues> }) 
       </div>
 
       <Field name="price" label="Prix (€)" required error={errors.price?.message}>
-        <Input type="number" min={0} step="0.01" {...register('price', { valueAsNumber: true })} />
+        <Input
+          type="number"
+          min={0.01}
+          step="0.01"
+          placeholder="ex : 49.99"
+          {...register('price')}
+        />
       </Field>
     </div>
   )

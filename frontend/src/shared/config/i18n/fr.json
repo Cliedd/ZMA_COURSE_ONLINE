@@ -442,7 +442,11 @@
     "completed": "Terminé",
     "next": "Leçon suivante",
     "syllabus": "Programme",
-    "noVideo": "Vidéo indisponible"
+    "noVideo": "Vidéo indisponible",
+    "noVideoAttached": "Aucune vidéo attachée à cette leçon",
+    "loadingVideo": "Chargement de la vidéo…",
+    "videoError": "Impossible de lire cette vidéo.",
+    "retry": "Réessayer"
   },
   "teacherDashboard": {
     "breadcrumb": "Mes cours",
