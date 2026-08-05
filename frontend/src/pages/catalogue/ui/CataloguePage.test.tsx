@@ -25,7 +25,7 @@ describe('CataloguePage', () => {
 
   it('affiche un état vide avec réinitialisation quand un filtre ne donne rien', async () => {
     mswServer.use(http.get(`${API}/courses`, () => HttpResponse.json(coursePage([]))))
-    renderWithProviders(<CataloguePage />, { route: '/catalogue?level=Doctorat' })
+    renderWithProviders(<CataloguePage />, { route: '/catalogue?level=Doctorate' })
 
     expect(await screen.findByText(/No course matches/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Reset filters/ })).toBeInTheDocument()
@@ -81,7 +81,7 @@ describe('CataloguePage', () => {
     await waitFor(() => {
       const last = receivedSearches[receivedSearches.length - 1] ?? ''
       expect(last).toContain('department=')
-      expect(last).toContain('level=Licence')
+      expect(last).toContain('level=Bachelor%27s')
       expect(last).toContain('q=piano')
     }, { timeout: 4000 })
   }, 10000)

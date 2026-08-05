@@ -1,7 +1,9 @@
 import { z } from 'zod'
 
-/** Niveaux académiques (correspond au champ `level` du backend). */
-export const COURSE_LEVELS = ['Licence', 'Master', 'Doctorat', 'Certificat', 'Atelier'] as const
+/** Niveaux académiques (correspond verbatim au champ `level` du backend — voir
+ * DataLoader.java. Ne JAMAIS traduire ces valeurs : elles sont envoyées telles
+ * quelles en paramètre de filtre et doivent matcher la taxonomie stockée en base. */
+export const COURSE_LEVELS = ["Bachelor's", "Master's", 'Doctorate', 'Certificate', 'Workshop'] as const
 export type CourseLevel = (typeof COURSE_LEVELS)[number]
 
 /** Une leçon dans une section (le backend accepte string ou objet). */
@@ -28,7 +30,7 @@ export const courseSchema = z.object({
   description: z.string().nullish().transform((v) => v ?? ''),
   shortDescription: z.string().nullish().transform((v) => v ?? ''),
   price: z.number().nullish().transform((v) => v ?? 0),
-  level: z.string().nullish().transform((v) => v ?? 'Atelier'),
+  level: z.string().nullish().transform((v) => v ?? 'Workshop'),
   department: z.string().nullish().transform((v) => v ?? ''),
   filiere: z.string().nullish().transform((v) => v ?? ''),
   ects: z.number().nullish().transform((v) => v ?? null),

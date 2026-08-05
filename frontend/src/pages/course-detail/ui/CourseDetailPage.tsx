@@ -7,7 +7,7 @@ import { formatPrice, formatDuration } from '@/shared/config/i18n'
 import { useCourse, courseSkills, courseCurriculum, curriculumLessonCount } from '@/entities/course'
 import { slugify } from '@/shared/lib/slugify'
 import { courseImage } from '@/widgets/course-card/lib/courseImage'
-import { DEPARTMENTS, departmentLabel } from '@/shared/config/navigation'
+import { DEPARTMENTS, departmentLabel, levelLabel } from '@/shared/config/navigation'
 import { cn } from '@/shared/lib/cn'
 import { CourseSyllabus } from './CourseSyllabus'
 
@@ -45,7 +45,7 @@ export function CourseDetailPage() {
             {course.department && (
               <span className={cn('inline-block h-1.5 w-1.5 shrink-0 rounded-full', deptDotClass(course.department))} aria-hidden />
             )}
-            {t(`level.${course.level}`, course.level)}{course.department ? ` · ${departmentLabel(t, course.department)}` : ''}
+            {levelLabel(t, course.level)}{course.department ? ` · ${departmentLabel(t, course.department)}` : ''}
           </span>
           <h1 className="mt-4 font-serif text-h1 leading-tight text-scene-ink">{course.title}</h1>
           {course.shortDescription && <p className="mt-4 max-w-2xl font-sans text-body leading-relaxed text-scene-ink/70">{course.shortDescription}</p>}
@@ -107,7 +107,7 @@ export function CourseDetailPage() {
             </div>
 
             <ul className="divide-y divide-line font-sans text-sm">
-              <SummaryRow label={t('catalogue.filtersLevel')} value={t(`level.${course.level}`, course.level)} />
+              <SummaryRow label={t('catalogue.filtersLevel')} value={levelLabel(t, course.level)} />
               {course.department && <SummaryRow label={t('catalogue.filtersDept')} value={departmentLabel(t, course.department)} />}
               {course.durationHours > 0 && <SummaryRow label={t('course.duration')} value={formatDuration(course.durationHours)} />}
               {lessonTotal > 0 && <SummaryRow label={t('course.syllabus')} value={t('course.lessons', { count: lessonTotal })} />}

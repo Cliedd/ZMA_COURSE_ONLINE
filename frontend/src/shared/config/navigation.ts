@@ -14,43 +14,43 @@ export interface NavEntry {
 
 export const DEPARTMENTS: NavEntry[] = [
   {
-    value: 'Interprétation et Pratique Instrumentale',
+    value: 'Performance & Instrumental Practice',
     labelKey: 'nav.departments.interpretation',
     hintKey: 'nav.departmentHints.interpretation',
-    to: `/catalogue?department=${encodeURIComponent('Interprétation et Pratique Instrumentale')}`,
+    to: `/catalogue?department=${encodeURIComponent('Performance & Instrumental Practice')}`,
   },
   {
-    value: 'Composition, Écriture et Théorie Musicale',
+    value: 'Composition, Writing & Music Theory',
     labelKey: 'nav.departments.composition',
     hintKey: 'nav.departmentHints.composition',
-    to: `/catalogue?department=${encodeURIComponent('Composition, Écriture et Théorie Musicale')}`,
+    to: `/catalogue?department=${encodeURIComponent('Composition, Writing & Music Theory')}`,
   },
   {
-    value: 'Technologies Musicales et Production Audiovisuelle',
+    value: 'Music Technology & Audiovisual Production',
     labelKey: 'nav.departments.technologies',
     hintKey: 'nav.departmentHints.technologies',
-    to: `/catalogue?department=${encodeURIComponent('Technologies Musicales et Production Audiovisuelle')}`,
+    to: `/catalogue?department=${encodeURIComponent('Music Technology & Audiovisual Production')}`,
   },
   {
-    value: 'Pédagogie Musicale et Formation des Formateurs',
+    value: 'Music Education & Teacher Training',
     labelKey: 'nav.departments.pedagogie',
     hintKey: 'nav.departmentHints.pedagogie',
-    to: `/catalogue?department=${encodeURIComponent('Pédagogie Musicale et Formation des Formateurs')}`,
+    to: `/catalogue?department=${encodeURIComponent('Music Education & Teacher Training')}`,
   },
   {
-    value: 'Musicologie, Patrimoine et Management Culturel',
+    value: 'Musicology, Heritage & Cultural Management',
     labelKey: 'nav.departments.musicologie',
     hintKey: 'nav.departmentHints.musicologie',
-    to: `/catalogue?department=${encodeURIComponent('Musicologie, Patrimoine et Management Culturel')}`,
+    to: `/catalogue?department=${encodeURIComponent('Musicology, Heritage & Cultural Management')}`,
   },
 ]
 
 export const LEVELS: NavEntry[] = [
-  { value: 'Licence', labelKey: 'level.Licence', hintKey: 'nav.levelHints.licence', to: '/catalogue?level=Licence' },
-  { value: 'Master', labelKey: 'level.Master', hintKey: 'nav.levelHints.master', to: '/catalogue?level=Master' },
-  { value: 'Doctorat', labelKey: 'level.Doctorat', hintKey: 'nav.levelHints.doctorat', to: '/catalogue?level=Doctorat' },
-  { value: 'Certificat', labelKey: 'level.Certificat', hintKey: 'nav.levelHints.certificat', to: '/catalogue?level=Certificat' },
-  { value: 'Atelier', labelKey: 'level.Atelier', hintKey: 'nav.levelHints.atelier', to: '/catalogue?level=Atelier' },
+  { value: "Bachelor's", labelKey: 'level.Licence', hintKey: 'nav.levelHints.licence', to: `/catalogue?level=${encodeURIComponent("Bachelor's")}` },
+  { value: "Master's", labelKey: 'level.Master', hintKey: 'nav.levelHints.master', to: `/catalogue?level=${encodeURIComponent("Master's")}` },
+  { value: 'Doctorate', labelKey: 'level.Doctorat', hintKey: 'nav.levelHints.doctorat', to: '/catalogue?level=Doctorate' },
+  { value: 'Certificate', labelKey: 'level.Certificat', hintKey: 'nav.levelHints.certificat', to: '/catalogue?level=Certificate' },
+  { value: 'Workshop', labelKey: 'level.Atelier', hintKey: 'nav.levelHints.atelier', to: '/catalogue?level=Workshop' },
 ]
 
 /** Traduit le nom d'affichage d'un département à partir de sa valeur littérale (celle
@@ -59,5 +59,12 @@ export const LEVELS: NavEntry[] = [
 export function departmentLabel(t: (key: string) => string, value?: string | null): string {
   if (!value) return ''
   const entry = DEPARTMENTS.find((d) => d.value === value)
+  return entry ? t(entry.labelKey) : value
+}
+
+/** Même principe que `departmentLabel`, pour le niveau académique. */
+export function levelLabel(t: (key: string) => string, value?: string | null): string {
+  if (!value) return ''
+  const entry = LEVELS.find((l) => l.value === value)
   return entry ? t(entry.labelKey) : value
 }

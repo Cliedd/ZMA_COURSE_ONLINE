@@ -21,11 +21,11 @@ const selectClass = 'min-h-touch w-full rounded border border-line bg-surface px
 const textareaClass = 'w-full rounded border border-line bg-surface px-3 py-2 font-sans text-body text-ink'
 
 const DEPARTMENTS = [
-  'Interprétation et Pratique Instrumentale',
-  'Composition, Écriture et Théorie Musicale',
-  'Technologies Musicales et Production Audiovisuelle',
-  'Pédagogie Musicale et Formation des Formateurs',
-  'Musicologie, Patrimoine et Management Culturel',
+  'Performance & Instrumental Practice',
+  'Composition, Writing & Music Theory',
+  'Music Technology & Audiovisual Production',
+  'Music Education & Teacher Training',
+  'Musicology, Heritage & Cultural Management',
 ]
 
 /** Formulaire des informations principales d'un cours (titre, description, tarif, niveau…). */

@@ -41,7 +41,7 @@ describe('Header — visiteur', () => {
     const item = within(menu).getByRole('menuitem', { name: /Performance/ })
     expect(item).toHaveAttribute(
       'href',
-      `/catalogue?department=${encodeURIComponent('Interprétation et Pratique Instrumentale')}`,
+      `/catalogue?department=${encodeURIComponent('Performance & Instrumental Practice')}`,
     )
   })
 

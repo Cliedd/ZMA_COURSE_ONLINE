@@ -3,7 +3,7 @@ import { Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardMedia, CardBody, CardFooter, Picture } from '@/shared/ui'
 import { formatPrice, formatDuration } from '@/shared/config/i18n'
-import { DEPARTMENTS, departmentLabel } from '@/shared/config/navigation'
+import { DEPARTMENTS, departmentLabel, levelLabel } from '@/shared/config/navigation'
 import { cn } from '@/shared/lib/cn'
 import type { Course } from '@/entities/course'
 import { courseImage } from '../lib/courseImage'
@@ -39,7 +39,7 @@ export function CourseCard({ course }: { course: Course }) {
             {course.department && (
               <span className={cn('inline-block h-1.5 w-1.5 shrink-0 rounded-full', deptDotClass(course.department))} aria-hidden />
             )}
-            {t(`level.${course.level}`, course.level)}
+            {levelLabel(t, course.level)}
             {course.department ? ` · ${departmentLabel(t, course.department)}` : ''}
           </span>
           <h3 className="font-serif text-h3 leading-tight text-ink group-hover:underline decoration-accent-ink/40 underline-offset-4">

@@ -4,8 +4,16 @@ import type { UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-/** Départements enseignés — options du select à l'étape 1. */
-export const DEPARTMENTS = ['Interprétation', 'Composition', 'Technologies', 'Pédagogie', 'Musicologie'] as const
+/** Départements enseignés — options du select à l'étape 1. Valeurs verbatim de la
+ * taxonomie backend (voir DataLoader.java) : ne jamais raccourcir/traduire, sous
+ * peine de désynchroniser les filtres du catalogue (cf. navigation.ts DEPARTMENTS). */
+export const DEPARTMENTS = [
+  'Performance & Instrumental Practice',
+  'Composition, Writing & Music Theory',
+  'Music Technology & Audiovisual Production',
+  'Music Education & Teacher Training',
+  'Musicology, Heritage & Cultural Management',
+] as const
 
 /** Convertit une chaîne vide (champ nombre laissé vide) en `undefined` avant coercition. */
 const optionalNumber = (message: string) =>

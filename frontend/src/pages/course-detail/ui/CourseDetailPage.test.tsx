@@ -21,7 +21,7 @@ describe('CourseDetailPage', () => {
   it('affiche le cours, ses compétences et le bouton d\'achat', async () => {
     mswServer.use(http.get(`${API}/courses/slug/piano`, () => HttpResponse.json({
       id: 'c1', slug: 'piano', title: 'Piano classique & harmonie', price: 18, rating: 4.9,
-      teacherName: 'Amara Diallo', level: 'Licence',
+      teacherName: 'Amara Diallo', level: "Bachelor's",
       skillsJson: '["Lire une partition","Jouer à deux mains"]',
       curriculumJson: '[{"id":"s1","title":"Fondations","lessons":["Posture","Clé de sol"]}]',
     })))

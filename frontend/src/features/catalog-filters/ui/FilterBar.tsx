@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { COURSE_LEVELS } from '@/entities/course'
-import { DEPARTMENTS } from '@/shared/config/navigation'
+import { DEPARTMENTS, LEVELS } from '@/shared/config/navigation'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/shared/ui'
 import { cn } from '@/shared/lib/cn'
 import type { CourseFilters } from '@/entities/course'
@@ -31,9 +30,9 @@ export function FilterBar({ filters, onSetFilter }: FilterBarProps) {
           <AccordionContent>
             <div className="flex flex-wrap gap-2">
               <Chip active={!filters.level} onClick={() => onSetFilter('level', undefined)}>{t('catalogue.all')}</Chip>
-              {COURSE_LEVELS.map((level) => (
-                <Chip key={level} active={filters.level === level} onClick={() => onSetFilter('level', level)}>
-                  {t(`level.${level}`, level)}
+              {LEVELS.map((level) => (
+                <Chip key={level.value} active={filters.level === level.value} onClick={() => onSetFilter('level', level.value)}>
+                  {t(level.labelKey)}
                 </Chip>
               ))}
             </div>
