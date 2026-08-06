@@ -442,7 +442,13 @@
     "completed": "Completed",
     "next": "Next lesson",
     "syllabus": "Syllabus",
-    "noVideo": "Video unavailable"
+    "noVideo": "Video unavailable",
+    "noVideoAttached": "No video attached to this lesson",
+    "loadingVideo": "Loading video…",
+    "videoError": "This video could not be played.",
+    "retry": "Retry",
+    "videoPlayer": "Video player",
+    "unsupportedBrowser": "Your browser does not support video playback."
   },
   "teacherDashboard": {
     "breadcrumb": "My courses",

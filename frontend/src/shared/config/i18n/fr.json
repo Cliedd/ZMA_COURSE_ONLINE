@@ -446,7 +446,9 @@
     "noVideoAttached": "Aucune vidéo attachée à cette leçon",
     "loadingVideo": "Chargement de la vidéo…",
     "videoError": "Impossible de lire cette vidéo.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "videoPlayer": "Lecteur vidéo",
+    "unsupportedBrowser": "Votre navigateur ne prend pas en charge la lecture de vidéos."
   },
   "teacherDashboard": {
     "breadcrumb": "Mes cours",
