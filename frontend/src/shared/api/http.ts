@@ -108,9 +108,18 @@ client.interceptors.response.use(
 async function request<T>(config: AxiosRequestConfig, schema?: ZodType<T, ZodTypeDef, unknown>): Promise<T> {
   const reqConfig = { ...config }
   if (reqConfig.data instanceof FormData) {
-    const headers = { ...(reqConfig.headers as Record<string, string> | undefined) }
-    delete headers['Content-Type']
-    reqConfig.headers = headers
+    // Deleting the key here is not enough: this instance's defaults set
+    // Content-Type: application/json, and axios re-merges that default back
+    // in for any per-request headers object that doesn't explicitly name the
+    // key. Axios's default transformRequest then sees a JSON content-type on
+    // a FormData body and JSON-stringifies it (dropping the file entirely),
+    // which silently turned every multipart upload into `{"file":{}}`.
+    // Explicitly overriding with `undefined` is what actually suppresses the
+    // merged-in default, so the browser can set its own multipart boundary.
+    reqConfig.headers = {
+      ...(reqConfig.headers as Record<string, string | undefined> | undefined),
+      'Content-Type': undefined,
+    }
   }
   const { data } = await client.request<unknown>(reqConfig)
   if (!schema) return data as T

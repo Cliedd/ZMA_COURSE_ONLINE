@@ -45,6 +45,39 @@ describe('get', () => {
   })
 })
 
+describe('envoi de FormData', () => {
+  it('ne sérialise jamais un FormData en JSON', async () => {
+    // Régression : ce client axios a Content-Type: application/json par
+    // défaut sur l'instance. Si on ne le supprime pas correctement pour les
+    // FormData, axios (voir lib/defaults/index.js#transformRequest) détecte
+    // un Content-Type JSON sur un body FormData et le convertit silencieusement
+    // via formDataToJSON() + JSON.stringify — un File devient `{}` et tout
+    // upload de vidéo de leçon échouait côté zma-media (403 sur upload-direct)
+    // car le serveur ne recevait plus jamais de vrai multipart.
+    // jsdom's XHR ne gère pas fidèlement les FormData (retombe sur
+    // text/plain), donc on vérifie directement au niveau de l'adapter axios
+    // ce qui sort réellement du pipeline de transformation, indépendamment
+    // du transport du navigateur.
+    let capturedData: unknown
+    let capturedContentType: unknown
+    mswServer.use(http.post(`${API}/media/upload-direct`, () => HttpResponse.json({ id: 'm1' })))
+
+    const formData = new FormData()
+    formData.append('file', new File(['hello video bytes'], 'clip.mp4', { type: 'video/mp4' }))
+
+    await post('/media/upload-direct', formData, z.object({ id: z.string() }), {
+      adapter: (config) => {
+        capturedData = config.data
+        capturedContentType = config.headers?.getContentType?.() ?? null
+        return Promise.resolve({ data: { id: 'm1' }, status: 200, statusText: 'OK', headers: {}, config })
+      },
+    })
+
+    expect(capturedData).toBeInstanceOf(FormData)
+    expect(capturedContentType).not.toMatch(/application\/json/)
+  })
+})
+
 describe('normalisation des erreurs', () => {
   it('transforme une erreur HTTP en AppError avec son statut', async () => {
     mswServer.use(http.get(`${API}/courses`, () => HttpResponse.json({ message: 'Cours introuvable' }, { status: 404 })))
