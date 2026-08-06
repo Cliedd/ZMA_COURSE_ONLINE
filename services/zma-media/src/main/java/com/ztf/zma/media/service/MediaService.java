@@ -40,6 +40,10 @@ public class MediaService {
     /** Max file size: 2 GB */
     private static final long MAX_SIZE_BYTES = 2L * 1024 * 1024 * 1024;
 
+    private final MediaRepository mediaRepository;
+    private final StorageService  storageService;
+    private final ImageProcessingService imageProcessingService;
+
     public MediaService(MediaRepository mediaRepository, StorageService storageService,
                          ImageProcessingService imageProcessingService) {
         this.mediaRepository = mediaRepository;

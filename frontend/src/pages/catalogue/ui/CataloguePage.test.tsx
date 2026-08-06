@@ -35,7 +35,7 @@ describe('CataloguePage', () => {
     mswServer.use(http.get(`${API}/courses`, () => HttpResponse.json({ message: 'Boom' }, { status: 500 })))
     renderWithProviders(<CataloguePage />, { route: '/catalogue' })
 
-    expect(await screen.findByRole('button', { name: /Try again|Réessayer/i }, {}, { timeout: 4000 })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: /Try again|Réessayer/i }, { timeout: 4000 })).toBeInTheDocument()
   })
 
   it('débounce la recherche et interroge l\'API avec le paramètre q', async () => {

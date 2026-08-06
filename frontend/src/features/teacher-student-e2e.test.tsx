@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -42,6 +42,8 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
     localStorage.clear()
   })
 
+  // Timeout étendu : ce scénario tape plusieurs champs caractère par caractère via
+  // userEvent, ce qui peut dépasser les 5000ms par défaut sous charge CPU (CI).
   it('1. Assistant de création de cours (Course Wizard Flow) fonctionne de bout en bout', async () => {
     mswServer.use(
       http.post(`${API}/courses`, async ({ request }) => {
@@ -88,7 +90,7 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
     const shortDesc = screen.getByLabelText(/résumé|description courte/i)
     await userEvent.type(shortDesc, 'Apprenez les bases du solfège')
 
-    const fullDesc = screen.getByLabelText(/description complète|description/i)
+    const fullDesc = screen.getByLabelText(/description détaillée|description complète/i)
     await userEvent.type(fullDesc, 'Description détaillée')
 
     // Soumission du formulaire
@@ -123,9 +125,11 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
         mockCourse = { ...mockCourse, ...body }
         return HttpResponse.json(mockCourse)
       }),
-      http.patch(`${API}/courses/course-101/publish`, async ({ request }) => {
-        const body = (await request.json()) as { published: boolean }
-        mockCourse.published = body.published
+      http.patch(`${API}/courses/course-101/publish`, ({ request }) => {
+        // The real endpoint takes `published` as a query param, not a JSON body
+        // (see CourseController#publishCourse / courseApi.publish).
+        const published = new URL(request.url).searchParams.get('published') !== 'false'
+        mockCourse.published = published
         return HttpResponse.json(mockCourse)
       }),
       http.post(`${API}/media/presign`, () =>
@@ -209,8 +213,11 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
         HttpResponse.json({ url: '/api/v1/media/video-123/file' }),
       ),
       http.patch(`${API}/enrollments/enr-1/progress`, async ({ request }) => {
-        const body = (await request.json()) as { progress: number }
-        currentProgress = body.progress
+        // The real endpoint takes the progress value as a raw JSON number body
+        // (see EnrollmentController#updateProgress / enrollmentApi.updateProgress),
+        // not an { progress } object.
+        const body = (await request.json()) as number
+        currentProgress = body
         return HttpResponse.json({
           id: 'enr-1',
           courseId: 'course-101',
