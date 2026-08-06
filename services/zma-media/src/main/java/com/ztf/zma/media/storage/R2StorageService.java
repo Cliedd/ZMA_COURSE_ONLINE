@@ -23,10 +23,14 @@ import java.nio.file.Path;
 import java.time.Duration;
 
 /**
- * Cloudflare R2 storage implementation (S3-compatible API).
- * Activated when storage.type=r2.
+ * Generic S3-compatible storage implementation (Cloudflare R2, Railway Buckets,
+ * or any other S3-compatible provider). Activated when storage.type=r2.
  *
- * R2 endpoint format: https://<accountId>.r2.cloudflarestorage.com
+ * The endpoint is fully configurable via storage.r2.endpoint — no provider-specific
+ * URL construction. Examples:
+ *   - Cloudflare R2:      https://<accountId>.r2.cloudflarestorage.com
+ *   - Railway Buckets:    https://t3.storageapi.dev (or whatever the bucket's
+ *                         `railway bucket credentials` output reports)
  */
 @Service
 @ConditionalOnProperty(name = "storage.type", havingValue = "r2")
@@ -39,7 +43,7 @@ public class R2StorageService implements StorageService {
     private final String bucket;
 
     public R2StorageService(
-            @Value("${storage.r2.account-id}") String accountId,
+            @Value("${storage.r2.endpoint}")    String endpoint,
             @Value("${storage.r2.access-key}")  String accessKey,
             @Value("${storage.r2.secret-key}")  String secretKey,
             @Value("${storage.r2.bucket:zma-media}") String bucket) {
@@ -47,7 +51,6 @@ public class R2StorageService implements StorageService {
         this.bucket = bucket;
 
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
-        String endpoint = "https://" + accountId + ".r2.cloudflarestorage.com";
 
         this.s3Client = S3Client.builder()
             .endpointOverride(URI.create(endpoint))
