@@ -1,6 +1,7 @@
 package com.ztf.zma.media.service;
 
 import com.ztf.zma.media.domain.Media;
+import com.ztf.zma.media.infrastructure.EnrollmentClient;
 import com.ztf.zma.media.repository.MediaRepository;
 import com.ztf.zma.media.storage.PresignedUrlResponse;
 import com.ztf.zma.media.storage.StorageService;
@@ -43,12 +44,14 @@ public class MediaService {
     private final MediaRepository mediaRepository;
     private final StorageService  storageService;
     private final ImageProcessingService imageProcessingService;
+    private final EnrollmentClient enrollmentClient;
 
     public MediaService(MediaRepository mediaRepository, StorageService storageService,
-                         ImageProcessingService imageProcessingService) {
+                         ImageProcessingService imageProcessingService, EnrollmentClient enrollmentClient) {
         this.mediaRepository = mediaRepository;
         this.storageService  = storageService;
         this.imageProcessingService = imageProcessingService;
+        this.enrollmentClient = enrollmentClient;
     }
 
     @Transactional
@@ -158,19 +161,23 @@ public class MediaService {
     /**
      * Generate a time-limited CDN/download URL.
      *
-     * Authorization: the requesting user must be the uploader, or hold the
-     * TEACHER/ADMIN role. NOTE: this service does not have visibility into
-     * course-enrollment records (owned by zma-enrollment), so a student who is
-     * genuinely enrolled in the course a media item is attached to but who did
-     * not upload it will currently be denied. Properly supporting "enrolled
-     * students can stream course media" requires either (a) an inter-service
-     * call/token claim asserting enrollment, or (b) embedding the caller's
-     * enrolled course IDs in the JWT. This is an architectural decision left
-     * for the team — see audit report.
+     * Authorization: the requesting user must be the uploader, hold the
+     * TEACHER/ADMIN role, OR (as of the enrolled-student playback fix) be a
+     * STUDENT genuinely enrolled — per zma-enrollment — in the course this
+     * media item is attached to. Enrollment is verified via an inter-service
+     * call to zma-enrollment's GET /api/v1/enrollments/check, forwarding the
+     * caller's own Authorization header/JWT so zma-enrollment authenticates
+     * as the original student (see EnrollmentClient). If that call fails for
+     * any reason (network error, zma-enrollment outage, ...) access is
+     * denied — fail closed, not open.
+     *
+     * This only extends READ/playback access. Mutating operations
+     * (confirmUpload/attach/deleteMedia) and plain metadata reads
+     * (getByIdForUser) remain owner/ADMIN/TEACHER-only via requireAccess().
      */
-    public String getDownloadUrl(String mediaId, String requestingUser, String role) {
+    public String getDownloadUrl(String mediaId, String requestingUser, String role, String authorizationHeader) {
         Media media = getById(mediaId);
-        requireAccess(media, requestingUser, role);
+        requirePlaybackAccess(media, requestingUser, role, authorizationHeader);
         if (!"READY".equals(media.getStatus())) {
             throw new RuntimeException("Media is not ready");
         }
@@ -189,6 +196,26 @@ public class MediaService {
         boolean isOwner = media.getUploadedBy() != null && media.getUploadedBy().equals(requestingUser);
         boolean isPrivileged = "ADMIN".equals(role) || "TEACHER".equals(role);
         if (!isOwner && !isPrivileged) {
+            throw new AccessDeniedException("Access denied");
+        }
+    }
+
+    /**
+     * Same as {@link #requireAccess}, but for read/playback paths only: also allows a
+     * STUDENT who is genuinely enrolled (per zma-enrollment) in the course this media
+     * item is attached to. Falls back to {@link #requireAccess}'s owner/ADMIN/TEACHER
+     * check first so no extra network call is made for the common case.
+     */
+    private void requirePlaybackAccess(Media media, String requestingUser, String role, String authorizationHeader) {
+        boolean isOwner = media.getUploadedBy() != null && media.getUploadedBy().equals(requestingUser);
+        boolean isPrivileged = "ADMIN".equals(role) || "TEACHER".equals(role);
+        if (isOwner || isPrivileged) {
+            return;
+        }
+        boolean isEnrolledStudent = "STUDENT".equals(role)
+                && media.getCourseId() != null
+                && enrollmentClient.isEnrolled(media.getCourseId(), authorizationHeader);
+        if (!isEnrolledStudent) {
             throw new AccessDeniedException("Access denied");
         }
     }

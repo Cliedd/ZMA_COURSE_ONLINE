@@ -140,13 +140,16 @@ public class MediaController {
 
     /**
      * Get a time-limited download/CDN URL.
-     * Restricted to the uploader or an ADMIN/TEACHER — see MediaService#getDownloadUrl
-     * for the documented limitation around enrolled-student access.
+     * Allowed for the uploader, an ADMIN/TEACHER, or a STUDENT genuinely enrolled
+     * (per zma-enrollment) in the course this media belongs to — see
+     * MediaService#getDownloadUrl. The inbound Authorization header is forwarded
+     * as-is to zma-enrollment so the enrollment check runs as the original caller.
      */
-    @Operation(summary = "Get a time-limited download URL", description = "Requires the caller to own the media or hold an ADMIN/TEACHER role.")
+    @Operation(summary = "Get a time-limited download URL", description = "Requires the caller to own the media, hold an ADMIN/TEACHER role, or be enrolled in the media's course.")
     @GetMapping("/{id}/url")
-    public Map<String, String> getDownloadUrl(@PathVariable String id, Authentication auth) {
-        return Map.of("url", mediaService.getDownloadUrl(id, auth.getName(), getRole(auth)));
+    public Map<String, String> getDownloadUrl(@PathVariable String id, Authentication auth,
+                                               @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorizationHeader) {
+        return Map.of("url", mediaService.getDownloadUrl(id, auth.getName(), getRole(auth), authorizationHeader));
     }
 
     /** Soft-delete: removes from storage and marks deleted */
