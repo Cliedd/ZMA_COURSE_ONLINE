@@ -70,7 +70,10 @@ describe('LessonMediaUpload', () => {
     const input = screen.getByLabelText(/attacher|attach/i, { selector: 'input' })
     await userEvent.upload(input, makeVideoFile())
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/file type not allowed|non pris en charge/i)
+    // The raw server message ("File type not allowed") must never reach the UI as-is:
+    // it isn't localized (shared/api/http's own fallbacks are hardcoded French), so
+    // LessonMediaUpload always renders the translated generic upload-error copy instead.
+    expect(await screen.findByRole('alert')).toHaveTextContent(/upload failed|échec de l'envoi/i)
     expect(settled).toBeNull()
   })
 

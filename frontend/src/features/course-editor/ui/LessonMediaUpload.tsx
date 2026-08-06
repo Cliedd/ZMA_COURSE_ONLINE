@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Loader2, Video, X } from 'lucide-react'
 import { Badge, Button, ProgressBar, toast } from '@/shared/ui'
-import { AppError } from '@/shared/api/http'
 import type { CurriculumLesson } from '@/entities/course'
 import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES, isVideoFile, uploadLessonVideo } from '../api/mediaApi'
 
@@ -42,11 +41,12 @@ export function LessonMediaUpload({ lesson, onChange }: LessonMediaUploadProps) 
       const media = await uploadLessonVideo(file, { onProgress: setProgress })
       onChange({ ...lesson, mediaId: media.id })
       toast.success(t('courseEditor.media.uploadSuccess'))
-    } catch (err) {
-      const serverMsg = err instanceof AppError ? err.message : null
-      const msg = serverMsg && serverMsg !== 'Une erreur est survenue.'
-        ? serverMsg
-        : t('courseEditor.media.errorNetwork')
+    } catch {
+      // Never surface the caught error's message directly: AppError messages come
+      // straight from the backend (or from shared/api/http's own hardcoded-French
+      // fallbacks for network failures) and are not localized, so they'd show
+      // raw/inconsistent text on an English-locale UI. Always render through i18n.
+      const msg = t('courseEditor.media.errorNetwork')
       setError(msg)
       toast.error(msg)
     } finally {
