@@ -166,6 +166,9 @@ export async function uploadLessonVideo(
       // generic network error regardless of the actual cause (e.g. a bucket
       // CORS rejection, a 403 from an expired presigned URL, a 5xx).
       console.error('[uploadLessonVideo] PUT to storage failed', err)
+      if (axios.isAxiosError(err) && err.response) {
+        console.error('[uploadLessonVideo] PUT status:', err.response.status, 'data:', err.response.data)
+      }
       throw new UploadError(classifyPutError(err), err instanceof Error ? err.message : 'upload failed', err)
     }
 

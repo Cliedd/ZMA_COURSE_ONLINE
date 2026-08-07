@@ -10,6 +10,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.CORSConfiguration;
 import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -65,12 +66,14 @@ public class R2StorageService implements StorageService {
             .endpointOverride(URI.create(endpoint))
             .region(Region.of("auto"))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
+            .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
             .build();
 
         this.presigner = S3Presigner.builder()
             .endpointOverride(URI.create(endpoint))
             .region(Region.of("auto"))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
+            .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
             .build();
     }
 
@@ -128,7 +131,7 @@ public class R2StorageService implements StorageService {
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
             .signatureDuration(Duration.ofHours(1))
-            .putObjectRequest(r -> r.bucket(bucket).key(s3Key).contentType(contentType))
+            .putObjectRequest(r -> r.bucket(bucket).key(s3Key))
             .build();
 
         String uploadUrl = presigner.presignPutObject(presignRequest).url().toString();
