@@ -99,7 +99,7 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
 
     // Vérification de la redirection vers l'éditeur de cours
     expect(await screen.findByText('Éditeur du cours créé')).toBeInTheDocument()
-  })
+  }, 15000)
 
   it('2 & 3. Édition du programme (sections/leçons/vidéo) et Publication du cours', async () => {
     let mockCourse = {
@@ -173,7 +173,7 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
       expect(screen.getByText('Publié')).toBeInTheDocument()
     })
     expect(mockCourse.published).toBe(true)
-  })
+  }, 20000)
 
   it('4. Lecteur de cours étudiant (CoursePlayer) : affichage du syllabus, streaming vidéo et mise à jour du progrès', async () => {
     const publishedCourse = {

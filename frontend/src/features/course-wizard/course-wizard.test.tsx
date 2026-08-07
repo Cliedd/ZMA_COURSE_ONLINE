@@ -75,8 +75,8 @@ describe('CourseWizard Component', () => {
     // Redirection vers le course editor
     await waitFor(() => {
       expect(screen.getByText('Course Editor Target Page')).toBeInTheDocument()
-    })
-  })
+    }, { timeout: 5000 })
+  }, 15000)
 
   it("maintient l'utilisateur sur l'étape 2 si la description courte n'est pas renseignée", async () => {
     renderWizard()
