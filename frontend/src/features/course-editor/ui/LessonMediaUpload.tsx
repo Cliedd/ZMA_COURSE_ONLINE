@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Loader2, Video, X } from 'lucide-react'
 import { Badge, Button, ProgressBar, toast } from '@/shared/ui'
 import type { CurriculumLesson } from '@/entities/course'
-import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES, isVideoFile, uploadLessonVideo } from '../api/mediaApi'
+import { ALLOWED_VIDEO_TYPES, MAX_VIDEO_SIZE_BYTES, UploadError, isVideoFile, uploadLessonVideo } from '../api/mediaApi'
 
 interface LessonMediaUploadProps {
   lesson: CurriculumLesson
@@ -41,12 +41,25 @@ export function LessonMediaUpload({ lesson, onChange }: LessonMediaUploadProps) 
       const media = await uploadLessonVideo(file, { onProgress: setProgress })
       onChange({ ...lesson, mediaId: media.id })
       toast.success(t('courseEditor.media.uploadSuccess'))
-    } catch {
+    } catch (err) {
       // Never surface the caught error's message directly: AppError messages come
       // straight from the backend (or from shared/api/http's own hardcoded-French
       // fallbacks for network failures) and are not localized, so they'd show
       // raw/inconsistent text on an English-locale UI. Always render through i18n.
-      const msg = t('courseEditor.media.errorNetwork')
+      // But DO pick the i18n key based on the failure's actual category (auth /
+      // server / network) instead of always defaulting to "check your connection"
+      // — that used to mask real causes (e.g. a storage CORS misconfiguration)
+      // behind a misleading connectivity message. The full error is always logged
+      // to the console (see mediaApi.ts) for debugging regardless of locale.
+      const key =
+        err instanceof UploadError
+          ? err.kind === 'auth'
+            ? 'courseEditor.media.errorAuth'
+            : err.kind === 'server'
+              ? 'courseEditor.media.errorServer'
+              : 'courseEditor.media.errorNetwork'
+          : 'courseEditor.media.errorNetwork'
+      const msg = t(key)
       setError(msg)
       toast.error(msg)
     } finally {

@@ -1,5 +1,6 @@
 package com.ztf.zma.media.storage;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +10,11 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CORSConfiguration;
+import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutBucketCorsRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -21,6 +25,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Generic S3-compatible storage implementation (Cloudflare R2, Railway Buckets,
@@ -41,14 +47,17 @@ public class R2StorageService implements StorageService {
     private final S3Client   s3Client;
     private final S3Presigner presigner;
     private final String bucket;
+    private final String corsAllowedOrigins;
 
     public R2StorageService(
             @Value("${storage.r2.endpoint}")    String endpoint,
             @Value("${storage.r2.access-key}")  String accessKey,
             @Value("${storage.r2.secret-key}")  String secretKey,
-            @Value("${storage.r2.bucket:zma-media}") String bucket) {
+            @Value("${storage.r2.bucket:zma-media}") String bucket,
+            @Value("${cors.allowed-origins}")   String corsAllowedOrigins) {
 
         this.bucket = bucket;
+        this.corsAllowedOrigins = corsAllowedOrigins;
 
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
@@ -63,6 +72,51 @@ public class R2StorageService implements StorageService {
             .region(Region.of("auto"))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build();
+    }
+
+    /**
+     * The browser uploads video bytes with a direct PUT to the presigned R2/Tigris
+     * URL (see generatePresignedUploadUrl below) — that request never touches our
+     * own Spring controllers, so the app-level @CrossOrigin/CorsConfigurationSource
+     * on MediaController has no effect on it. Without a CORS policy configured on
+     * the bucket itself, the browser's preflight OPTIONS to the storage endpoint
+     * gets a 200 with no Access-Control-Allow-Origin header, so the browser blocks
+     * the actual PUT — surfacing to the user as a generic "network error" with no
+     * indication that the bucket, not the network, is the problem.
+     *
+     * Idempotently push the same allowed origins used for our own API (cors.allowed-
+     * origins) onto the bucket's CORS policy at startup so direct-to-bucket uploads
+     * are actually reachable from the app's real origins. Never fails startup: if
+     * the storage provider rejects/doesn't support PutBucketCors, we log and move on
+     * rather than crashing the service over a non-critical bootstrap step.
+     */
+    @PostConstruct
+    void configureBucketCors() {
+        List<String> origins = Arrays.stream(corsAllowedOrigins.split(","))
+            .map(String::trim)
+            .filter(o -> !o.isEmpty())
+            .toList();
+        if (origins.isEmpty()) {
+            log.warn("configureBucketCors: cors.allowed-origins is empty, skipping bucket CORS setup");
+            return;
+        }
+        try {
+            CORSRule rule = CORSRule.builder()
+                .allowedOrigins(origins)
+                .allowedMethods("PUT", "GET", "HEAD")
+                .allowedHeaders("*")
+                .exposeHeaders("ETag")
+                .maxAgeSeconds(3000)
+                .build();
+            s3Client.putBucketCors(PutBucketCorsRequest.builder()
+                .bucket(bucket)
+                .corsConfiguration(CORSConfiguration.builder().corsRules(rule).build())
+                .build());
+            log.info("Configured bucket CORS on {} for origins: {}", bucket, origins);
+        } catch (Exception ex) {
+            log.warn("Failed to configure bucket CORS on {} (uploads from browser origins may be blocked): {}",
+                bucket, ex.getMessage());
+        }
     }
 
     @Override

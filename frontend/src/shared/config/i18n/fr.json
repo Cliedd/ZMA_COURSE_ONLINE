@@ -473,7 +473,9 @@
       "uploadSuccess": "Vidéo mise en ligne avec succès.",
       "errorFormat": "Format non pris en charge. Utilisez MP4, WebM ou MOV.",
       "errorSize": "Fichier trop volumineux. Taille maximale : 2 Go.",
-      "errorNetwork": "Échec de l'envoi. Vérifiez votre connexion et réessayez."
+      "errorNetwork": "Échec de l'envoi. Vérifiez votre connexion et réessayez.",
+      "errorAuth": "Vous n'êtes pas autorisé à mettre en ligne cette vidéo. Reconnectez-vous et réessayez.",
+      "errorServer": "Le serveur a refusé l'envoi. Réessayez dans un instant."
     }
   },
   "localeSwitch": {

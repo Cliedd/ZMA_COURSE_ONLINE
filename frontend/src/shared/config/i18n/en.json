@@ -473,7 +473,9 @@
       "uploadSuccess": "Video uploaded successfully.",
       "errorFormat": "Unsupported file type. Use MP4, WebM or MOV.",
       "errorSize": "File too large. Maximum size is 2 GB.",
-      "errorNetwork": "Upload failed. Check your connection and try again."
+      "errorNetwork": "Upload failed. Check your connection and try again.",
+      "errorAuth": "You are not allowed to upload this video. Try signing in again.",
+      "errorServer": "The server rejected the upload. Please try again in a moment."
     }
   },
   "localeSwitch": {

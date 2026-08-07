@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { z } from 'zod'
-import { post, patch } from '@/shared/api/http'
+import { post, patch, AppError } from '@/shared/api/http'
 
 /** Miroir de zma-media : MediaService.PresignUrlWithId */
 const presignSchema = z.object({
@@ -74,6 +74,52 @@ export interface UploadLessonVideoOptions {
 }
 
 /**
+ * Coarse category for an upload failure, used by the UI to pick a specific
+ * i18n message instead of always saying "check your connection" — that
+ * fallback used to catch everything (CORS rejections, 5xx, permission
+ * errors, an aborted upload) and mislabel it as a connectivity problem,
+ * which made real failures (e.g. the storage bucket missing a CORS policy
+ * for browser-origin uploads) look like a user network issue.
+ */
+export type UploadErrorKind = 'format' | 'size' | 'auth' | 'server' | 'network' | 'client'
+
+export class UploadError extends Error {
+  constructor(readonly kind: UploadErrorKind, message: string, readonly cause?: unknown) {
+    super(message)
+    this.name = 'UploadError'
+  }
+}
+
+function classifyAppError(err: AppError): UploadErrorKind {
+  if (err.status === 0) return 'network'
+  if (err.status === 401 || err.status === 403) return 'auth'
+  if (err.status >= 500) return 'server'
+  return 'client'
+}
+
+/**
+ * Direct-to-bucket PUT bypasses shared/api/http.ts entirely (it's a raw
+ * axios.put to an absolute presigned URL, not our API), so its errors never
+ * go through toAppError. A request that never reaches the server at all —
+ * no HTTP response, axios code ERR_NETWORK — is what a browser reports both
+ * for a real connectivity loss AND for a CORS preflight rejection (the
+ * browser deliberately hides the real reason from JS for security). We
+ * cannot tell those apart client-side; console.error keeps the raw detail
+ * available for debugging even though the user-facing message stays generic
+ * for that case.
+ */
+function classifyPutError(err: unknown): UploadErrorKind {
+  if (axios.isAxiosError(err)) {
+    const status = err.response?.status
+    if (status === 401 || status === 403) return 'auth'
+    if (status !== undefined && status >= 500) return 'server'
+    if (status !== undefined) return 'client'
+    return 'network'
+  }
+  return 'network'
+}
+
+/**
  * Upload une vidéo de leçon via le flux presign de zma-media :
  * 1) POST /media/presign → { mediaId, uploadUrl, s3Key }
  * 2a) En prod (R2) : uploadUrl est une URL S3 signée absolue → PUT direct des octets,
@@ -86,11 +132,19 @@ export async function uploadLessonVideo(
   { onProgress, signal }: UploadLessonVideoOptions = {},
 ): Promise<UploadedMedia> {
   const contentType = inferVideoContentType(file)
-  const presigned = await post(
-    '/media/presign',
-    { fileName: file.name, contentType, sizeBytes: file.size, purpose: 'LESSON_VIDEO' },
-    presignSchema,
-  )
+
+  let presigned: z.infer<typeof presignSchema>
+  try {
+    presigned = await post(
+      '/media/presign',
+      { fileName: file.name, contentType, sizeBytes: file.size, purpose: 'LESSON_VIDEO' },
+      presignSchema,
+    )
+  } catch (err) {
+    const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+    console.error('[uploadLessonVideo] presign failed', err)
+    throw new UploadError(kind, err instanceof Error ? err.message : 'presign failed', err)
+  }
 
   const reportProgress = (loaded: number, total?: number) => {
     if (!onProgress) return
@@ -100,12 +154,28 @@ export async function uploadLessonVideo(
   }
 
   if (/^https?:\/\//i.test(presigned.uploadUrl)) {
-    await axios.put(presigned.uploadUrl, file, {
-      headers: { 'Content-Type': contentType },
-      signal,
-      onUploadProgress: (e) => reportProgress(e.loaded, e.total),
-    })
-    return patch(`/media/${presigned.mediaId}/confirm`, undefined, uploadedMediaSchema)
+    try {
+      await axios.put(presigned.uploadUrl, file, {
+        headers: { 'Content-Type': contentType },
+        signal,
+        onUploadProgress: (e) => reportProgress(e.loaded, e.total),
+      })
+    } catch (err) {
+      // Log the raw axios error (status, code, message) — this is the detail
+      // that used to be discarded entirely and reported to the user as a
+      // generic network error regardless of the actual cause (e.g. a bucket
+      // CORS rejection, a 403 from an expired presigned URL, a 5xx).
+      console.error('[uploadLessonVideo] PUT to storage failed', err)
+      throw new UploadError(classifyPutError(err), err instanceof Error ? err.message : 'upload failed', err)
+    }
+
+    try {
+      return await patch(`/media/${presigned.mediaId}/confirm`, undefined, uploadedMediaSchema)
+    } catch (err) {
+      const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+      console.error('[uploadLessonVideo] confirm failed', err)
+      throw new UploadError(kind, err instanceof Error ? err.message : 'confirm failed', err)
+    }
   }
 
   const relativeUrl = presigned.uploadUrl.startsWith(API_PREFIX)
@@ -115,8 +185,14 @@ export async function uploadLessonVideo(
   const formData = new FormData()
   formData.append('file', file)
 
-  return post(relativeUrl, formData, uploadedMediaSchema, {
-    signal,
-    onUploadProgress: (e) => reportProgress(e.loaded, e.total),
-  })
+  try {
+    return await post(relativeUrl, formData, uploadedMediaSchema, {
+      signal,
+      onUploadProgress: (e) => reportProgress(e.loaded, e.total),
+    })
+  } catch (err) {
+    const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+    console.error('[uploadLessonVideo] direct upload failed', err)
+    throw new UploadError(kind, err instanceof Error ? err.message : 'upload failed', err)
+  }
 }
