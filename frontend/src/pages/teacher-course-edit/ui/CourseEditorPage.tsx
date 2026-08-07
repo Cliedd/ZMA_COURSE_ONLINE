@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Skeleton } from '@/shared/ui'
+import { Skeleton, toast } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import {
   useCourseById,
@@ -9,11 +9,24 @@ import {
   usePublishCourse,
   useDeleteCourse,
 } from '@/entities/course'
-import type { CurriculumSection, CourseWriteRequest } from '@/entities/course'
+import type { Course, CurriculumSection, CourseWriteRequest } from '@/entities/course'
 import { CourseInfoForm, CurriculumEditor, PublishControl } from '@/features/course-editor'
 
-function toWriteRequest(base: { title: string; price: number; department?: string; level?: string }, patch: Partial<CourseWriteRequest>): CourseWriteRequest {
-  return { title: base.title, price: base.price, department: base.department, level: base.level, ...patch }
+function toWriteRequest(base: Course, patch: Partial<CourseWriteRequest>): CourseWriteRequest {
+  return {
+    title: base.title,
+    price: base.price,
+    department: base.department,
+    level: base.level,
+    shortDescription: base.shortDescription,
+    description: base.description,
+    durationHours: base.durationHours,
+    ects: base.ects ?? undefined,
+    skillsJson: base.skillsJson,
+    debouches: base.debouches,
+    curriculumJson: base.curriculumJson,
+    ...patch,
+  }
 }
 
 /** Page d'édition d'un cours : infos, programme, publication et suppression. */
@@ -54,14 +67,20 @@ export function CourseEditorPage() {
 
   const handleSaveInfo = (data: CourseWriteRequest) => {
     if (!courseId) return
-    updateCourse.mutate({ id: courseId, data: { ...data, curriculumJson: JSON.stringify(currentSections) } })
+    updateCourse.mutate(
+      { id: courseId, data: { ...data, curriculumJson: JSON.stringify(currentSections) } },
+      { onError: () => toast.error('Impossible de sauvegarder le cours.') },
+    )
   }
 
   const handleSaveCurriculum = (next: CurriculumSection[]) => {
     setSections(next)
     if (!courseId) return
     const data = toWriteRequest(course, { curriculumJson: JSON.stringify(next) })
-    updateCourse.mutate({ id: courseId, data })
+    updateCourse.mutate(
+      { id: courseId, data },
+      { onError: () => toast.error('Impossible de sauvegarder le cours.') },
+    )
   }
 
   const handleTogglePublish = () => {
