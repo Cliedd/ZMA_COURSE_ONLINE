@@ -84,6 +84,7 @@ public class PaymentService {
         // Free course → enroll directly, skip payment gateway entirely
         if (amount <= 0) {
             Payment free = new Payment();
+            free.setId(UUID.randomUUID().toString());
             free.setStudentId(studentId);
             free.setCourseId(courseId);
             free.setCourseTitle(title);
