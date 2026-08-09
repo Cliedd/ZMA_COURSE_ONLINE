@@ -93,6 +93,37 @@ public class RedisTokenService {
         fallbackStore.remove(REFRESH_PREFIX + refreshToken);
     }
 
+    /**
+     * Revokes all refresh tokens belonging to {@code email}.
+     * Used when an admin changes a user's role so that the next refresh
+     * issues a JWT that carries the new role.
+     * Scans Redis with pattern {@code refresh:*} and deletes entries whose
+     * value equals the email; also sweeps the in-memory fallback store.
+     */
+    public void invalidateAllRefreshTokensForUser(String email) {
+        // In-memory fallback: remove all entries whose value matches the email.
+        fallbackStore.entrySet().removeIf(e ->
+            e.getKey().startsWith(REFRESH_PREFIX) && email.equals(e.getValue()));
+
+        // Redis: scan refresh:* and delete keys whose stored value is the email.
+        try {
+            String pattern = REFRESH_PREFIX + "*";
+            org.springframework.data.redis.core.Cursor<String> cursor =
+                redis.scan(org.springframework.data.redis.core.ScanOptions.scanOptions()
+                    .match(pattern).count(200).build());
+            while (cursor.hasNext()) {
+                String key = cursor.next();
+                String storedEmail = redis.opsForValue().get(key);
+                if (email.equals(storedEmail)) {
+                    redis.delete(key);
+                }
+            }
+            cursor.close();
+        } catch (Exception e) {
+            log.warn("Redis unavailable for invalidateAllRefreshTokensForUser({})", email);
+        }
+    }
+
     // ── Password Reset Tokens ─────────────────────────────────────────────────
 
     public String createResetToken(String email) {

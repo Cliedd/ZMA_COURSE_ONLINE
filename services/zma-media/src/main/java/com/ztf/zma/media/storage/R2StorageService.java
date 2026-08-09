@@ -130,12 +130,12 @@ public class R2StorageService implements StorageService {
         String s3Key = "media/" + mediaId + "/" + fileName;
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofHours(1))
+            .signatureDuration(Duration.ofHours(24))
             .putObjectRequest(r -> r.bucket(bucket).key(s3Key))
             .build();
 
         String uploadUrl = presigner.presignPutObject(presignRequest).url().toString();
-        return new PresignedUrlResponse(uploadUrl, s3Key, 3600);
+        return new PresignedUrlResponse(uploadUrl, s3Key, 86400);
     }
 
     @Override

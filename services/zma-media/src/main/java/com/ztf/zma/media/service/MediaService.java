@@ -32,7 +32,7 @@ public class MediaService {
         "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif",
         "video/mp4", "video/webm", "video/quicktime", "video/x-matroska",
         "video/avi", "video/x-msvideo", "video/mkv", "video/3gpp", "video/ogg",
-        "video/x-flv", "video/mp2t", "video/x-m4v", "application/octet-stream",
+        "video/x-flv", "video/mp2t", "video/x-m4v",
         "application/pdf",
         "application/zip",
         "audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg"

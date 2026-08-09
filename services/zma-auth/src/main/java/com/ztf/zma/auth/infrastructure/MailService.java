@@ -35,7 +35,7 @@ public class MailService {
         String resetLink = frontendUrl + "/reset-password?token=" + resetToken;
 
         if (!mailEnabled) {
-            log.warn("[DEV] Password reset link for {}: {}", to, resetLink);
+            log.warn("[DEV] Password reset email would be sent to {} (mail disabled)", to);
             return;
         }
 
@@ -59,7 +59,7 @@ public class MailService {
         String verifyLink = frontendUrl + "/verify-email?token=" + verifyToken;
 
         if (!mailEnabled) {
-            log.warn("[DEV] Email verification link for {}: {}", to, verifyLink);
+            log.warn("[DEV] Verification email would be sent to {} (mail disabled)", to);
             return;
         }
 

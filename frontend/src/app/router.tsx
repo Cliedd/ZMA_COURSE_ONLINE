@@ -1,7 +1,7 @@
 import { Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NotFound } from './NotFound'
-import { RequireAuth } from './guards'
+import { RequireAuth, RequireRole } from './guards'
 import { OAuthCallbackPage } from './OAuthCallbackPage'
 import { lazyWithReload } from './lazyWithReload'
 import { PublicLayout } from '@/app/layouts/PublicLayout'
@@ -101,9 +101,9 @@ export function AppRoutes() {
             <Route path="/checkout/:courseId" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
             <Route path="/checkout/return" element={<RequireAuth><CheckoutReturnPage /></RequireAuth>} />
             <Route path="/chat/:courseId" element={<RequireAuth><ChatPage /></RequireAuth>} />
-            <Route path="/teacher" element={<RequireAuth><TeacherDashboardPage /></RequireAuth>} />
-            <Route path="/teacher/courses/new" element={<RequireAuth><CourseWizardPage /></RequireAuth>} />
-            <Route path="/teacher/courses/:courseId/edit" element={<RequireAuth><CourseEditorPage /></RequireAuth>} />
+            <Route path="/teacher" element={<RequireRole role="TEACHER"><TeacherDashboardPage /></RequireRole>} />
+            <Route path="/teacher/courses/new" element={<RequireRole role="TEACHER"><CourseWizardPage /></RequireRole>} />
+            <Route path="/teacher/courses/:courseId/edit" element={<RequireRole role="TEACHER"><CourseEditorPage /></RequireRole>} />
             <Route path="/admin" element={<RequireAuth><AdminOverviewPage /></RequireAuth>} />
             <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />
             <Route path="/admin/finance" element={<RequireAuth><AdminFinancePage /></RequireAuth>} />

@@ -14,13 +14,22 @@ export function connectSessionToHttp(): void {
     getToken: () => useAuthStore.getState().token,
     clearSession: () => useAuthStore.getState().logout(),
     refresh: async () => {
-      const { refreshToken, setSession } = useAuthStore.getState()
+      const { refreshToken, role: previousRole, setSession } = useAuthStore.getState()
       if (!refreshToken) return false
       try {
         // Appel direct (axios brut) : ne doit pas repasser par l'intercepteur,
         // sinon un 401 sur le rafraîchissement déclencherait une récursion.
         const { data } = await axios.post<AuthResponse>('/api/v1/auth/refresh', { refreshToken })
         setSession(data)
+
+        // Si l'admin a changé le rôle de cet utilisateur, le nouveau JWT porte
+        // un rôle différent. On force un rechargement complet pour que toute
+        // l'interface (menus, guards, contextes) reflète le nouveau rôle sans
+        // qu'il reste de state périmé en mémoire.
+        if (previousRole !== null && data.role !== previousRole) {
+          window.location.reload()
+        }
+
         return true
       } catch {
         return false

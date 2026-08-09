@@ -1,6 +1,7 @@
 package com.ztf.zma.auth.api;
 
 import com.ztf.zma.auth.domain.User;
+import com.ztf.zma.auth.infrastructure.RedisTokenService;
 import com.ztf.zma.auth.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,9 +30,12 @@ public class AdminUserController {
     private static final Set<String> ALLOWED_ROLES = Set.of("STUDENT", "TEACHER", "ADMIN");
 
     private final UserRepository userRepository;
+    private final RedisTokenService redisTokenService;
 
-    public AdminUserController(UserRepository userRepository) {
+    public AdminUserController(UserRepository userRepository,
+                               RedisTokenService redisTokenService) {
         this.userRepository = userRepository;
+        this.redisTokenService = redisTokenService;
     }
 
     // ── List all users (paginated) ──────────────────────────────────────────────
@@ -73,6 +77,14 @@ public class AdminUserController {
 
         user.setRole(normalizedRole);
         userRepository.save(user);
+
+        // Force the affected user's next request to refresh their JWT so it
+        // carries the new role.  Invalidating all their refresh tokens means
+        // the existing access token (still valid for up to 1 h) will eventually
+        // expire, and the very next automatic refresh will produce a new JWT
+        // with the updated role read fresh from the database.
+        redisTokenService.invalidateAllRefreshTokensForUser(user.getEmail());
+
         return UserSummary.from(user);
     }
 
