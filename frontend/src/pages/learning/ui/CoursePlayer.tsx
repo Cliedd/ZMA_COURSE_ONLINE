@@ -33,13 +33,16 @@ export function VideoPlayer({ mediaId, title }: VideoPlayerProps) {
         return
       }
     } catch {
-      // Fall back to direct local streaming URL endpoint
+      // presigned URL unavailable — no unauthenticated fallback in production
     }
 
-    if (!signal?.aborted) {
-      setStreamUrl(`/api/v1/media/${id}/file`)
-      setIsLoading(false)
-    }
+    if (signal?.aborted) return
+
+    // Last-resort fallback: the /file endpoint works in local dev (storage.type=local)
+    // but returns 404 in production (R2). We attempt it so local dev keeps working;
+    // if the video element fires onError we surface a user-facing message.
+    setStreamUrl(`/api/v1/media/${id}/file`)
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {

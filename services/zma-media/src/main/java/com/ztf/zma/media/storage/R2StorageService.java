@@ -45,17 +45,19 @@ public class R2StorageService implements StorageService {
 
     private static final Logger log = LoggerFactory.getLogger(R2StorageService.class);
 
-    private final S3Client   s3Client;
+    private final S3Client    s3Client;
     private final S3Presigner presigner;
+    private final S3Presigner downloadPresigner;
     private final String bucket;
     private final String corsAllowedOrigins;
 
     public R2StorageService(
-            @Value("${storage.r2.endpoint}")    String endpoint,
-            @Value("${storage.r2.access-key}")  String accessKey,
-            @Value("${storage.r2.secret-key}")  String secretKey,
+            @Value("${storage.r2.endpoint}")         String endpoint,
+            @Value("${storage.r2.public-url:}")      String publicUrl,
+            @Value("${storage.r2.access-key}")       String accessKey,
+            @Value("${storage.r2.secret-key}")       String secretKey,
             @Value("${storage.r2.bucket:zma-media}") String bucket,
-            @Value("${cors.allowed-origins}")   String corsAllowedOrigins) {
+            @Value("${cors.allowed-origins}")        String corsAllowedOrigins) {
 
         this.bucket = bucket;
         this.corsAllowedOrigins = corsAllowedOrigins;
@@ -69,11 +71,26 @@ public class R2StorageService implements StorageService {
             .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
             .build();
 
+        // Upload presigner always uses the internal S3 endpoint (path-style).
         this.presigner = S3Presigner.builder()
             .endpointOverride(URI.create(endpoint))
             .region(Region.of("auto"))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
+            .build();
+
+        // Download presigner uses the public bucket URL if configured so that
+        // the generated presigned URL is signed against the same host the
+        // browser will actually reach — avoiding the 307 redirect that would
+        // invalidate the HMAC signature (the host is part of the signed string).
+        // Falls back to the upload endpoint when publicUrl is not set (local dev).
+        String downloadEndpoint = (publicUrl != null && !publicUrl.isBlank()) ? publicUrl : endpoint;
+        boolean pathStyle = (publicUrl == null || publicUrl.isBlank());
+        this.downloadPresigner = S3Presigner.builder()
+            .endpointOverride(URI.create(downloadEndpoint))
+            .region(Region.of("auto"))
+            .credentialsProvider(StaticCredentialsProvider.create(credentials))
+            .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(pathStyle).build())
             .build();
     }
 
@@ -151,7 +168,7 @@ public class R2StorageService implements StorageService {
             .getObjectRequest(r -> r.bucket(bucket).key(s3Key))
             .build();
 
-        return presigner.presignGetObject(presignRequest).url().toString();
+        return downloadPresigner.presignGetObject(presignRequest).url().toString();
     }
 
     @Override
