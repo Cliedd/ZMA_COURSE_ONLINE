@@ -6,6 +6,7 @@ import com.ztf.zma.catalog.api.CourseRequest;
 import com.ztf.zma.catalog.domain.Course;
 import com.ztf.zma.catalog.domain.CourseStatus;
 import com.ztf.zma.catalog.domain.Review;
+import com.ztf.zma.catalog.infrastructure.CommunityClient;
 import com.ztf.zma.catalog.repository.CourseRepository;
 import com.ztf.zma.catalog.repository.ReviewRepository;
 import org.springframework.data.domain.Page;
@@ -26,12 +27,15 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final ReviewRepository reviewRepository;
+    private final CommunityClient communityClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CourseService(CourseRepository courseRepository,
-                         ReviewRepository reviewRepository) {
+                         ReviewRepository reviewRepository,
+                         CommunityClient communityClient) {
         this.courseRepository = courseRepository;
         this.reviewRepository = reviewRepository;
+        this.communityClient  = communityClient;
     }
 
     // ── Public listing ────────────────────────────────────────────────────────
@@ -246,7 +250,10 @@ public class CourseService {
         requireStatus(course, "approve", CourseStatus.IN_REVIEW);
         course.setStatus(CourseStatus.PUBLISHED);
         course.setReviewComment(null);
-        return courseRepository.save(course);
+        Course saved = courseRepository.save(course);
+        // Créer automatiquement le canal de chat du cours (fire-and-forget)
+        communityClient.createChatRoom(saved.getId(), saved.getTitle(), saved.getTeacherEmail());
+        return saved;
     }
 
     /** Admin rejects an IN_REVIEW course, sending it back to the teacher with feedback. */

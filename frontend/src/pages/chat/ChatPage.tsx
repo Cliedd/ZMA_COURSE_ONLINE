@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { Send, ChevronLeft, Loader2, MessageSquare, Lock, Users, Circle, Paperclip, X, CornerDownRight, FileIcon } from 'lucide-react'
+import { Send, ChevronLeft, Loader2, MessageSquare, Lock, Users, Circle } from 'lucide-react'
 import { Button } from '../../components/ui/button'
 import { Separator } from '../../components/ui/separator'
 import { Avatar, AvatarFallback } from '../../components/ui/avatar'
@@ -10,66 +10,18 @@ import { useCourse } from '../../hooks/useCourses'
 import { useIsEnrolled, useMyEnrollments } from '../../hooks/useEnrollment'
 import {
   useChatRoom, useChatMessages, useCreateOrGetRoom, useTeacherChatRooms,
-  useChatConnectionStatus, useChatTyping, useNotifyTyping, useSendMessage,
-  useChatReactions, useToggleReaction,
+  useChatConnectionStatus, useSendMessage,
 } from '../../hooks/useChat'
 import { useAuthStore } from '@/entities/session'
-import { mediaApi } from '../../services/api'
-import type { ChatMessage, ReactionSummary } from '../../types'
-
-const REACTION_EMOJIS = ['👍', '❤️', '😂', '🎵']
-
-/** file.type -> the coarse attachmentType hint the backend stores as-is */
-function attachmentTypeFor(mimeType: string): string {
-  if (mimeType.startsWith('image/')) return 'image'
-  if (mimeType.startsWith('audio/')) return 'audio'
-  return 'file'
-}
-
-interface PendingAttachment {
-  mediaId: string
-  fileName: string
-  attachmentType: string
-}
-
-/** Emoji reaction pills under a message bubble — fixed set, tap to toggle. */
-function ReactionRow({
-  messageId, summary, myEmail, onToggle,
-}: {
-  messageId: string
-  summary?: ReactionSummary
-  myEmail: string | null
-  onToggle: (emoji: string) => void
-}) {
-  return (
-    <div className="flex flex-wrap gap-1 mt-1">
-      {REACTION_EMOJIS.map(emoji => {
-        const count = summary?.counts?.[emoji] ?? 0
-        const mine = !!myEmail && (summary?.reactors?.[emoji]?.includes(myEmail) ?? false)
-        return (
-          <button
-            key={emoji}
-            onClick={() => onToggle(emoji)}
-            className={cn(
-              'flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] transition-colors',
-              mine
-                ? 'border-primary/50 bg-primary/10 text-primary'
-                : 'border-border bg-background text-muted-foreground hover:bg-muted'
-            )}
-          >
-            <span>{emoji}</span>
-            {count > 0 && <span>{count}</span>}
-          </button>
-        )
-      })}
-      <span className="sr-only" data-testid={`reactions-${messageId}`} />
-    </div>
-  )
-}
+import type { ChatMessage } from '../../types'
 
 function ConnectionDot({ status }: { status: 'connecting' | 'connected' | 'disconnected' }) {
-  const color = status === 'connected' ? 'text-emerald-500' : status === 'connecting' ? 'text-amber-500' : 'text-muted-foreground'
-  const label = status === 'connected' ? 'Live' : status === 'connecting' ? 'Connecting…' : 'Offline'
+  const color =
+    status === 'connected' ? 'text-emerald-500' :
+    status === 'connecting' ? 'text-amber-500' : 'text-muted-foreground'
+  const label =
+    status === 'connected' ? 'En direct' :
+    status === 'connecting' ? 'Connexion...' : 'Hors ligne'
   return (
     <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
       <Circle className={cn('h-2 w-2 fill-current', color)} />
@@ -78,7 +30,7 @@ function ConnectionDot({ status }: { status: 'connecting' | 'connected' | 'disco
   )
 }
 
-/** Left sidebar — one entry per course chat the user has access to, ChatGPT-conversation-list style. */
+/** Sidebar — liste des canaux accessibles */
 function ChatSidebar({ activeCourseId }: { activeCourseId?: string }) {
   const { role } = useAuthStore()
   const isTeacher = role === 'TEACHER'
@@ -97,7 +49,9 @@ function ChatSidebar({ activeCourseId }: { activeCourseId?: string }) {
       <div className="flex-1 overflow-y-auto py-2">
         {items.length === 0 ? (
           <p className="px-4 py-3 text-xs text-muted-foreground">
-            {isTeacher ? 'No course chats yet.' : 'Enroll in a course to start chatting.'}
+            {isTeacher
+              ? 'Aucune conversation de cours pour l\'instant.'
+              : 'Inscrivez-vous à un cours pour accéder au chat.'}
           </p>
         ) : (
           items.map(item => (
@@ -121,6 +75,44 @@ function ChatSidebar({ activeCourseId }: { activeCourseId?: string }) {
   )
 }
 
+/** Bulle de message */
+function MessageBubble({ msg, myEmail }: { msg: ChatMessage; myEmail: string | null }) {
+  const isMe = msg.senderEmail === myEmail
+  const initials = msg.senderName?.slice(0, 2).toUpperCase() ?? '??'
+  const time = new Date(msg.sentAt).toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return (
+    <div className={cn('flex gap-3', isMe ? 'flex-row-reverse' : 'flex-row')}>
+      <Avatar className="h-8 w-8 shrink-0">
+        <AvatarFallback className="text-xs bg-primary/10 text-primary font-semibold">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+      <div className={cn('max-w-[70%] space-y-1', isMe ? 'items-end' : 'items-start', 'flex flex-col')}>
+        <div className={cn(
+          'flex items-center gap-2 text-xs text-muted-foreground',
+          isMe ? 'flex-row-reverse' : 'flex-row'
+        )}>
+          <span className="font-medium">{msg.senderName}</span>
+          <span>{time}</span>
+          {msg.editedAt && <span className="italic">modifié</span>}
+        </div>
+        <div className={cn(
+          'rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap',
+          isMe
+            ? 'bg-primary text-primary-foreground rounded-tr-sm'
+            : 'bg-muted text-foreground rounded-tl-sm'
+        )}>
+          {msg.content}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export const ChatPage = () => {
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
@@ -132,34 +124,23 @@ export const ChatPage = () => {
   const createOrGetRoom = useCreateOrGetRoom()
 
   const [input, setInput] = useState('')
-  const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null)
-  const [pendingAttachment, setPendingAttachment] = useState<PendingAttachment | null>(null)
-  const [uploading, setUploading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data: messages = [] } = useChatMessages(room?.id)
+  const messages = useChatMessages(room?.id).data ?? []
   const connectionStatus = useChatConnectionStatus()
-  const typers = useChatTyping(room?.id)
-  const notifyTyping = useNotifyTyping(room?.id)
   const sendMessage = useSendMessage(room?.id)
-  const reactions = useChatReactions(room?.id)
-  const toggleReaction = useToggleReaction(room?.id)
 
-  // Teacher auto-creates room when entering chat
+  // Enseignant : crée automatiquement le canal à l'entrée dans le chat
   useEffect(() => {
     if (!roomLoading && !room && role === 'TEACHER' && course && email) {
-      createOrGetRoom.mutate({
-        courseId: course.id,
-        courseName: course.title,
-        createdByEmail: email,
-      }, {
-        onSuccess: () => refetchRoom(),
-      })
+      createOrGetRoom.mutate(
+        { courseId: course.id, courseName: course.title, createdByEmail: email },
+        { onSuccess: () => refetchRoom() }
+      )
     }
   }, [roomLoading, room, role, course, email])
 
-  // Scroll to bottom on new messages
+  // Scroll vers le bas à chaque nouveau message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length])
@@ -180,12 +161,14 @@ export const ChatPage = () => {
           <Lock className="h-8 w-8 text-destructive" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">Restricted access</h2>
-          <p className="text-muted-foreground mt-1 text-sm">You need to be enrolled in this course to access the chat.</p>
+          <h2 className="text-xl font-bold">Accès restreint</h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Vous devez être inscrit à ce cours pour accéder au chat.
+          </p>
         </div>
         {course && (
           <Link to={`/checkout/${course.id}`}>
-            <Button>Enroll in course</Button>
+            <Button>S'inscrire au cours</Button>
           </Link>
         )}
       </div>
@@ -194,16 +177,9 @@ export const ChatPage = () => {
 
   const handleSend = () => {
     const content = input.trim()
-    if (!room || (!content && !pendingAttachment)) return
-    sendMessage.mutate({
-      content: content || undefined,
-      parentMessageId: replyingTo?.id,
-      attachmentMediaId: pendingAttachment?.mediaId,
-      attachmentType: pendingAttachment?.attachmentType,
-    })
+    if (!room || !content) return
+    sendMessage.mutate({ content })
     setInput('')
-    setReplyingTo(null)
-    setPendingAttachment(null)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -213,97 +189,7 @@ export const ChatPage = () => {
     }
   }
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    e.target.value = ''
-    if (!file) return
-    setUploading(true)
-    try {
-      const presign = await mediaApi.requestUpload(file.name, file.type, file.size)
-      await fetch(presign.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
-      await mediaApi.confirmUpload(presign.mediaId)
-      setPendingAttachment({
-        mediaId: presign.mediaId,
-        fileName: file.name,
-        attachmentType: attachmentTypeFor(file.type),
-      })
-    } catch {
-      // Upload failed — silently drop, user can retry
-    } finally {
-      setUploading(false)
-    }
-  }
-
   const loading = enrollLoading || roomLoading
-  const typingLabel = typers.length === 0 ? null
-    : typers.length === 1 ? `${typers[0]} is typing…`
-    : `${typers.join(', ')} are typing…`
-
-  const renderBubble = (msg: ChatMessage) => {
-    const isMe = msg.senderEmail === email
-    return (
-      <div className={cn('flex gap-3', isMe ? 'flex-row-reverse' : 'flex-row')}>
-        <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback className="text-xs bg-primary/10 text-primary font-semibold">
-            {msg.senderName?.slice(0, 2).toUpperCase() ?? '??'}
-          </AvatarFallback>
-        </Avatar>
-        <div className={cn('max-w-[70%] space-y-1', isMe ? 'items-end' : 'items-start', 'flex flex-col')}>
-          <div className={cn(
-            'flex items-center gap-2 text-xs text-muted-foreground',
-            isMe ? 'flex-row-reverse' : 'flex-row'
-          )}>
-            <span className="font-medium">{msg.senderName}</span>
-            <span>{new Date(msg.sentAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
-            {msg.editedAt && <span className="italic">edited</span>}
-          </div>
-          <div className={cn(
-            'rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap',
-            isMe
-              ? 'bg-primary text-primary-foreground rounded-tr-sm'
-              : 'bg-muted text-foreground rounded-tl-sm'
-          )}>
-            {msg.attachmentMediaId && (
-              <div className={cn(
-                'flex items-center gap-1.5 text-xs mb-1',
-                isMe ? 'text-primary-foreground/80' : 'text-muted-foreground'
-              )}>
-                <FileIcon className="h-3.5 w-3.5" />
-                <span>Attachment ({msg.attachmentType ?? 'file'})</span>
-              </div>
-            )}
-            {msg.content}
-          </div>
-          <div className={cn('flex items-center gap-2', isMe ? 'flex-row-reverse' : 'flex-row')}>
-            <ReactionRow
-              messageId={msg.id}
-              summary={reactions[msg.id]}
-              myEmail={email}
-              onToggle={(emoji) => toggleReaction.mutate({ messageId: msg.id, emoji })}
-            />
-            {!msg.parentMessageId && (
-              <button
-                onClick={() => setReplyingTo(msg)}
-                className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
-              >
-                Reply
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Flat timeline -> root messages with their replies nested underneath,
-  // both kept in chronological (sentAt) order.
-  const rootMessages = messages.filter(m => !m.parentMessageId)
-  const repliesByParent = messages.reduce<Record<string, ChatMessage[]>>((acc, m) => {
-    if (m.parentMessageId) {
-      (acc[m.parentMessageId] ??= []).push(m)
-    }
-    return acc
-  }, {})
 
   return (
     <div className="-mx-8 -my-8 flex h-screen bg-background overflow-hidden">
@@ -314,19 +200,21 @@ export const ChatPage = () => {
         <div className="flex items-center gap-4 border-b border-border px-6 py-3 glass shrink-0">
           <Link to={isTeacher ? '/teacher' : '/dashboard'} className="md:hidden">
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground h-8 px-2.5">
-              <ChevronLeft className="h-4 w-4" /> Back
+              <ChevronLeft className="h-4 w-4" /> Retour
             </Button>
           </Link>
           <Separator orientation="vertical" className="h-4 md:hidden" />
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <MessageSquare className="h-4 w-4 text-primary shrink-0" />
-            <p className="text-sm font-semibold truncate">{course?.title ?? 'Loading...'}</p>
-            {room && <Badge variant="outline" className="text-[10px] ml-1">Active chat</Badge>}
+            <p className="text-sm font-semibold truncate">{course?.title ?? 'Chargement...'}</p>
+            {room && (
+              <Badge variant="outline" className="text-[10px] ml-1">Canal actif</Badge>
+            )}
           </div>
           <ConnectionDot status={connectionStatus} />
           {isTeacher && (
             <Badge variant="secondary" className="text-xs gap-1">
-              <Users className="h-3 w-3" /> Teacher
+              <Users className="h-3 w-3" /> Enseignant
             </Badge>
           )}
         </div>
@@ -343,23 +231,26 @@ export const ChatPage = () => {
                 <MessageSquare className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-medium">No chat available</p>
+                <p className="font-medium">Aucun canal disponible</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {isTeacher
-                    ? 'Create the chat for this course to start the discussion.'
-                    : "The teacher hasn't created a chat for this course yet."}
+                    ? 'Créez le canal de ce cours pour démarrer la discussion.'
+                    : 'Le canal de discussion de ce cours sera bientôt disponible.'}
                 </p>
               </div>
               {isTeacher && course && (
                 <Button
-                  onClick={() => createOrGetRoom.mutate({
-                    courseId: course.id,
-                    courseName: course.title,
-                    createdByEmail: email ?? '',
-                  }, { onSuccess: () => refetchRoom() })}
+                  onClick={() =>
+                    createOrGetRoom.mutate(
+                      { courseId: course.id, courseName: course.title, createdByEmail: email ?? '' },
+                      { onSuccess: () => refetchRoom() }
+                    )
+                  }
                   disabled={createOrGetRoom.isPending}
                 >
-                  {createOrGetRoom.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create chat'}
+                  {createOrGetRoom.isPending
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : 'Créer le canal'}
                 </Button>
               )}
             </div>
@@ -368,109 +259,59 @@ export const ChatPage = () => {
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
                 <MessageSquare className="h-6 w-6 text-primary" />
               </div>
-              <p className="font-medium">No messages yet</p>
-              <p className="text-sm text-muted-foreground">Be the first to write something!</p>
+              <p className="font-medium">Aucun message pour l'instant</p>
+              <p className="text-sm text-muted-foreground">Soyez le premier à écrire quelque chose !</p>
             </div>
           ) : (
-            rootMessages.map((msg: ChatMessage) => {
-              const replies = repliesByParent[msg.id] ?? []
-              return (
-                <div key={msg.id} className="space-y-3">
-                  {renderBubble(msg)}
-                  {replies.length > 0 && (
-                    <div className="pl-11 space-y-3 border-l-2 border-border ml-4">
-                      {replies.map(reply => (
-                        <div key={reply.id} className="flex items-start gap-1.5">
-                          <CornerDownRight className="h-3.5 w-3.5 text-muted-foreground mt-2.5 shrink-0" />
-                          <div className="flex-1 min-w-0">{renderBubble(reply)}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })
-          )}
-          {typingLabel && (
-            <p className="pl-11 text-xs italic text-muted-foreground animate-pulse">{typingLabel}</p>
+            messages.map((msg: ChatMessage) => (
+              <MessageBubble key={msg.id} msg={msg} myEmail={email} />
+            ))
           )}
           <div ref={bottomRef} />
         </div>
 
         {/* Input */}
         {room && (
-          <div className="border-t border-border p-4 glass shrink-0">
-            <div className="max-w-4xl mx-auto">
-              {replyingTo && (
-                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-1.5 mb-2 text-xs">
-                  <span className="flex items-center gap-1.5 text-muted-foreground truncate">
-                    <CornerDownRight className="h-3 w-3 shrink-0" />
-                    Replying to <span className="font-medium text-foreground truncate">{replyingTo.senderName}</span>:
-                    <span className="truncate italic">{replyingTo.content}</span>
-                  </span>
-                  <button onClick={() => setReplyingTo(null)} className="shrink-0 text-muted-foreground hover:text-foreground">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              )}
-              {pendingAttachment && (
-                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-1.5 mb-2 text-xs">
-                  <span className="flex items-center gap-1.5 text-muted-foreground truncate">
-                    <Paperclip className="h-3 w-3 shrink-0" />
-                    <span className="truncate">{pendingAttachment.fileName}</span>
-                  </span>
-                  <button onClick={() => setPendingAttachment(null)} className="shrink-0 text-muted-foreground hover:text-foreground">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              )}
-              <div className="flex items-end gap-3">
+          <div className="border-t border-border glass shrink-0">
+            <p className="text-center text-[11px] text-muted-foreground italic px-4 pt-2">
+              Ce canal est dédié aux échanges pédagogiques avec l'enseignant. Soyez respectueux.
+            </p>
+            <div className="p-4">
+              <div className="max-w-4xl mx-auto flex items-end gap-3">
                 <Avatar className="h-8 w-8 shrink-0 mb-0.5">
                   <AvatarFallback className="text-xs bg-primary/10 text-primary font-semibold">
                     {email?.slice(0, 2).toUpperCase() ?? 'ZM'}
                   </AvatarFallback>
                 </Avatar>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
-                <button
-                  className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                  title="Attach a file"
-                >
-                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
-                </button>
                 <div className="flex-1 relative">
                   <textarea
                     className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-12 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[44px] max-h-32"
-                    placeholder="Write a message..."
+                    placeholder="Écrire un message..."
                     rows={1}
                     value={input}
-                    onChange={e => { setInput(e.target.value); notifyTyping(e.target.value) }}
+                    onChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                   />
                   <button
                     className={cn(
                       'absolute right-2 bottom-2 flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                      (input.trim() || pendingAttachment)
+                      input.trim()
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'bg-muted text-muted-foreground cursor-not-allowed'
                     )}
                     onClick={handleSend}
-                    disabled={(!input.trim() && !pendingAttachment) || sendMessage.isPending}
+                    disabled={!input.trim() || sendMessage.isPending}
                   >
-                    {sendMessage.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                    {sendMessage.isPending
+                      ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      : <Send className="h-3.5 w-3.5" />}
                   </button>
                 </div>
               </div>
+              <p className="text-center text-[10px] text-muted-foreground mt-2">
+                Entrée pour envoyer · Maj+Entrée pour une nouvelle ligne
+              </p>
             </div>
-            <p className="text-center text-[10px] text-muted-foreground mt-2">
-              Press Enter to send · Shift+Enter for a new line
-            </p>
           </div>
         )}
       </div>

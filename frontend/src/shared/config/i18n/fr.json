@@ -509,5 +509,41 @@
     "onThisPage": "sur cette page",
     "userManagement": "Gestion des utilisateurs",
     "financeOverview": "Aperçu financier"
+  },
+  "quiz": {
+    "editor": {
+      "title": "Créer un quiz",
+      "editTitle": "Modifier le quiz",
+      "save": "Enregistrer le quiz",
+      "saved": "Enregistré !",
+      "delete": "Supprimer le quiz",
+      "addQuestion": "Ajouter une question",
+      "addOption": "Ajouter une option",
+      "titleLabel": "Titre du quiz",
+      "modeLabel": "Type d'examen",
+      "passingScoreLabel": "Score minimum pour réussir",
+      "training": "Examen de test",
+      "trainingHint": "Tentatives illimitées",
+      "exam": "Examen de passage",
+      "examHint": "Une seule tentative"
+    },
+    "take": {
+      "submit": "Soumettre mes réponses",
+      "retry": "Réessayer",
+      "passed": "Bravo, vous avez réussi !",
+      "failed": "Score insuffisant",
+      "trainingBanner": "Vous pouvez reprendre cet examen autant de fois que nécessaire jusqu'à ce que vous réussissiez. Il s'agit d'un examen de test pour consolider vos apprentissages.",
+      "examBanner": "Attention — Vous ne pouvez passer cet examen qu'une seule fois. Prenez le temps de vous concentrer avant de commencer.",
+      "alreadyDone": "Vous avez déjà passé cet examen.",
+      "noQuiz": "Aucun quiz disponible pour cette leçon.",
+      "answerAll": "Répondez à toutes les questions pour pouvoir soumettre."
+    },
+    "stats": {
+      "title": "Statistiques des quiz",
+      "attempts": "Tentatives",
+      "passedFirst": "Réussi 1ère fois",
+      "failed": "Échoué",
+      "avgScore": "Score moyen"
+    }
   }
 }

@@ -72,6 +72,19 @@ public class ChatController {
         return saved;
     }
 
+    /** Endpoint interne — ajouter un étudiant au canal d'un cours (réseau Docker, pas de JWT) */
+    @PostMapping("/internal/add-member")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addMember(@RequestBody Map<String, String> body) {
+        chatService.addMember(body.get("courseId"), body.get("studentEmail"));
+    }
+
+    /** Nombre de membres actifs dans un canal */
+    @GetMapping("/{roomId}/members/count")
+    public Map<String, Long> getMemberCount(@PathVariable String roomId) {
+        return Map.of("count", chatService.getMemberCount(roomId));
+    }
+
     /** Replies to a message, ordered oldest-first */
     @Operation(summary = "Get the thread of replies to a message")
     @GetMapping("/{roomId}/messages/{messageId}/thread")

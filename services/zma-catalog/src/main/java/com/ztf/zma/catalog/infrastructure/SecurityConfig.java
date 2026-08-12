@@ -54,6 +54,9 @@ public class SecurityConfig {
                 // Public read access to published catalog
                 .requestMatchers(HttpMethod.GET, "/api/v1/courses/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
+                // Quiz endpoints — accessibles à tout utilisateur authentifié
+                // (le controller QuizController vérifie lui-même le rôle TEACHER pour les opérations d'écriture)
+                .requestMatchers("/api/v1/quizzes/**").authenticated()
                 // Reviews can be submitted by any authenticated user (including STUDENT)
                 .requestMatchers(HttpMethod.POST, "/api/v1/courses/*/reviews").authenticated()
                 // All other write operations require TEACHER or ADMIN

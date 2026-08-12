@@ -39,6 +39,9 @@ const AdminOverviewPage = lazyWithReload(() => import('@/pages/admin-overview').
 const AdminUsersPage = lazyWithReload(() => import('@/pages/admin-users').then((m) => ({ default: m.AdminUsersPage })))
 const AdminFinancePage = lazyWithReload(() => import('@/pages/admin-finance').then((m) => ({ default: m.AdminFinancePage })))
 const CertificateVerifyPage = lazyWithReload(() => import('@/pages/certificate-verify').then((m) => ({ default: m.CertificateVerifyPage })))
+const QuizEditorPage = lazyWithReload(() => import('@/pages/quiz-editor').then((m) => ({ default: m.QuizEditorPage })))
+const QuizPage = lazyWithReload(() => import('@/pages/quiz').then((m) => ({ default: m.QuizPage })))
+const TeacherQuizStatsPage = lazyWithReload(() => import('@/pages/teacher-quiz-stats').then((m) => ({ default: m.TeacherQuizStatsPage })))
 
 /** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
  *  TeacherDashboard et CourseWizard (hérités, réécrits au chantier 3) pointent encore
@@ -104,6 +107,9 @@ export function AppRoutes() {
             <Route path="/teacher" element={<RequireRole role="TEACHER"><TeacherDashboardPage /></RequireRole>} />
             <Route path="/teacher/courses/new" element={<RequireRole role="TEACHER"><CourseWizardPage /></RequireRole>} />
             <Route path="/teacher/courses/:courseId/edit" element={<RequireRole role="TEACHER"><CourseEditorPage /></RequireRole>} />
+            <Route path="/teacher/courses/:courseId/lessons/:lessonId/quiz" element={<RequireRole role="TEACHER"><QuizEditorPage /></RequireRole>} />
+            <Route path="/teacher/courses/:courseId/quiz-stats" element={<RequireRole role="TEACHER"><TeacherQuizStatsPage /></RequireRole>} />
+            <Route path="/quiz/:lessonId" element={<RequireAuth><QuizPage /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><AdminOverviewPage /></RequireAuth>} />
             <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />
             <Route path="/admin/finance" element={<RequireAuth><AdminFinancePage /></RequireAuth>} />

@@ -3,9 +3,13 @@ package com.ztf.zma.community.service;
 import com.ztf.zma.community.domain.ChatMessage;
 import com.ztf.zma.community.domain.ChatMessageReaction;
 import com.ztf.zma.community.domain.ChatRoom;
+import com.ztf.zma.community.domain.ChatRoomMember;
 import com.ztf.zma.community.repository.ChatMessageReactionRepository;
 import com.ztf.zma.community.repository.ChatMessageRepository;
+import com.ztf.zma.community.repository.ChatRoomMemberRepository;
 import com.ztf.zma.community.repository.ChatRoomRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,16 +25,21 @@ import java.util.stream.Collectors;
 @Service
 public class ChatService {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class);
+
     private final ChatRoomRepository            roomRepository;
     private final ChatMessageRepository         messageRepository;
     private final ChatMessageReactionRepository reactionRepository;
+    private final ChatRoomMemberRepository      memberRepository;
 
     public ChatService(ChatRoomRepository roomRepository,
                        ChatMessageRepository messageRepository,
-                       ChatMessageReactionRepository reactionRepository) {
+                       ChatMessageReactionRepository reactionRepository,
+                       ChatRoomMemberRepository memberRepository) {
         this.roomRepository     = roomRepository;
         this.messageRepository  = messageRepository;
         this.reactionRepository = reactionRepository;
+        this.memberRepository   = memberRepository;
     }
 
     @Transactional
@@ -51,6 +60,28 @@ public class ChatService {
 
     public List<ChatRoom> getRoomsByTeacher(String email) {
         return roomRepository.findByCreatedByEmail(email);
+    }
+
+    /**
+     * Ajoute l'étudiant au canal de chat du cours s'il n'en est pas déjà membre.
+     * Appelé en fire-and-forget depuis zma-enrollment après inscription.
+     */
+    @Transactional
+    public void addMember(String courseId, String studentEmail) {
+        roomRepository.findByCourseId(courseId).ifPresentOrElse(room -> {
+            if (!memberRepository.existsByRoomIdAndStudentEmail(room.getId(), studentEmail)) {
+                ChatRoomMember member = new ChatRoomMember();
+                member.setRoomId(room.getId());
+                member.setStudentEmail(studentEmail);
+                memberRepository.save(member);
+                log.info("Étudiant {} ajouté au canal du cours {}", studentEmail, courseId);
+            }
+        }, () -> log.debug("Canal non encore créé pour le cours {}, skip addMember", courseId));
+    }
+
+    /** Nombre de membres actifs dans un canal */
+    public long getMemberCount(String roomId) {
+        return memberRepository.countByRoomId(roomId);
     }
 
     @Transactional

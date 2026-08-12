@@ -88,7 +88,7 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
         {/* Bestseller badge */}
         {(course.rating ?? 0) >= 4.9 && (
           <div className="absolute top-3 left-3 z-10 bg-zma-g1 text-zma-ink text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <Star className="h-2.5 w-2.5 fill-zma-ink" /> Bestseller
+            <Star className="h-2.5 w-2.5 fill-zma-ink" /> Meilleure vente
           </div>
         )}
 
@@ -101,7 +101,7 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
           <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-lg border border-white/10">
-            {(course.price ?? 0) === 0 ? 'Free' : `${course.price}€`}
+            {(course.price ?? 0) === 0 ? 'Gratuit' : `${course.price}€`}
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30">
@@ -136,7 +136,7 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
 
           {course.teacherName && (
             <p className="text-xs text-muted-foreground">
-              by <span className="font-semibold text-foreground">{course.teacherName}</span>
+              par <span className="font-semibold text-foreground">{course.teacherName}</span>
             </p>
           )}
 
@@ -154,7 +154,7 @@ export const CourseCard = ({ course, view = 'grid', index = 0 }: CourseCardProps
           </div>
 
           <div className="flex h-9 items-center justify-center rounded-xl bg-primary/5 border border-primary/15 text-primary text-xs font-semibold gap-2 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300 mt-1">
-            View course <ArrowRight className="h-3.5 w-3.5" />
+            Voir le cours <ArrowRight className="h-3.5 w-3.5" />
           </div>
         </div>
       </div>

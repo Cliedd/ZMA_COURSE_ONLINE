@@ -62,15 +62,15 @@ export const MobileTabBar = () => {
       className="fixed inset-x-0 bottom-0 z-[150] flex md:hidden items-stretch border-t border-border bg-white/95 backdrop-blur-xl pb-safe dark:bg-background/95"
       style={{ height: 'var(--tab-bar-h)' }}
     >
-      <TabLink to="/" label="Home" icon={Home} active={location.pathname === '/'} />
-      <TabLink to="/catalogue" label="Courses" icon={BookOpen} active={isActive('/catalogue')} />
+      <TabLink to="/" label="Accueil" icon={Home} active={location.pathname === '/'} />
+      <TabLink to="/catalogue" label="Cours" icon={BookOpen} active={isActive('/catalogue')} />
 
       {authenticated ? (
         <>
-          <TabLink to={dashboardTo} label="Dashboard" icon={LayoutDashboard} active={isActive(dashboardTo)} />
+          <TabLink to={dashboardTo} label="Tableau de bord" icon={LayoutDashboard} active={isActive(dashboardTo)} />
           <Sheet open={accountOpen} onOpenChange={setAccountOpen}>
             <SheetTrigger asChild>
-              <TabButton label="Account" icon={() => (
+              <TabButton label="Compte" icon={() => (
                 <Avatar className="h-[22px] w-[22px] ring-2 ring-primary/25">
                   <AvatarFallback className="text-[9px] font-bold bg-primary/10 text-primary">{initials}</AvatarFallback>
                 </Avatar>
@@ -83,7 +83,7 @@ export const MobileTabBar = () => {
                 </Avatar>
                 <div className="min-w-0">
                   <SheetTitle className="truncate">{email}</SheetTitle>
-                  <p className="text-xs text-muted-foreground capitalize">{role?.toLowerCase() ?? 'student'}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{role?.toLowerCase() ?? 'étudiant'}</p>
                 </div>
               </SheetHeader>
               <div className="p-3 pb-6 space-y-1">
@@ -92,7 +92,7 @@ export const MobileTabBar = () => {
                   onClick={() => setAccountOpen(false)}
                   className="flex items-center justify-between gap-2.5 px-3 py-3.5 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-colors"
                 >
-                  <span className="flex items-center gap-2.5"><LayoutDashboard className="h-4 w-4 text-muted-foreground" /> Dashboard</span>
+                  <span className="flex items-center gap-2.5"><LayoutDashboard className="h-4 w-4 text-muted-foreground" /> Tableau de bord</span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>
                 <Link
@@ -100,14 +100,14 @@ export const MobileTabBar = () => {
                   onClick={() => setAccountOpen(false)}
                   className="flex items-center justify-between gap-2.5 px-3 py-3.5 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-colors"
                 >
-                  <span className="flex items-center gap-2.5"><BookOpen className="h-4 w-4 text-muted-foreground" /> Courses</span>
+                  <span className="flex items-center gap-2.5"><BookOpen className="h-4 w-4 text-muted-foreground" /> Cours</span>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </Link>
                 <button
                   onClick={logout}
                   className="flex w-full items-center gap-2.5 px-3 py-3.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
                 >
-                  <LogOut className="h-4 w-4" /> Log out
+                  <LogOut className="h-4 w-4" /> Se déconnecter
                 </button>
               </div>
             </SheetContent>
@@ -115,8 +115,8 @@ export const MobileTabBar = () => {
         </>
       ) : (
         <>
-          <TabLink to="/auth/connexion" label="Log in" icon={LogIn} active={isActive('/auth/connexion')} />
-          <TabLink to="/auth/inscription" label="Register" icon={UserPlus} active={isActive('/auth/inscription')} />
+          <TabLink to="/auth/connexion" label="Connexion" icon={LogIn} active={isActive('/auth/connexion')} />
+          <TabLink to="/auth/inscription" label="S'inscrire" icon={UserPlus} active={isActive('/auth/inscription')} />
         </>
       )}
     </nav>

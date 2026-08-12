@@ -19,6 +19,12 @@ export function TeacherCourseRow({ course }: { course: Course }) {
           {course.published ? t('teacherDashboard.published') : t('teacherDashboard.draft')}
         </Badge>
         <Link
+          to={`/teacher/courses/${course.id}/quiz-stats`}
+          className="text-xs text-muted-foreground hover:text-primary underline underline-offset-2"
+        >
+          Stats quiz
+        </Link>
+        <Link
           to={`/teacher/courses/${course.id}/edit`}
           className="inline-flex min-h-touch items-center font-sans text-sm font-semibold text-ink underline"
         >

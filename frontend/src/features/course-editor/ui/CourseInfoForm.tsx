@@ -22,12 +22,12 @@ type Values = z.infer<typeof schema>
 const selectClass = 'min-h-touch w-full rounded border border-line bg-surface px-3 font-sans text-body text-ink'
 const textareaClass = 'w-full rounded border border-line bg-surface px-3 py-2 font-sans text-body text-ink'
 
-const DEPARTMENTS = [
-  'Performance & Instrumental Practice',
-  'Composition, Writing & Music Theory',
-  'Music Technology & Audiovisual Production',
-  'Music Education & Teacher Training',
-  'Musicology, Heritage & Cultural Management',
+const DEPARTMENTS: { value: string; label: string }[] = [
+  { value: 'Performance & Instrumental Practice', label: 'Interprétation & Pratique instrumentale' },
+  { value: 'Composition, Writing & Music Theory', label: 'Composition, Écriture & Théorie musicale' },
+  { value: 'Music Technology & Audiovisual Production', label: 'Technologies musicales & Production audiovisuelle' },
+  { value: 'Music Education & Teacher Training', label: 'Pédagogie musicale & Formation des formateurs' },
+  { value: 'Musicology, Heritage & Cultural Management', label: 'Musicologie, Patrimoine & Management culturel' },
 ]
 
 /** Formulaire des informations principales d'un cours (titre, description, tarif, niveau, compétences, débouchés…). */
@@ -110,7 +110,7 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
         <Field name="department" label="Département">
           <select className={selectClass} {...register('department')}>
             {DEPARTMENTS.map((dept) => (
-              <option key={dept} value={dept}>{dept}</option>
+              <option key={dept.value} value={dept.value}>{dept.label}</option>
             ))}
           </select>
         </Field>

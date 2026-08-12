@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Play, Check, Lock, VideoOff, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import { Skeleton, ProgressBar } from '@/shared/ui'
@@ -7,6 +7,7 @@ import { get } from '@/shared/api/http'
 import { cn } from '@/shared/lib/cn'
 import { useCourseById, courseCurriculum, curriculumLessonCount, lessonTitle } from '@/entities/course'
 import { useMyEnrollments, useUpdateProgress } from '@/entities/enrollment'
+import { useQuizByLesson } from '@/hooks/useQuiz'
 
 interface VideoPlayerProps {
   mediaId?: string | null
@@ -123,6 +124,32 @@ export function VideoPlayer({ mediaId, title }: VideoPlayerProps) {
   )
 }
 
+/** Extracts lesson IDs from raw curriculumJson for quiz linking. */
+function extractLessonIds(curriculumJson: string): (string | undefined)[] {
+  try {
+    const raw = JSON.parse(curriculumJson)
+    if (!Array.isArray(raw)) return []
+    return raw.flatMap((section: { lessons?: { id?: string }[] }) =>
+      (section.lessons ?? []).map((l) => l.id)
+    )
+  } catch {
+    return []
+  }
+}
+
+function ActiveLessonQuizButton({ lessonId }: { lessonId: string | undefined }) {
+  const { data: lessonQuiz } = useQuizByLesson(lessonId)
+  if (!lessonQuiz || !lessonId) return null
+  return (
+    <Link
+      to={`/quiz/${lessonId}`}
+      className="inline-flex items-center gap-2 rounded bg-ink px-5 py-2.5 text-sm font-semibold text-paper"
+    >
+      Passer le quiz →
+    </Link>
+  )
+}
+
 export function CoursePlayer() {
   const { t } = useTranslation()
   const { courseId } = useParams()
@@ -142,6 +169,10 @@ export function CoursePlayer() {
   const total = course.lessonCount || curriculumLessonCount(sections) || lessons.length
   const done = Math.round(((enrollment?.progress ?? 0) / 100) * total)
 
+  // Extract raw lesson IDs from curriculum JSON for quiz linking
+  const lessonIds = extractLessonIds(course.curriculumJson)
+  const activeLessonId = lessonIds[current]
+
   const markComplete = () => {
     if (!enrollment) return
     const next = Math.min(100, Math.round(((current + 1) / Math.max(1, total)) * 100))
@@ -155,10 +186,13 @@ export function CoursePlayer() {
         <div className="p-6">
           <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.16em] text-accent">{course.title}</p>
           <h1 className="mt-2 font-serif text-h2 text-scene-ink">{activeLesson ? lessonTitle(activeLesson) : course.title}</h1>
-          <button onClick={markComplete} disabled={!enrollment || updateProgress.isPending}
-            className="mt-5 inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene disabled:opacity-50">
-            <Check className="h-4 w-4" aria-hidden /> {t('player.complete')}
-          </button>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <button onClick={markComplete} disabled={!enrollment || updateProgress.isPending}
+              className="inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene disabled:opacity-50">
+              <Check className="h-4 w-4" aria-hidden /> {t('player.complete')}
+            </button>
+            <ActiveLessonQuizButton lessonId={activeLessonId} />
+          </div>
         </div>
       </main>
 

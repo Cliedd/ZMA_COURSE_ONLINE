@@ -67,6 +67,9 @@ public class EnrollmentService {
         communityClient.notifyEnrollment(studentId,
                 resolvedTitle != null ? resolvedTitle : courseId);
 
+        // Auto-ajouter l'étudiant au canal de chat du cours (fire-and-forget)
+        communityClient.addMemberToRoom(courseId, studentId);
+
         return saved;
     }
 

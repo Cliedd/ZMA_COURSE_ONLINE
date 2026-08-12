@@ -509,5 +509,41 @@
     "onThisPage": "on this page",
     "userManagement": "User management",
     "financeOverview": "Finance overview"
+  },
+  "quiz": {
+    "editor": {
+      "title": "Create quiz",
+      "editTitle": "Edit quiz",
+      "save": "Save quiz",
+      "saved": "Saved!",
+      "delete": "Delete quiz",
+      "addQuestion": "Add question",
+      "addOption": "Add option",
+      "titleLabel": "Quiz title",
+      "modeLabel": "Exam type",
+      "passingScoreLabel": "Minimum passing score",
+      "training": "Practice exam",
+      "trainingHint": "Unlimited attempts",
+      "exam": "Final exam",
+      "examHint": "Single attempt only"
+    },
+    "take": {
+      "submit": "Submit answers",
+      "retry": "Try again",
+      "passed": "Congratulations, you passed!",
+      "failed": "Score too low",
+      "trainingBanner": "You can retake this exam as many times as needed until you pass. This is a practice exam to help consolidate your learning.",
+      "examBanner": "Warning — You can only take this exam once. Take your time to focus before you start.",
+      "alreadyDone": "You have already taken this exam.",
+      "noQuiz": "No quiz available for this lesson.",
+      "answerAll": "Answer all questions to submit."
+    },
+    "stats": {
+      "title": "Quiz statistics",
+      "attempts": "Attempts",
+      "passedFirst": "Passed 1st try",
+      "failed": "Failed",
+      "avgScore": "Avg score"
+    }
   }
 }

@@ -4,6 +4,14 @@ import { COURSE_LEVELS } from '@/entities/course'
 import { DEPARTMENTS } from '../model/useWizardForm'
 import type { WizardFormValues } from '../model/useWizardForm'
 
+const DEPARTMENT_LABELS: Record<string, string> = {
+  'Performance & Instrumental Practice': 'Interprétation & Pratique instrumentale',
+  'Composition, Writing & Music Theory': 'Composition, Écriture & Théorie musicale',
+  'Music Technology & Audiovisual Production': 'Technologies musicales & Production audiovisuelle',
+  'Music Education & Teacher Training': 'Pédagogie musicale & Formation des formateurs',
+  'Musicology, Heritage & Cultural Management': 'Musicologie, Patrimoine & Management culturel',
+}
+
 const SELECT_CLASSES = 'min-h-touch rounded border border-line bg-surface px-3 font-sans text-body text-ink'
 
 /** Étape 1 : titre, département, niveau et prix du cours. */
@@ -25,7 +33,7 @@ export function StepBasics({ form }: { form: UseFormReturn<WizardFormValues> }) 
         <select id="department" className={SELECT_CLASSES} {...register('department')}>
           <option value="">— Sélectionner un département —</option>
           {DEPARTMENTS.map((department) => (
-            <option key={department} value={department}>{department}</option>
+            <option key={department} value={department}>{DEPARTMENT_LABELS[department] ?? department}</option>
           ))}
         </select>
       </div>

@@ -49,6 +49,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Internal endpoints — network-isolated, no JWT required
                 .requestMatchers("/api/v1/notifications/internal/**").permitAll()
+                .requestMatchers("/api/v1/community/rooms/internal/**").permitAll()
                 // Public read: community posts and comments
                 .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()

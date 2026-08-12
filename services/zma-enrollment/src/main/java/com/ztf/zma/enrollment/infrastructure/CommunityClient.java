@@ -41,4 +41,24 @@ public class CommunityClient {
             log.warn("Could not send enrollment notification to user {}: {}", studentId, ex.getMessage());
         }
     }
+
+    /**
+     * Ajoute automatiquement l'étudiant au canal de chat du cours lors de son inscription.
+     * Fire-and-forget — n'échoue jamais silencieusement.
+     */
+    public void addMemberToRoom(String courseId, String studentEmail) {
+        try {
+            restClient.post()
+                .uri("/api/v1/community/rooms/internal/add-member")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of(
+                    "courseId",      courseId,
+                    "studentEmail",  studentEmail
+                ))
+                .retrieve()
+                .toBodilessEntity();
+        } catch (Exception ex) {
+            log.warn("Could not add member {} to room for course {}: {}", studentEmail, courseId, ex.getMessage());
+        }
+    }
 }
