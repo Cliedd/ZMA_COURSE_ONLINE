@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { z } from 'zod'
-import { post, patch, AppError } from '@/shared/api/http'
+import { get, post, patch, AppError } from '@/shared/api/http'
 
 /** Miroir de zma-media : MediaService.PresignUrlWithId */
 const presignSchema = z.object({
@@ -20,6 +20,12 @@ const uploadedMediaSchema = z.object({
 })
 
 export type UploadedMedia = z.infer<typeof uploadedMediaSchema>
+
+/** Types MIME image acceptés pour les couvertures de cours. */
+export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+
+/** Taille max pour une image de couverture : 10 Mo */
+export const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
 /** Extensions vidéo courantes acceptées. */
 export const ALLOWED_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'mkv', 'avi', 'm4v', '3gp', 'flv', 'ogv', 'ts']
@@ -197,5 +203,83 @@ export async function uploadLessonVideo(
     const kind = err instanceof AppError ? classifyAppError(err) : 'network'
     console.error('[uploadLessonVideo] direct upload failed', err)
     throw new UploadError(kind, err instanceof Error ? err.message : 'upload failed', err)
+  }
+}
+
+/**
+ * Upload une image de couverture de cours via le flux presign de zma-media.
+ * Retourne l'URL publique (download URL) de l'image uploadée.
+ * Même mécanique que uploadLessonVideo, avec purpose='COURSE_THUMBNAIL'.
+ */
+export async function uploadCourseThumbnail(
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<string> {
+  const contentType = file.type || 'image/jpeg'
+
+  let presigned: z.infer<typeof presignSchema>
+  try {
+    presigned = await post(
+      '/media/presign',
+      { fileName: file.name, contentType, sizeBytes: file.size, purpose: 'COURSE_THUMBNAIL' },
+      presignSchema,
+    )
+  } catch (err) {
+    const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+    console.error('[uploadCourseThumbnail] presign failed', err)
+    throw new UploadError(kind, err instanceof Error ? err.message : 'presign failed', err)
+  }
+
+  const reportProgress = (loaded: number, total?: number) => {
+    if (!onProgress) return
+    const denom = total ?? file.size
+    if (!denom) return
+    onProgress(Math.min(100, Math.round((loaded / denom) * 100)))
+  }
+
+  let media: UploadedMedia
+
+  if (/^https?:\/\//i.test(presigned.uploadUrl)) {
+    try {
+      await axios.put(presigned.uploadUrl, file, {
+        headers: { 'Content-Type': contentType },
+        onUploadProgress: (e) => reportProgress(e.loaded, e.total),
+      })
+    } catch (err) {
+      console.error('[uploadCourseThumbnail] PUT to storage failed', err)
+      throw new UploadError(classifyPutError(err), err instanceof Error ? err.message : 'upload failed', err)
+    }
+    try {
+      media = await patch(`/media/${presigned.mediaId}/confirm`, undefined, uploadedMediaSchema)
+    } catch (err) {
+      const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+      console.error('[uploadCourseThumbnail] confirm failed', err)
+      throw new UploadError(kind, err instanceof Error ? err.message : 'confirm failed', err)
+    }
+  } else {
+    const relativeUrl = presigned.uploadUrl.startsWith(API_PREFIX)
+      ? presigned.uploadUrl.slice(API_PREFIX.length)
+      : presigned.uploadUrl
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      media = await post(relativeUrl, formData, uploadedMediaSchema, {
+        onUploadProgress: (e) => reportProgress(e.loaded, e.total),
+      })
+    } catch (err) {
+      const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+      console.error('[uploadCourseThumbnail] direct upload failed', err)
+      throw new UploadError(kind, err instanceof Error ? err.message : 'upload failed', err)
+    }
+  }
+
+  // Récupérer l'URL publique via GET /media/{id}/url
+  try {
+    const result = await get(`/media/${media.id}/url`, undefined, z.object({ url: z.string() }))
+    return result.url
+  } catch (err) {
+    const kind = err instanceof AppError ? classifyAppError(err) : 'network'
+    console.error('[uploadCourseThumbnail] getDownloadUrl failed', err)
+    throw new UploadError(kind, err instanceof Error ? err.message : 'get URL failed', err)
   }
 }

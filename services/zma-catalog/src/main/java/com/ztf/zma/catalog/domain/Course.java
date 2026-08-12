@@ -39,6 +39,9 @@ public class Course {
     /** CSS gradient class index 0-9 for card thumbnail */
     private Integer gradientIndex;
 
+    /** Optional cover image URL (uploaded via zma-media). Overrides gradientIndex when set. */
+    private String thumbnailUrl;
+
     /** Email of the owning teacher (null = official ZMA course) */
     private String teacherEmail;
 
@@ -127,6 +130,9 @@ public class Course {
 
     public Integer getGradientIndex() { return gradientIndex; }
     public void setGradientIndex(Integer gradientIndex) { this.gradientIndex = gradientIndex; }
+
+    public String getThumbnailUrl() { return thumbnailUrl; }
+    public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
 
     public String getSkillsJson() { return skillsJson; }
     public void setSkillsJson(String skillsJson) { this.skillsJson = skillsJson; }

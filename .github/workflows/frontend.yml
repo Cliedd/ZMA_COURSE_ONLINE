@@ -16,10 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      # npm install (pas npm ci) : le lock n'est pas versionné car des dépendances
-      # natives (sharp, @unrs/resolver) ont des deps optionnelles par plateforme
-      # non portables. .npmrc fixe legacy-peer-deps=true.
-      - run: npm install --no-audit --no-fund
+      # npm ci : le lock est versionné (Linux ↔ Linux : local + CI tournent tous deux
+      # sous Ubuntu, donc les dépendances natives sont portables). .npmrc fixe
+      # legacy-peer-deps=true ce qui est respecté par npm ci.
+      - run: npm ci --no-audit --no-fund
       - name: Types, lint et tests
         run: npm run verify
       - name: Build

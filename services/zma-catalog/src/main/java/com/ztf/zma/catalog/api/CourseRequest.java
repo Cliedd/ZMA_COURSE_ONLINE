@@ -20,5 +20,6 @@ public record CourseRequest(
         Integer gradientIndex,
         String skillsJson,
         String curriculumJson,
-        String debouches
+        String debouches,
+        String thumbnailUrl
 ) {}

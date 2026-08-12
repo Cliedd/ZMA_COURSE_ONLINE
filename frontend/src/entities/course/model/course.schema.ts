@@ -40,6 +40,7 @@ export const courseSchema = z.object({
   rating: z.number().nullish().transform((v) => v ?? null),
   durationHours: z.number().nullish().transform((v) => v ?? 0),
   gradientIndex: z.number().nullish().transform((v) => v ?? 0),
+  thumbnailUrl: z.string().nullish().transform((v) => v ?? null),
   lessonCount: z.number().nullish().transform((v) => v ?? 0),
   skillsJson: z.string().nullish().transform((v) => v ?? ''),
   curriculumJson: z.string().nullish().transform((v) => v ?? ''),

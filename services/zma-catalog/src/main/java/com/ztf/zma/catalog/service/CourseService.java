@@ -353,5 +353,6 @@ public class CourseService {
             // (full parse avoided — lesson count from structured data set externally)
         }
         if (req.debouches()        != null) c.setDebouches(req.debouches());
+        if (req.thumbnailUrl()     != null) c.setThumbnailUrl(req.thumbnailUrl());
     }
 }

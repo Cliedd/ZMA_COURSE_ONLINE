@@ -30,6 +30,7 @@ export interface CourseWriteRequest {
   skillsJson?: string
   curriculumJson?: string
   debouches?: string
+  thumbnailUrl?: string
 }
 
 const reviewPageSchema = z.object({

@@ -1,9 +1,12 @@
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Field, Input, Button } from '@/shared/ui'
+import { ImageIcon, Loader2, X } from 'lucide-react'
+import { Field, Input, Button, toast } from '@/shared/ui'
 import { COURSE_LEVELS, courseSkills, courseOutcomes } from '@/entities/course'
 import type { Course, CourseWriteRequest } from '@/entities/course'
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES, UploadError, uploadCourseThumbnail } from '../api/mediaApi'
 
 const schema = z.object({
   title: z.string().min(1, 'Le titre est requis.'),
@@ -48,6 +51,44 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
     },
   })
 
+  // ── Photo de couverture ──────────────────────────────────────────────────
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(course.thumbnailUrl ?? null)
+  const [uploadingThumb, setUploadingThumb] = useState(false)
+  const [thumbProgress, setThumbProgress] = useState(0)
+  const thumbInputRef = useRef<HTMLInputElement>(null)
+
+  const handleThumbnailFile = async (file: File | undefined) => {
+    if (!file) return
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      toast.error('Format non supporté. Choisissez une image JPG, PNG ou WebP.')
+      return
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      toast.error('Image trop lourde (max 10 Mo).')
+      return
+    }
+    setUploadingThumb(true)
+    setThumbProgress(0)
+    try {
+      const url = await uploadCourseThumbnail(file, setThumbProgress)
+      setThumbnailUrl(url)
+      toast.success('Photo de couverture uploadée.')
+    } catch (err) {
+      const msg =
+        err instanceof UploadError && err.kind === 'auth'
+          ? 'Accès refusé. Reconnectez-vous.'
+          : err instanceof UploadError && err.kind === 'server'
+            ? 'Erreur serveur. Réessayez plus tard.'
+            : 'Échec de l\'upload. Vérifiez votre connexion.'
+      toast.error(msg)
+    } finally {
+      setUploadingThumb(false)
+      if (thumbInputRef.current) thumbInputRef.current.value = ''
+    }
+  }
+
+  const removeThumbnail = () => setThumbnailUrl(null)
+
   const onSubmit = handleSubmit((values) => {
     const skillsArray = values.skills
       ? values.skills.split('\n').map((s) => s.trim()).filter(Boolean)
@@ -67,6 +108,7 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
       ects: values.ects,
       skillsJson: skillsArray.length > 0 ? JSON.stringify(skillsArray) : '',
       debouches: debouchesArray.length > 0 ? debouchesArray.join(' | ') : '',
+      thumbnailUrl: thumbnailUrl ?? undefined,
     })
   })
 
@@ -122,6 +164,60 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
         <Field name="ects" label="Crédits ECTS">
           <Input type="number" min={0} {...register('ects')} />
         </Field>
+      </div>
+
+      {/* ── Photo de couverture ─────────────────────────────────────── */}
+      <div className="flex flex-col gap-2">
+        <span className="font-sans text-sm font-medium text-ink">Photo de couverture</span>
+        <input
+          ref={thumbInputRef}
+          type="file"
+          accept={ALLOWED_IMAGE_TYPES.join(',')}
+          className="hidden"
+          aria-label="Choisir une photo de couverture"
+          onChange={(e) => void handleThumbnailFile(e.target.files?.[0])}
+        />
+        {thumbnailUrl ? (
+          <div className="relative w-full max-w-sm overflow-hidden rounded border border-line">
+            <img
+              src={thumbnailUrl}
+              alt="Aperçu de la couverture du cours"
+              className="aspect-[16/10] w-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={removeThumbnail}
+              aria-label="Supprimer la photo de couverture"
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-surface/80 text-danger backdrop-blur-sm"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
+          </div>
+        ) : (
+          <div className="flex aspect-[16/10] w-full max-w-sm items-center justify-center rounded border border-dashed border-line bg-surface-alt">
+            <ImageIcon className="h-8 w-8 text-ink-faint" aria-hidden />
+          </div>
+        )}
+        {uploadingThumb ? (
+          <div className="flex items-center gap-2 font-sans text-sm text-ink-muted">
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            <span>Upload en cours… {thumbProgress}%</span>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => thumbInputRef.current?.click()}
+            className="self-start"
+          >
+            <ImageIcon className="h-3.5 w-3.5" aria-hidden />
+            {thumbnailUrl ? 'Changer la photo' : 'Choisir une image'}
+          </Button>
+        )}
+        <p className="font-sans text-xs text-ink-muted">
+          JPG, PNG ou WebP · max 10 Mo · format recommandé 16:10
+        </p>
       </div>
 
       <div>
