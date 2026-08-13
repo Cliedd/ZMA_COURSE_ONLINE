@@ -2,13 +2,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Play, Check, Lock, VideoOff, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
+import { Play, Check, Lock, VideoOff, Loader2, AlertCircle, RefreshCw, Megaphone, BookOpen } from 'lucide-react'
 import { Skeleton, ProgressBar } from '@/shared/ui'
 import { get } from '@/shared/api/http'
 import { cn } from '@/shared/lib/cn'
 import { useCourseById, courseCurriculum, curriculumLessonCount, lessonTitle } from '@/entities/course'
 import { useMyEnrollments, useUpdateProgress } from '@/entities/enrollment'
 import { useQuizByLesson } from '@/hooks/useQuiz'
+import { CourseAnnouncements } from '@/features/course-announcements'
+import { useCourseAnnouncements, useCourseRoom } from '@/entities/announcement'
+
+type PlayerTab = 'lesson' | 'announcements'
 
 interface VideoPlayerProps {
   mediaId?: string | null
@@ -156,12 +160,26 @@ function ActiveLessonQuizButton({ lessonId }: { lessonId: string | undefined }) 
   )
 }
 
+/** Badge showing unread announcement count (any messages the student hasn't seen). */
+function AnnouncementBadge({ courseId }: { courseId: string | undefined }) {
+  const { data: room } = useCourseRoom(courseId)
+  const { data: messages = [] } = useCourseAnnouncements(room?.id)
+  const count = messages.filter((m) => !m.deletedAt).length
+  if (!count) return null
+  return (
+    <span className="ml-1.5 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-accent px-1 font-sans text-[10px] font-bold text-scene">
+      {count}
+    </span>
+  )
+}
+
 export function CoursePlayer() {
   const { t } = useTranslation()
   const { courseId } = useParams()
   const { data: course, isLoading } = useCourseById(courseId)
   const { data: enrollments = [] } = useMyEnrollments()
   const updateProgress = useUpdateProgress()
+  const [activeTab, setActiveTab] = useState<PlayerTab>('lesson')
 
   const enrollment = enrollments.find((e) => e.courseId === courseId)
   const sections = course ? courseCurriculum(course) : []
@@ -189,17 +207,56 @@ export function CoursePlayer() {
     <div className="grid gap-0 lg:grid-cols-[1fr_320px]">
       <main className="min-h-[60vh]">
         <VideoPlayer mediaId={activeLesson?.mediaId} title={activeLesson ? lessonTitle(activeLesson) : undefined} courseId={courseId} />
-        <div className="p-6">
-          <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.16em] text-accent">{course.title}</p>
-          <h1 className="mt-2 font-serif text-h2 text-scene-ink">{activeLesson ? lessonTitle(activeLesson) : course.title}</h1>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <button onClick={markComplete} disabled={!enrollment || updateProgress.isPending}
-              className="inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene disabled:opacity-50">
-              <Check className="h-4 w-4" aria-hidden /> {t('player.complete')}
-            </button>
-            <ActiveLessonQuizButton lessonId={activeLessonId} />
-          </div>
+
+        {/* Tab strip */}
+        <div role="tablist" className="flex border-b border-line">
+          <button
+            role="tab"
+            aria-selected={activeTab === 'lesson'}
+            onClick={() => setActiveTab('lesson')}
+            className={cn(
+              'inline-flex min-h-touch items-center gap-2 px-5 font-sans text-sm font-medium border-b-2 -mb-px transition-colors',
+              activeTab === 'lesson'
+                ? 'border-accent text-ink'
+                : 'border-transparent text-ink-muted hover:text-ink',
+            )}
+          >
+            <BookOpen className="h-4 w-4" aria-hidden />
+            {t('player.lesson', 'Leçon')}
+          </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === 'announcements'}
+            onClick={() => setActiveTab('announcements')}
+            className={cn(
+              'inline-flex min-h-touch items-center gap-2 px-5 font-sans text-sm font-medium border-b-2 -mb-px transition-colors',
+              activeTab === 'announcements'
+                ? 'border-accent text-ink'
+                : 'border-transparent text-ink-muted hover:text-ink',
+            )}
+          >
+            <Megaphone className="h-4 w-4" aria-hidden />
+            Annonces
+            <AnnouncementBadge courseId={courseId} />
+          </button>
         </div>
+
+        {/* Tab panels */}
+        {activeTab === 'lesson' ? (
+          <div className="p-6">
+            <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.16em] text-accent">{course.title}</p>
+            <h1 className="mt-2 font-serif text-h2 text-scene-ink">{activeLesson ? lessonTitle(activeLesson) : course.title}</h1>
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <button onClick={markComplete} disabled={!enrollment || updateProgress.isPending}
+                className="inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene disabled:opacity-50">
+                <Check className="h-4 w-4" aria-hidden /> {t('player.complete')}
+              </button>
+              <ActiveLessonQuizButton lessonId={activeLessonId} />
+            </div>
+          </div>
+        ) : (
+          <CourseAnnouncements courseId={courseId ?? ''} />
+        )}
       </main>
 
       <aside className="border-l border-line bg-scene-surface/40">

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { Megaphone } from 'lucide-react'
 import { Skeleton, toast } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import {
@@ -113,6 +114,20 @@ export function CourseEditorPage() {
 
         <section className="mt-8 border-t border-line pt-8">
           <CurriculumEditor sections={currentSections} onChange={handleSaveCurriculum} />
+        </section>
+
+        <section className="mt-8 border-t border-line pt-8">
+          <h2 className="font-serif text-h3 text-ink mb-3">Annonces</h2>
+          <p className="font-sans text-sm text-ink-muted mb-4">
+            Publiez des annonces pour vos étudiants (mises à jour du cours, devoirs, rappels…).
+          </p>
+          <Link
+            to={`/teacher/courses/${courseId}/announcements`}
+            className="inline-flex min-h-touch items-center gap-2 rounded border border-line bg-surface px-5 font-sans text-sm font-semibold text-ink hover:bg-surface/80"
+          >
+            <Megaphone className="h-4 w-4 text-accent" aria-hidden />
+            Gérer les annonces
+          </Link>
         </section>
 
         <section className="mt-8 border-t border-line pt-8">
