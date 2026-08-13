@@ -25,6 +25,7 @@
     "dashboard": "Tableau de bord",
     "myCourses": "Mes cours",
     "teacherSpace": "Espace enseignant",
+    "teacherStudents": "Progression des étudiants",
     "administration": "Administration",
     "settingsLink": "Paramètres",
     "logoutToastTitle": "Déconnexion",
@@ -545,5 +546,21 @@
       "failed": "Échoué",
       "avgScore": "Score moyen"
     }
+  },
+  "teacherStudents": {
+    "breadcrumb": "Progression des étudiants",
+    "title": "Progression des étudiants",
+    "subtitle": "Suivez la progression des étudiants inscrits à vos cours.",
+    "backToDashboard": "Retour au tableau de bord",
+    "filterLabel": "Filtrer par cours",
+    "colStudent": "Étudiant",
+    "colEnrolledAt": "Inscrit le",
+    "colProgress": "Progression",
+    "colStatus": "Statut",
+    "statusActive": "Actif",
+    "statusCompleted": "Terminé",
+    "noStudents": "Aucun étudiant inscrit à ce cours pour le moment.",
+    "noCourses": "Vous n'avez pas encore créé de cours.",
+    "loadError": "Impossible de charger les inscriptions. Veuillez réessayer."
   }
 }

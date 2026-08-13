@@ -1,4 +1,4 @@
-import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield, Languages } from 'lucide-react'
+import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield, Languages, Users } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu, MenuContent, MenuItem, MenuTrigger, toast } from '@/shared/ui'
@@ -116,12 +116,20 @@ function UserMenu() {
         </MenuItem>
 
         {role === 'TEACHER' && (
-          <MenuItem asChild>
-            <Link to="/teacher" className="flex items-center gap-2.5 py-2">
-              <UserIcon className="h-4 w-4 text-ink-muted" />
-              <span>{t('nav.teacherSpace')}</span>
-            </Link>
-          </MenuItem>
+          <>
+            <MenuItem asChild>
+              <Link to="/teacher" className="flex items-center gap-2.5 py-2">
+                <UserIcon className="h-4 w-4 text-ink-muted" />
+                <span>{t('nav.teacherSpace')}</span>
+              </Link>
+            </MenuItem>
+            <MenuItem asChild>
+              <Link to="/teacher/students" className="flex items-center gap-2.5 py-2">
+                <Users className="h-4 w-4 text-ink-muted" />
+                <span>{t('nav.teacherStudents')}</span>
+              </Link>
+            </MenuItem>
+          </>
         )}
 
         {role === 'ADMIN' && (

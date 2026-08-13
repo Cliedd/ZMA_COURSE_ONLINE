@@ -7,6 +7,10 @@ export const enrollmentApi = {
   getMine: (): Promise<Enrollment[]> =>
     get('/enrollments/me', undefined, z.array(enrollmentSchema)),
 
+  /** Teacher/Admin: list all students enrolled in a course. */
+  getByCourse: (courseId: string): Promise<Enrollment[]> =>
+    get(`/enrollments/course/${encodeURIComponent(courseId)}`, undefined, z.array(enrollmentSchema)),
+
   check: (courseId: string) =>
     get('/enrollments/check', { params: { courseId } }, enrollCheckSchema),
 

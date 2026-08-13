@@ -25,6 +25,7 @@
     "dashboard": "Dashboard",
     "myCourses": "My courses",
     "teacherSpace": "Teacher space",
+    "teacherStudents": "Student progress",
     "administration": "Administration",
     "settingsLink": "Settings",
     "logoutToastTitle": "Signed out",
@@ -545,5 +546,21 @@
       "failed": "Failed",
       "avgScore": "Avg score"
     }
+  },
+  "teacherStudents": {
+    "breadcrumb": "Student progress",
+    "title": "Student progress",
+    "subtitle": "Track the progress of students enrolled in your courses.",
+    "backToDashboard": "Back to dashboard",
+    "filterLabel": "Filter by course",
+    "colStudent": "Student",
+    "colEnrolledAt": "Enrolled on",
+    "colProgress": "Progress",
+    "colStatus": "Status",
+    "statusActive": "Active",
+    "statusCompleted": "Completed",
+    "noStudents": "No students enrolled in this course yet.",
+    "noCourses": "You haven't created any course yet.",
+    "loadError": "Unable to load enrollments. Please try again."
   }
 }

@@ -3,5 +3,5 @@ export type { Enrollment, Certificate, CertificateVerification } from './model/e
 export { enrollmentApi } from './api/enrollmentApi'
 export {
   enrollmentKeys, useMyEnrollments, useEnrollmentCheck, useMyCertificates, useUpdateProgress,
-  useVerifyCertificate,
+  useVerifyCertificate, useCourseEnrollments,
 } from './model/hooks'
