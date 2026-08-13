@@ -84,13 +84,19 @@ public class R2StorageService implements StorageService {
         // browser will actually reach — avoiding the 307 redirect that would
         // invalidate the HMAC signature (the host is part of the signed string).
         // Falls back to the upload endpoint when publicUrl is not set (local dev).
+        //
+        // Path-style is ALWAYS enabled for the download presigner. Virtual-hosted
+        // style (bucket-as-subdomain, e.g. https://<bucket>.t3.storageapi.dev/...)
+        // does not work for Railway/Tigris Buckets — the bucket-name subdomain does
+        // not resolve. Path-style (https://t3.storageapi.dev/<bucket>/...) is the
+        // correct form for all S3-compatible providers used here, including Cloudflare
+        // R2 behind a custom public URL configured in path-style mode.
         String downloadEndpoint = (publicUrl != null && !publicUrl.isBlank()) ? publicUrl : endpoint;
-        boolean pathStyle = (publicUrl == null || publicUrl.isBlank());
         this.downloadPresigner = S3Presigner.builder()
             .endpointOverride(URI.create(downloadEndpoint))
             .region(Region.of("auto"))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
-            .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(pathStyle).build())
+            .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
             .build();
     }
 
