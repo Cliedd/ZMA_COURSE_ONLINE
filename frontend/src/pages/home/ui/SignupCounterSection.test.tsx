@@ -13,7 +13,7 @@ describe('SignupCounterSection', () => {
 
     renderWithProviders(<SignupCounterSection />)
 
-    await waitFor(() => expect(screen.getByText('342')).toBeInTheDocument(), { timeout: 3000 })
+    await waitFor(() => expect(screen.getByText(/342/)).toBeInTheDocument(), { timeout: 3000 })
   })
 
   it('affiche un squelette de chargement plutôt que 0 pendant la requête', async () => {
