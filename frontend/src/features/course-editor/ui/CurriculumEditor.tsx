@@ -7,6 +7,13 @@ function makeSectionId(): string {
   return `s${Date.now()}${Math.round(Math.random() * 1000)}`
 }
 
+function makeLessonId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `l${Date.now()}${Math.round(Math.random() * 1_000_000)}`
+}
+
 interface SectionRowProps {
   section: CurriculumSection
   onRename: (title: string) => void
@@ -95,7 +102,7 @@ export function CurriculumEditor({ sections, onChange }: { sections: CurriculumS
   }
 
   const addLesson = (id: string, title: string) => {
-    onChange(sections.map((s) => (s.id === id ? { ...s, lessons: [...s.lessons, { title }] } : s)))
+    onChange(sections.map((s) => (s.id === id ? { ...s, lessons: [...s.lessons, { id: makeLessonId(), title }] } : s)))
   }
 
   const removeLesson = (id: string, index: number) => {

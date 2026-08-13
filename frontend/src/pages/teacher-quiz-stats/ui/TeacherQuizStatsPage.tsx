@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { ChevronLeft, BarChart2, Loader2 } from 'lucide-react'
-import { useCourseById } from '@/entities/course'
+import { useCourseById, courseCurriculum } from '@/entities/course'
 import { useQuizByLesson, useQuizStats } from '../../../hooks/useQuiz'
 
 // Simple stats card for a single quiz/lesson
@@ -57,11 +57,13 @@ export function TeacherQuizStatsPage() {
     )
   }
 
-  // Parse curriculum to get lessons
-  const curriculum = course?.curriculumJson ? JSON.parse(course.curriculumJson) : []
+  // Parse curriculum via the shared helper which normalises lessons and backfills
+  // missing IDs (lessons created before the `id` field was introduced get a
+  // stable in-memory UUID here; they'll be persisted on the next course save).
+  const curriculum = course ? courseCurriculum(course) : []
   const allLessons: { sectionTitle: string; lessonTitle: string; lessonId: string }[] = []
   for (const section of curriculum) {
-    for (const lesson of (section.lessons ?? [])) {
+    for (const lesson of section.lessons) {
       if (lesson.id) {
         allLessons.push({
           sectionTitle: section.title,

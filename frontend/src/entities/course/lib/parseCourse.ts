@@ -1,5 +1,13 @@
 import type { Course } from '../model/course.schema'
 
+/** Génère un identifiant stable pour une leçon (UUID v4 si disponible, sinon timestamp+random). */
+function makeLessonId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `l${Date.now()}${Math.round(Math.random() * 1_000_000)}`
+}
+
 /** Compétences (`skillsJson`) parsées, avec repli sûr sur tableau vide. */
 export function courseSkills(course: Course): string[] {
   return safeParseArray(course.skillsJson)
@@ -13,6 +21,9 @@ export function courseOutcomes(course: Course): string[] {
 /** Une leçon normalisée côté front : toujours un objet, même si le backend
  * accepte aussi une simple chaîne (voir lessonSchema, course.schema.ts). */
 export interface CurriculumLesson {
+  /** Identifiant stable, assigné à la création et persisté dans curriculumJson.
+   * Utilisé comme clé pour les quiz et les statistiques (TeacherQuizStatsPage). */
+  id?: string
   title: string
   /** Média (vidéo) attaché via zma-media, ou absent/null tant qu'aucune vidéo n'est liée. */
   mediaId?: string | null
@@ -41,11 +52,16 @@ export function courseCurriculum(course: Course): CurriculumSection[] {
       lessons: Array.isArray(s.lessons)
         ? s.lessons
             .map((l): CurriculumLesson | null => {
-              if (typeof l === 'string') return l ? { title: l, mediaId: null } : null
-              const obj = l as { title?: unknown; mediaId?: unknown }
+              if (typeof l === 'string') return l ? { id: makeLessonId(), title: l, mediaId: null } : null
+              const obj = l as { id?: unknown; title?: unknown; mediaId?: unknown }
               const title = typeof obj.title === 'string' ? obj.title : ''
               if (!title) return null
-              return { title, mediaId: typeof obj.mediaId === 'string' ? obj.mediaId : null }
+              return {
+                // Backfill stable id for lessons saved before this field was introduced.
+                id: typeof obj.id === 'string' && obj.id ? obj.id : makeLessonId(),
+                title,
+                mediaId: typeof obj.mediaId === 'string' ? obj.mediaId : null,
+              }
             })
             .filter((l): l is CurriculumLesson => l !== null)
         : [],
