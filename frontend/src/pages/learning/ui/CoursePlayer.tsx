@@ -13,9 +13,10 @@ import { useQuizByLesson } from '@/hooks/useQuiz'
 interface VideoPlayerProps {
   mediaId?: string | null
   title?: string
+  courseId?: string
 }
 
-export function VideoPlayer({ mediaId, title }: VideoPlayerProps) {
+export function VideoPlayer({ mediaId, title, courseId }: VideoPlayerProps) {
   const { t } = useTranslation()
   const [streamUrl, setStreamUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -27,7 +28,8 @@ export function VideoPlayer({ mediaId, title }: VideoPlayerProps) {
     setStreamUrl(null)
 
     try {
-      const res = await get<{ url: string }>(`/media/${id}/url`, { signal })
+      const urlPath = courseId ? `/media/${id}/url?courseId=${courseId}` : `/media/${id}/url`
+      const res = await get<{ url: string }>(urlPath, { signal })
       if (res?.url) {
         setStreamUrl(res.url)
         setIsLoading(false)
@@ -44,7 +46,7 @@ export function VideoPlayer({ mediaId, title }: VideoPlayerProps) {
     // if the video element fires onError we surface a user-facing message.
     setStreamUrl(`/api/v1/media/${id}/file`)
     setIsLoading(false)
-  }, [])
+  }, [courseId])
 
   useEffect(() => {
     if (!mediaId) {
@@ -186,7 +188,7 @@ export function CoursePlayer() {
   return (
     <div className="grid gap-0 lg:grid-cols-[1fr_320px]">
       <main className="min-h-[60vh]">
-        <VideoPlayer mediaId={activeLesson?.mediaId} title={activeLesson ? lessonTitle(activeLesson) : undefined} />
+        <VideoPlayer mediaId={activeLesson?.mediaId} title={activeLesson ? lessonTitle(activeLesson) : undefined} courseId={courseId} />
         <div className="p-6">
           <p className="font-sans text-eyebrow font-bold uppercase tracking-[0.16em] text-accent">{course.title}</p>
           <h1 className="mt-2 font-serif text-h2 text-scene-ink">{activeLesson ? lessonTitle(activeLesson) : course.title}</h1>

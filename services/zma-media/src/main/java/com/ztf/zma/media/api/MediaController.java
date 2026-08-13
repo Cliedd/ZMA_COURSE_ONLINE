@@ -148,8 +148,9 @@ public class MediaController {
     @Operation(summary = "Get a time-limited download URL", description = "Requires the caller to own the media, hold an ADMIN/TEACHER role, or be enrolled in the media's course.")
     @GetMapping("/{id}/url")
     public Map<String, String> getDownloadUrl(@PathVariable String id, Authentication auth,
-                                               @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorizationHeader) {
-        return Map.of("url", mediaService.getDownloadUrl(id, auth.getName(), getRole(auth), authorizationHeader));
+                                               @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorizationHeader,
+                                               @RequestParam(required = false) String courseId) {
+        return Map.of("url", mediaService.getDownloadUrl(id, auth.getName(), getRole(auth), authorizationHeader, courseId));
     }
 
     /** Soft-delete: removes from storage and marks deleted */

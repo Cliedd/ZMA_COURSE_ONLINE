@@ -11,6 +11,7 @@ import {
 } from '@/entities/course'
 import type { Course, CurriculumSection, CourseWriteRequest } from '@/entities/course'
 import { CourseInfoForm, CurriculumEditor, PublishControl } from '@/features/course-editor'
+import { patch } from '@/shared/api/http'
 
 function toWriteRequest(base: Course, patch: Partial<CourseWriteRequest>): CourseWriteRequest {
   return {
@@ -81,6 +82,13 @@ export function CourseEditorPage() {
       { id: courseId, data },
       { onError: () => toast.error('Impossible de sauvegarder le cours.') },
     )
+    // Link each lesson's media to this course so enrolled students can play it.
+    // Fire-and-forget — failures are non-blocking (the fallback courseId param handles playback).
+    next.flatMap((s) => s.lessons).forEach((lesson) => {
+      if (lesson.mediaId) {
+        void patch(`/media/${lesson.mediaId}/attach`, { courseId }).catch(() => {})
+      }
+    })
   }
 
   const handleTogglePublish = () => {

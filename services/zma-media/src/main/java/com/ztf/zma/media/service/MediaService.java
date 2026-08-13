@@ -176,8 +176,12 @@ public class MediaService {
      * (getByIdForUser) remain owner/ADMIN/TEACHER-only via requireAccess().
      */
     public String getDownloadUrl(String mediaId, String requestingUser, String role, String authorizationHeader) {
+        return getDownloadUrl(mediaId, requestingUser, role, authorizationHeader, null);
+    }
+
+    public String getDownloadUrl(String mediaId, String requestingUser, String role, String authorizationHeader, String fallbackCourseId) {
         Media media = getById(mediaId);
-        requirePlaybackAccess(media, requestingUser, role, authorizationHeader);
+        requirePlaybackAccess(media, requestingUser, role, authorizationHeader, fallbackCourseId);
         if (!"READY".equals(media.getStatus())) {
             throw new RuntimeException("Media is not ready");
         }
@@ -207,14 +211,25 @@ public class MediaService {
      * check first so no extra network call is made for the common case.
      */
     private void requirePlaybackAccess(Media media, String requestingUser, String role, String authorizationHeader) {
+        requirePlaybackAccess(media, requestingUser, role, authorizationHeader, null);
+    }
+
+    /**
+     * Authorization check for read/playback. Accepts a fallbackCourseId that is used
+     * when the media record has no courseId set (which happens when the frontend never
+     * called /attach after upload). The CoursePlayer passes its own courseId as the
+     * fallback so enrolled students can always play lessons in courses they're in.
+     */
+    private void requirePlaybackAccess(Media media, String requestingUser, String role, String authorizationHeader, String fallbackCourseId) {
         boolean isOwner = media.getUploadedBy() != null && media.getUploadedBy().equals(requestingUser);
         boolean isPrivileged = "ADMIN".equals(role) || "TEACHER".equals(role);
         if (isOwner || isPrivileged) {
             return;
         }
+        String effectiveCourseId = media.getCourseId() != null ? media.getCourseId() : fallbackCourseId;
         boolean isEnrolledStudent = "STUDENT".equals(role)
-                && media.getCourseId() != null
-                && enrollmentClient.isEnrolled(media.getCourseId(), authorizationHeader);
+                && effectiveCourseId != null
+                && enrollmentClient.isEnrolled(effectiveCourseId, authorizationHeader);
         if (!isEnrolledStudent) {
             throw new AccessDeniedException("Access denied");
         }
