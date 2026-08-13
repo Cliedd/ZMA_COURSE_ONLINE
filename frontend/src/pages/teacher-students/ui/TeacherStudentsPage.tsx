@@ -2,27 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Users } from 'lucide-react'
-import { Skeleton } from '@/shared/ui'
+import { Skeleton, ProgressBar } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import { useAuthStore } from '@/entities/session'
 import { useTeacherCourses } from '@/entities/course'
 import { useCourseEnrollments } from '@/entities/enrollment'
 import type { Enrollment } from '@/entities/enrollment'
-
-/** Progress bar rendered as a semantic colour stripe. */
-function ProgressBar({ value }: { value: number }) {
-  const pct = Math.min(100, Math.max(0, Math.round(value)))
-  const colour =
-    pct === 100 ? 'bg-success' : pct >= 50 ? 'bg-accent' : 'bg-warning'
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-24 overflow-hidden rounded-full bg-line">
-        <div className={`h-full ${colour}`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="font-sans text-xs text-ink-muted tabular-nums">{pct}%</span>
-    </div>
-  )
-}
 
 /** Single enrollment row inside the student table. */
 function EnrollmentRow({ enrollment }: { enrollment: Enrollment }) {
@@ -50,7 +35,7 @@ function EnrollmentRow({ enrollment }: { enrollment: Enrollment }) {
         {enrolledDate}
       </td>
       <td className="py-3 px-4">
-        <ProgressBar value={enrollment.progress} />
+        <ProgressBar value={enrollment.progress} className="w-24" />
       </td>
       <td className="py-3 px-4">
         <span className={`font-sans text-xs font-semibold uppercase ${statusClass}`}>

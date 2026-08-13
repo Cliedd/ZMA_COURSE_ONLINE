@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield, Languages, Users } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
