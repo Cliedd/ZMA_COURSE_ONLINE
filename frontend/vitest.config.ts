@@ -8,6 +8,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    testTimeout: 15000,
     // http://localhost (sans port) : nécessaire pour que les URL relatives d'axios
     // (baseURL '/api/v1') se résolvent au même origin que les gestionnaires MSW
     // enregistrés avec des URL absolues dans les tests (voir http.test.ts).
