@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Plus, Trash2, ChevronUp, ChevronDown, Save, Loader2, ChevronLeft } from 'lucide-react'

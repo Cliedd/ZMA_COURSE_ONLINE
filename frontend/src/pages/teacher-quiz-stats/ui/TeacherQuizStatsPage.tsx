@@ -26,7 +26,7 @@ function QuizStatCard({ lessonTitle, lessonId }: { lessonTitle: string; lessonId
             <p className="text-[11px] text-muted-foreground">Tentatives</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-serif text-emerald-600">{stats.passedFirst}</p>
+            <p className="text-2xl font-serif text-success">{stats.passedFirst}</p>
             <p className="text-[11px] text-muted-foreground">Réussi 1ère fois</p>
           </div>
           <div className="text-center">

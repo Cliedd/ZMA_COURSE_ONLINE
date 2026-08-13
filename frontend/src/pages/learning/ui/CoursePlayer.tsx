@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'

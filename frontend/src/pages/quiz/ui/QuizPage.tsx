@@ -39,9 +39,9 @@ export function QuizPage() {
   if (alreadyDoneExam && lastAttempt) {
     return (
       <div className="container py-16 max-w-xl text-center">
-        <div className={`inline-flex h-16 w-16 items-center justify-center rounded-full mb-4 ${lastAttempt.passed ? 'bg-emerald-100' : 'bg-destructive/10'}`}>
+        <div className={`inline-flex h-16 w-16 items-center justify-center rounded-full mb-4 ${lastAttempt.passed ? 'bg-success/10' : 'bg-destructive/10'}`}>
           {lastAttempt.passed
-            ? <CheckCircle className="h-8 w-8 text-emerald-600" />
+            ? <CheckCircle className="h-8 w-8 text-success" />
             : <XCircle className="h-8 w-8 text-destructive" />}
         </div>
         <h1 className="font-serif text-2xl text-ink mb-2">{lastAttempt.passed ? 'Examen réussi !' : 'Examen non réussi'}</h1>
@@ -56,9 +56,9 @@ export function QuizPage() {
     return (
       <div className="container py-12 max-w-2xl">
         <div className="text-center mb-8">
-          <div className={`inline-flex h-16 w-16 items-center justify-center rounded-full mb-4 ${result.passed ? 'bg-emerald-100' : 'bg-destructive/10'}`}>
+          <div className={`inline-flex h-16 w-16 items-center justify-center rounded-full mb-4 ${result.passed ? 'bg-success/10' : 'bg-destructive/10'}`}>
             {result.passed
-              ? <CheckCircle className="h-8 w-8 text-emerald-600" />
+              ? <CheckCircle className="h-8 w-8 text-success" />
               : <XCircle className="h-8 w-8 text-destructive" />}
           </div>
           <h1 className="font-serif text-2xl text-ink mb-2">
@@ -115,9 +115,9 @@ export function QuizPage() {
           </p>
         </div>
       ) : (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 mb-8">
-          <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-sm text-amber-800">
+        <div className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning/5 px-4 py-3 mb-8">
+          <Info className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+          <p className="text-sm text-warning">
             Vous pouvez reprendre cet examen autant de fois que nécessaire jusqu'à ce que vous réussissiez. Il s'agit d'un examen de test pour consolider vos apprentissages.
           </p>
         </div>

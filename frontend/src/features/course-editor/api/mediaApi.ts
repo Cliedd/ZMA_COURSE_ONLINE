@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import axios from 'axios'
 import { z } from 'zod'
 import { get, post, patch, AppError } from '@/shared/api/http'
