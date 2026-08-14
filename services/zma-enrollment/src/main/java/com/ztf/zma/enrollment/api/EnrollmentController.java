@@ -116,6 +116,16 @@ public class EnrollmentController {
         return enrollmentService.updateCompletedLessons(id, body.get("completedLessonsJson"));
     }
 
+    /**
+     * Admin/internal: resyncs catalog studentsCount for all courses from actual enrollment data.
+     * Fixes counters that were zero before the increment-on-enroll logic was added.
+     */
+    @PostMapping("/internal/resync-student-counts")
+    public Map<String, String> resyncStudentCounts() {
+        enrollmentService.resyncAllStudentCounts();
+        return Map.of("status", "ok");
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unenroll(@PathVariable String id, Authentication auth) {

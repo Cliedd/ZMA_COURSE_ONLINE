@@ -212,6 +212,32 @@ public class CourseController {
         );
     }
 
+    /**
+     * Increments studentsCount for a course — called by zma-enrollment after a new enrollment.
+     * Network-isolated: no JWT required (enrollment service is on the same Docker network).
+     */
+    @PostMapping("/internal/{id}/increment-students")
+    public Map<String, Object> incrementStudents(@PathVariable String id) {
+        courseService.incrementStudentsCount(id);
+        Course course = courseService.getCourseById(id);
+        return Map.of(
+            "id",            course.getId(),
+            "studentsCount", course.getStudentsCount() != null ? course.getStudentsCount() : 0
+        );
+    }
+
+    /**
+     * Sets studentsCount to an exact value — used by zma-enrollment for backfill/resync.
+     * Network-isolated: no JWT required.
+     */
+    @PostMapping("/internal/{id}/sync-students")
+    public Map<String, Object> syncStudents(@PathVariable String id,
+                                            @RequestBody Map<String, Object> body) {
+        int count = body.containsKey("count") ? ((Number) body.get("count")).intValue() : 0;
+        courseService.setStudentsCount(id, count);
+        return Map.of("id", id, "studentsCount", count);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private String getRole(Authentication auth) {

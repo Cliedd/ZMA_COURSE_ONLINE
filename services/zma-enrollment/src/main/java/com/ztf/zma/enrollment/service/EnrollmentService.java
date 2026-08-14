@@ -63,6 +63,9 @@ public class EnrollmentService {
         enrollment.setCourseLevel(resolvedLevel);
         Enrollment saved = enrollmentRepository.save(enrollment);
 
+        // Keep catalog studentsCount in sync (fire-and-forget)
+        catalogClient.incrementStudentsCount(courseId);
+
         // Notify student (fire-and-forget)
         communityClient.notifyEnrollment(studentId,
                 resolvedTitle != null ? resolvedTitle : courseId);
@@ -143,6 +146,19 @@ public class EnrollmentService {
             throw new RuntimeException("Enrollment not found");
         }
         enrollmentRepository.deleteById(enrollmentId);
+    }
+
+    /**
+     * Resyncs studentsCount in the catalog for every course that has at least one enrollment.
+     * Safe to call multiple times (idempotent). Used to backfill pre-existing enrollments.
+     */
+    public void resyncAllStudentCounts() {
+        // Group enrollments by courseId and push exact counts to the catalog
+        enrollmentRepository.findAll().stream()
+            .collect(java.util.stream.Collectors.groupingBy(
+                Enrollment::getCourseId,
+                java.util.stream.Collectors.counting()))
+            .forEach((courseId, count) -> catalogClient.syncStudentsCount(courseId, count));
     }
 
     public Certificate getCertificate(String certId) {

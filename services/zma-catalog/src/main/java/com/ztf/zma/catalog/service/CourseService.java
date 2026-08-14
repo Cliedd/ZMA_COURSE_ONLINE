@@ -289,6 +289,25 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    /** Atomically increments studentsCount for the given course (called by zma-enrollment). */
+    @Transactional
+    public void incrementStudentsCount(String courseId) {
+        courseRepository.findById(courseId).ifPresent(course -> {
+            int current = course.getStudentsCount() != null ? course.getStudentsCount() : 0;
+            course.setStudentsCount(current + 1);
+            courseRepository.save(course);
+        });
+    }
+
+    /** Sets studentsCount to an exact value — used for backfill/resync from enrollment service. */
+    @Transactional
+    public void setStudentsCount(String courseId, int count) {
+        courseRepository.findById(courseId).ifPresent(course -> {
+            course.setStudentsCount(count);
+            courseRepository.save(course);
+        });
+    }
+
     /** Converts a title to a URL-safe slug, unique in the DB. */
     private String generateUniqueSlug(String title) {
         if (!StringUtils.hasText(title)) title = "course";

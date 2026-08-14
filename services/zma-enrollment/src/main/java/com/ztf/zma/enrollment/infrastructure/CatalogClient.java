@@ -42,6 +42,39 @@ public class CatalogClient {
         }
     }
 
+    /**
+     * Notifies the catalog service that a new student has enrolled in the given course,
+     * so the denormalized studentsCount field is kept in sync.
+     * Fire-and-forget: failures are logged but do not fail the enrollment.
+     */
+    public void incrementStudentsCount(String courseId) {
+        try {
+            restClient.post()
+                .uri("/api/v1/courses/internal/" + courseId + "/increment-students")
+                .retrieve()
+                .toBodilessEntity();
+        } catch (Exception ex) {
+            log.warn("Could not increment studentsCount for course {}: {}", courseId, ex.getMessage());
+        }
+    }
+
+    /**
+     * Pushes an exact enrollment count for a course to the catalog (backfill/resync).
+     * Fire-and-forget: failures are logged but do not fail the caller.
+     */
+    public void syncStudentsCount(String courseId, long count) {
+        try {
+            restClient.post()
+                .uri("/api/v1/courses/internal/" + courseId + "/sync-students")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .body(Map.of("count", count))
+                .retrieve()
+                .toBodilessEntity();
+        } catch (Exception ex) {
+            log.warn("Could not sync studentsCount for course {}: {}", courseId, ex.getMessage());
+        }
+    }
+
     /** Returns total lesson count for certificate validation */
     public Integer getLessonCount(String courseId) {
         try {
