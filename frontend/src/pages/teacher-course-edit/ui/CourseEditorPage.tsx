@@ -11,6 +11,7 @@ import {
   useDeleteCourse,
 } from '@/entities/course'
 import type { Course, CurriculumSection, CourseWriteRequest } from '@/entities/course'
+import { AppError } from '@/shared/api/http'
 import { CourseInfoForm, CurriculumEditor, PublishControl } from '@/features/course-editor'
 import { patch } from '@/shared/api/http'
 
@@ -71,7 +72,7 @@ export function CourseEditorPage() {
     if (!courseId) return
     updateCourse.mutate(
       { id: courseId, data: { ...data, curriculumJson: JSON.stringify(currentSections) } },
-      { onError: () => toast.error('Impossible de sauvegarder le cours.') },
+      { onError: (err) => toast.error(err instanceof AppError && err.status === 403 ? 'Accès refusé. Ce cours ne vous appartient pas.' : 'Impossible de sauvegarder le cours.') },
     )
   }
 
@@ -81,7 +82,7 @@ export function CourseEditorPage() {
     const data = toWriteRequest(course, { curriculumJson: JSON.stringify(next) })
     updateCourse.mutate(
       { id: courseId, data },
-      { onError: () => toast.error('Impossible de sauvegarder le cours.') },
+      { onError: (err) => toast.error(err instanceof AppError && err.status === 403 ? 'Accès refusé. Ce cours ne vous appartient pas.' : 'Impossible de sauvegarder le cours.') },
     )
     // Link each lesson's media to this course so enrolled students can play it.
     // Fire-and-forget — failures are non-blocking (the fallback courseId param handles playback).

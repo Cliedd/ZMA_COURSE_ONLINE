@@ -39,7 +39,9 @@ public class Course {
     /** CSS gradient class index 0-9 for card thumbnail */
     private Integer gradientIndex;
 
-    /** Optional cover image URL (uploaded via zma-media). Overrides gradientIndex when set. */
+    /** Optional cover image URL (uploaded via zma-media). Overrides gradientIndex when set.
+     *  TEXT (not VARCHAR(255)) — presigned S3 URLs can exceed 255 characters. */
+    @Column(columnDefinition = "TEXT")
     private String thumbnailUrl;
 
     /** Email of the owning teacher (null = official ZMA course) */
