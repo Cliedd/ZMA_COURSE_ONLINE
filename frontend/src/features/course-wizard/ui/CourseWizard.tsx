@@ -9,6 +9,7 @@ import type { WizardFormValues, WizardStep } from '../model/useWizardForm'
 import { StepBasics } from './StepBasics'
 import { StepDetails } from './StepDetails'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function toWriteRequest(values: WizardFormValues): CourseWriteRequest {
   const skillsArray = values.skills
     ? values.skills

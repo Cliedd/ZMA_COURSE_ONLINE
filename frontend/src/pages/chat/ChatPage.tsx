@@ -138,6 +138,7 @@ export const ChatPage = () => {
         { onSuccess: () => refetchRoom() }
       )
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomLoading, room, role, course, email])
 
   // Scroll vers le bas à chaque nouveau message

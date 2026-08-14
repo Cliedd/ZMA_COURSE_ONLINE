@@ -99,8 +99,10 @@ export function useChatTyping(roomId: string | undefined) {
     });
     return () => {
       unsubscribe();
-      timers.current.forEach(clearTimeout);
-      timers.current.clear();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const t = timers.current;
+      t.forEach(clearTimeout);
+      t.clear();
     };
   }, [roomId, token, email]);
 

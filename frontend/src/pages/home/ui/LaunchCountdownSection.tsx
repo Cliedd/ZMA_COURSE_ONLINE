@@ -24,6 +24,7 @@ export interface CountdownBreakdown {
 /** Décompose l'écart entre `now` et `target` en jours/heures/minutes/secondes,
  * plafonné à zéro une fois l'échéance atteinte ou dépassée. Fonction pure, testée
  * indépendamment du rendu et du timer. */
+// eslint-disable-next-line react-refresh/only-export-components
 export function computeCountdown(target: Date, now: Date): CountdownBreakdown {
   const diffMs = target.getTime() - now.getTime()
 
