@@ -44,6 +44,7 @@ const QuizPage = lazyWithReload(() => import('@/pages/quiz').then((m) => ({ defa
 const TeacherQuizStatsPage = lazyWithReload(() => import('@/pages/teacher-quiz-stats').then((m) => ({ default: m.TeacherQuizStatsPage })))
 const TeacherStudentsPage = lazyWithReload(() => import('@/pages/teacher-students').then((m) => ({ default: m.TeacherStudentsPage })))
 const TeacherAnnouncementsPage = lazyWithReload(() => import('@/pages/teacher-course-announcements').then((m) => ({ default: m.TeacherAnnouncementsPage })))
+const TeacherSettingsPage = lazyWithReload(() => import('@/pages/teacher-settings').then((m) => ({ default: m.TeacherSettingsPage })))
 
 /** Redirige l'ancien chemin d'édition français en préservant l'identifiant du cours.
  *  TeacherDashboard et CourseWizard (hérités, réécrits au chantier 3) pointent encore
@@ -113,6 +114,7 @@ export function AppRoutes() {
             <Route path="/teacher/courses/:courseId/quiz-stats" element={<RequireRole role="TEACHER"><TeacherQuizStatsPage /></RequireRole>} />
             <Route path="/teacher/courses/:courseId/announcements" element={<RequireRole role="TEACHER"><TeacherAnnouncementsPage /></RequireRole>} />
             <Route path="/teacher/students" element={<RequireRole role="TEACHER"><TeacherStudentsPage /></RequireRole>} />
+            <Route path="/teacher/profile" element={<RequireRole role="TEACHER"><TeacherSettingsPage /></RequireRole>} />
             <Route path="/quiz/:lessonId" element={<RequireAuth><QuizPage /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><AdminOverviewPage /></RequireAuth>} />
             <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />

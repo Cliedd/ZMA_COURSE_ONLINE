@@ -456,6 +456,7 @@
     "title": "Tableau de bord enseignant",
     "subtitle": "Gérez vos cours et suivez vos statistiques.",
     "newCourse": "Créer un cours",
+    "myProfile": "Mon profil",
     "statCourses": "Cours",
     "statStudents": "Étudiants",
     "statRating": "Note moyenne",
@@ -546,6 +547,26 @@
       "failed": "Échoué",
       "avgScore": "Score moyen"
     }
+  },
+  "teacherSettings": {
+    "breadcrumb": "Mon profil",
+    "title": "Mon profil",
+    "sectionAccount": "Compte",
+    "sectionProfile": "Informations personnelles",
+    "email": "Adresse e-mail",
+    "role": "Rôle",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Votre prénom",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Votre nom",
+    "bio": "Biographie",
+    "bioPlaceholder": "Parlez de vous en quelques mots…",
+    "phone": "Numéro de téléphone",
+    "phonePlaceholder": "+33 6 00 00 00 00",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saveSuccess": "Profil mis à jour",
+    "saveError": "Erreur lors de la mise à jour"
   },
   "teacherStudents": {
     "breadcrumb": "Progression des étudiants",

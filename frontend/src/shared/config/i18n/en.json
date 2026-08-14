@@ -456,6 +456,7 @@
     "title": "Teacher dashboard",
     "subtitle": "Manage your courses and track your stats.",
     "newCourse": "Create a course",
+    "myProfile": "My profile",
     "statCourses": "Courses",
     "statStudents": "Students",
     "statRating": "Average rating",
@@ -546,6 +547,26 @@
       "failed": "Failed",
       "avgScore": "Avg score"
     }
+  },
+  "teacherSettings": {
+    "breadcrumb": "My profile",
+    "title": "My profile",
+    "sectionAccount": "Account",
+    "sectionProfile": "Personal information",
+    "email": "Email address",
+    "role": "Role",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name",
+    "bio": "Biography",
+    "bioPlaceholder": "Tell us a bit about yourself…",
+    "phone": "Phone number",
+    "phonePlaceholder": "+1 000 000 0000",
+    "save": "Save",
+    "saving": "Saving…",
+    "saveSuccess": "Profile updated",
+    "saveError": "Error updating profile"
   },
   "teacherStudents": {
     "breadcrumb": "Student progress",

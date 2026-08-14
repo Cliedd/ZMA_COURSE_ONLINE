@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, UserCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
@@ -35,13 +35,22 @@ export function TeacherDashboardPage() {
               {t('teacherDashboard.subtitle')}
             </p>
           </div>
-          <Link
-            to="/teacher/courses/new"
-            className="inline-flex min-h-touch items-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            {t('teacherDashboard.newCourse')}
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              to="/teacher/profile"
+              className="inline-flex min-h-touch items-center gap-2 rounded border border-line px-5 font-sans text-sm font-semibold text-ink"
+            >
+              <UserCircle className="h-4 w-4" aria-hidden="true" />
+              {t('teacherDashboard.myProfile')}
+            </Link>
+            <Link
+              to="/teacher/courses/new"
+              className="inline-flex min-h-touch items-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              {t('teacherDashboard.newCourse')}
+            </Link>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
