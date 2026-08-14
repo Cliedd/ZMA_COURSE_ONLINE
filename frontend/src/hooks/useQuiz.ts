@@ -7,8 +7,16 @@ export function useQuizByLesson(lessonId?: string) {
     queryKey: ['quiz', 'lesson', lessonId],
     queryFn: async () => {
       if (!lessonId) return null
-      const result = await get<Quiz | null>(`/quizzes/lesson/${lessonId}`)
-      return result ?? null
+      try {
+        const result = await get<Quiz | null>(`/quizzes/lesson/${lessonId}`)
+        return result ?? null
+      } catch (err: unknown) {
+        // 404 means no quiz exists for this lesson — treat as null, not an error
+        if (err && typeof err === 'object' && 'status' in err && (err as { status: number }).status === 404) {
+          return null
+        }
+        throw err
+      }
     },
     enabled: !!lessonId,
   })

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Input, Button } from '@/shared/ui'
 import type { CurriculumSection, CurriculumLesson } from '@/entities/course'
 import { LessonMediaUpload } from './LessonMediaUpload'
@@ -16,6 +17,7 @@ function makeLessonId(): string {
 
 interface SectionRowProps {
   section: CurriculumSection
+  courseId?: string
   onRename: (title: string) => void
   onRemove: () => void
   onAddLesson: (lesson: string) => void
@@ -24,7 +26,7 @@ interface SectionRowProps {
 }
 
 /** Une section du programme : titre, liste de leçons, ajout/retrait local. */
-function SectionRow({ section, onRename, onRemove, onAddLesson, onRemoveLesson, onChangeLesson }: SectionRowProps) {
+function SectionRow({ section, courseId, onRename, onRemove, onAddLesson, onRemoveLesson, onChangeLesson }: SectionRowProps) {
   const [lessonDraft, setLessonDraft] = useState('')
 
   const addLesson = () => {
@@ -59,6 +61,15 @@ function SectionRow({ section, onRename, onRemove, onAddLesson, onRemoveLesson, 
             <span className="font-sans text-sm text-ink">{lesson.title}</span>
             <div className="flex items-center gap-2">
               <LessonMediaUpload lesson={lesson} onChange={(next) => onChangeLesson(index, next)} />
+              {courseId && lesson.id && (
+                <Link
+                  to={`/teacher/courses/${courseId}/lessons/${lesson.id}/quiz`}
+                  className="inline-flex min-h-touch items-center rounded border border-line px-2 font-sans text-xs font-medium text-ink hover:bg-surface transition-colors"
+                  title="Gérer le quiz de cette leçon"
+                >
+                  Quiz
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => onRemoveLesson(index)}
@@ -88,7 +99,7 @@ function SectionRow({ section, onRename, onRemove, onAddLesson, onRemoveLesson, 
 }
 
 /** Éditeur du programme d'un cours : sections et leçons, contrôlé par `sections`/`onChange`. */
-export function CurriculumEditor({ sections, onChange }: { sections: CurriculumSection[]; onChange: (sections: CurriculumSection[]) => void }) {
+export function CurriculumEditor({ sections, onChange, courseId }: { sections: CurriculumSection[]; onChange: (sections: CurriculumSection[]) => void; courseId?: string }) {
   const addSection = () => {
     onChange([...sections, { id: makeSectionId(), title: '', lessons: [] }])
   }
@@ -135,6 +146,7 @@ export function CurriculumEditor({ sections, onChange }: { sections: CurriculumS
           <SectionRow
             key={section.id}
             section={section}
+            courseId={courseId}
             onRename={(title) => renameSection(section.id, title)}
             onRemove={() => removeSection(section.id)}
             onAddLesson={(lesson) => addLesson(section.id, lesson)}

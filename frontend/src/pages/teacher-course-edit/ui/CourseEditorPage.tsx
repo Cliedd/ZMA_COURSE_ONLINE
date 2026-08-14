@@ -113,7 +113,7 @@ export function CourseEditorPage() {
         </section>
 
         <section className="mt-8 border-t border-line pt-8">
-          <CurriculumEditor sections={currentSections} onChange={handleSaveCurriculum} />
+          <CurriculumEditor sections={currentSections} onChange={handleSaveCurriculum} courseId={courseId} />
         </section>
 
         <section className="mt-8 border-t border-line pt-8">

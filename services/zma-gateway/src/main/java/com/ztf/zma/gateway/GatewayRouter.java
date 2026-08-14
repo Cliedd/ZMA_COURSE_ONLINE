@@ -146,6 +146,15 @@ public class GatewayRouter {
         return proxy(req, body, communityUrl, false);
     }
 
+    @RequestMapping(value = "/quizzes/**",
+        method = {RequestMethod.GET, RequestMethod.POST,
+                  RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
+    @CircuitBreaker(name = "catalog", fallbackMethod = "fallback")
+    public ResponseEntity<String> proxyQuizzes(HttpServletRequest req,
+                                               @RequestBody(required = false) String body) {
+        return proxy(req, body, catalogUrl, false);
+    }
+
     // ── Circuit breaker fallback ──────────────────────────────────────────────
 
     public ResponseEntity<String> fallback(HttpServletRequest req, String body,
