@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { Field, Input, Button, toast } from '@/shared/ui'
 import { authApi, useAuthStore } from '@/entities/session'
 import { AppError } from '@/shared/api/http'
+import { GoogleIcon } from './GoogleIcon'
 
 const schema = z.object({
   email: z.string().email('auth.invalidEmail'),
@@ -77,6 +78,16 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
     }
   })
 
+  const handleResend = async () => {
+    try {
+      await authApi.resendVerification(resendEmail)
+      toast.success('E-mail de vérification renvoyé. Vérifiez votre boîte de réception.')
+      setShowResendVerification(false)
+    } catch {
+      toast.error("Impossible de renvoyer l'e-mail. Réessayez dans quelques instants.")
+    }
+  }
+
   return (
     <div className="w-full border border-line bg-surface p-8 shadow-overlay sm:p-10">
       <div className="text-center">
@@ -114,9 +125,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
       {forgotSuccess ? (
         <div className="mt-8 border border-success/30 bg-success/10 p-4 text-success">
           <p className="font-semibold text-sm">{t('auth.emailSentTitle')}</p>
-          <p className="font-sans text-xs mt-1">
-            {t('auth.emailSentBody')}
-          </p>
+          <p className="font-sans text-xs mt-1">{t('auth.emailSentBody')}</p>
           <button
             onClick={() => setMode('login')}
             className="mt-4 inline-flex items-center font-sans text-xs font-semibold text-blue underline"
@@ -137,21 +146,13 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
               hint={t('auth.pwdHint')}
               error={errors.password && t(errors.password.message ?? '')}
             >
-              <Input
-                type="password"
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                {...register('password')}
-              />
+              <Input type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} {...register('password')} />
             </Field>
           )}
 
           {mode === 'login' && (
             <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setMode('forgot')}
-                className="font-sans text-xs font-semibold text-accent-ink hover:underline"
-              >
+              <button type="button" onClick={() => setMode('forgot')} className="font-sans text-xs font-semibold text-accent-ink hover:underline">
                 {t('auth.forgotLink')}
               </button>
             </div>
@@ -161,19 +162,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
             <div>
               <p role="alert" className="font-sans text-sm text-danger">{formError}</p>
               {showResendVerification && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await authApi.resendVerification(resendEmail)
-                      toast.success('E-mail de vérification renvoyé. Vérifiez votre boîte de réception.')
-                      setShowResendVerification(false)
-                    } catch {
-                      toast.error('Impossible de renvoyer l\'e-mail. Réessayez dans quelques instants.')
-                    }
-                  }}
-                  className="mt-1 font-sans text-xs font-semibold text-accent-ink hover:underline"
-                >
+                <button type="button" onClick={handleResend} className="mt-1 font-sans text-xs font-semibold text-accent-ink hover:underline">
                   Renvoyer l'e-mail de vérification
                 </button>
               )}
@@ -206,17 +195,3 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
   )
 }
 
-function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
-  // Couleurs de la marque Google (logo officiel "G") : intentionnellement en dur,
-  // ce ne sont pas des jetons thémables du design system.
-  /* eslint-disable no-restricted-syntax */
-  return (
-    <svg viewBox="0 0 24 24" {...props}>
-      <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
-      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
-      <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29A11.96 11.96 0 0 0 0 12c0 1.93.46 3.76 1.29 5.38l3.98-3.09z" />
-      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.94 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
-    </svg>
-  )
-  /* eslint-enable no-restricted-syntax */
-}

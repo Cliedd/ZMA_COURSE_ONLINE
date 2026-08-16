@@ -32,7 +32,7 @@ class AuthFlowIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void register_thenLoginWithWrongPassword_isRejected() {
-        RegisterRequest register = new RegisterRequest("wrongpass@example.com", "correct-password-1", "STUDENT");
+        RegisterRequest register = new RegisterRequest("wrongpass@example.com", "Correct-password-1", "STUDENT");
         ResponseEntity<AuthResponse> registerResponse =
                 restTemplate.postForEntity("/api/v1/auth/register", register, AuthResponse.class);
 
