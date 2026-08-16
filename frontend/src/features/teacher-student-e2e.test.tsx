@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { I18nextProvider } from 'react-i18next'
 import { i18n } from '@/shared/config/i18n'
@@ -11,6 +11,18 @@ import { CourseWizardPage } from '@/pages/teacher-course-new'
 import { CourseEditorPage } from '@/pages/teacher-course-edit'
 import { CoursePlayer } from '@/pages/learning'
 import { useAuthStore } from '@/entities/session'
+
+// Mock uploadLessonVideo to avoid FormData+XHR hanging under Node 24's jsdom.
+// MSW's XHR interceptor does not respond to FormData POST bodies in that environment,
+// so the upload spinner blocks indefinitely.  We verify the integration at the
+// component-state level (mediaId set, badge visible) while bypassing the unreliable
+// HTTP layer for multipart uploads.
+vi.mock('@/features/course-editor/api/mediaApi', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/course-editor/api/mediaApi')>()
+  return { ...actual, uploadLessonVideo: vi.fn() }
+})
+
+import { uploadLessonVideo } from '@/features/course-editor/api/mediaApi'
 
 const API = 'http://localhost/api/v1'
 
@@ -40,6 +52,10 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
   beforeEach(() => {
     useAuthStore.getState().logout()
     localStorage.clear()
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
   })
 
   // Timeout étendu : ce scénario tape plusieurs champs caractère par caractère via
@@ -102,6 +118,14 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
   }, 15000)
 
   it('2 & 3. Édition du programme (sections/leçons/vidéo) et Publication du cours', async () => {
+    vi.mocked(uploadLessonVideo).mockResolvedValueOnce({
+      id: 'v-999',
+      fileName: 'intro.mp4',
+      size: 2048,
+      contentType: 'video/mp4',
+      status: 'READY',
+    })
+
     let mockCourse = {
       id: 'course-101',
       slug: 'solfege-et-harmonie',
@@ -132,15 +156,6 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
         mockCourse.published = published
         return HttpResponse.json(mockCourse)
       }),
-      http.post(`${API}/media/presign`, () =>
-        HttpResponse.json(
-          { mediaId: 'v-999', uploadUrl: '/api/v1/media/v-999/upload-direct', s3Key: 'local/v-999/intro.mp4', expiresInSeconds: 3600 },
-          { status: 201 },
-        ),
-      ),
-      http.post(`${API}/media/v-999/upload-direct`, () =>
-        HttpResponse.json({ id: 'v-999', fileName: 'intro.mp4', size: 2048, contentType: 'video/mp4', status: 'READY' }),
-      ),
     )
 
     renderWithProviders(
