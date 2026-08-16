@@ -121,17 +121,21 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
     }
 
-    /** Resend verification email */
+    /** Resend verification email (unauthenticated — for users who can't log in yet) */
     @PostMapping("/resend-verification")
     public ResponseEntity<Map<String, String>> resendVerification(
-            @AuthenticationPrincipal String email) {
+            @RequestBody Map<String, String> body) {
 
-        userRepository.findByEmail(email).ifPresent(user -> {
-            if (!user.isEmailVerified()) {
-                String token = redisTokenService.createVerifyToken(email);
-                mailService.sendVerificationEmail(email, token);
-            }
-        });
+        String email = body.get("email");
+        if (email != null) {
+            userRepository.findByEmail(normalizeEmail(email)).ifPresent(user -> {
+                if (!user.isEmailVerified()) {
+                    String token = redisTokenService.createVerifyToken(user.getEmail());
+                    mailService.sendVerificationEmail(user.getEmail(), token);
+                }
+            });
+        }
+        // Always return 200 to avoid user enumeration
         return ResponseEntity.ok(Map.of("message", "Verification email sent if applicable"));
     }
 
@@ -157,6 +161,9 @@ public class AuthController {
         }
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
+        }
+        if (!user.isEmailVerified()) {
+            throw new RuntimeException("Please verify your email before logging in. Check your inbox or request a new verification email.");
         }
         if (user.isSuspended()) {
             throw new RuntimeException("Account is suspended");

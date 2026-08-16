@@ -20,5 +20,7 @@ export const authApi = {
     post('/auth/forgot-password', { email }),
   resetPassword: (resetToken: string, newPassword: string): Promise<{ message?: string }> =>
     post('/auth/reset-password', { resetToken, newPassword }),
+  resendVerification: (email: string): Promise<{ message?: string }> =>
+    post('/auth/resend-verification', { email }),
 }
 

@@ -116,9 +116,9 @@ export function AppRoutes() {
             <Route path="/teacher/students" element={<RequireRole role="TEACHER"><TeacherStudentsPage /></RequireRole>} />
             <Route path="/teacher/profile" element={<RequireRole role="TEACHER"><TeacherSettingsPage /></RequireRole>} />
             <Route path="/quiz/:lessonId" element={<RequireAuth><QuizPage /></RequireAuth>} />
-            <Route path="/admin" element={<RequireAuth><AdminOverviewPage /></RequireAuth>} />
-            <Route path="/admin/users" element={<RequireAuth><AdminUsersPage /></RequireAuth>} />
-            <Route path="/admin/finance" element={<RequireAuth><AdminFinancePage /></RequireAuth>} />
+            <Route path="/admin" element={<RequireRole role="ADMIN"><AdminOverviewPage /></RequireRole>} />
+            <Route path="/admin/users" element={<RequireRole role="ADMIN"><AdminUsersPage /></RequireRole>} />
+            <Route path="/admin/finance" element={<RequireRole role="ADMIN"><AdminFinancePage /></RequireRole>} />
             {/* Anciens chemins de l'espace enseignant */}
             <Route path="/enseigner/cours/creer" element={<Navigate to="/teacher/courses/new" replace />} />
             <Route path="/teacher/cours/:courseId" element={<LegacyEditRedirect />} />

@@ -23,6 +23,8 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>(initialMode)
   const [formError, setFormError] = useState<string | null>(null)
   const [forgotSuccess, setForgotSuccess] = useState<boolean>(false)
+  const [showResendVerification, setShowResendVerification] = useState<boolean>(false)
+  const [resendEmail, setResendEmail] = useState<string>('')
 
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<Values>({
     resolver: zodResolver(schema),
@@ -31,6 +33,7 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
   const onSubmit = handleSubmit(async ({ email, password }) => {
     setFormError(null)
     setForgotSuccess(false)
+    setShowResendVerification(false)
     try {
       if (mode === 'login') {
         if (!password || password.length < 8) {
@@ -46,6 +49,10 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
           setError('password', { message: 'auth.pwdMin' })
           return
         }
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+          setError('password', { message: 'auth.pwdComplexity' })
+          return
+        }
         await authApi.register(email, password)
         toast.success(t('auth.registerToastBody'), t('auth.registerToastTitle'))
         setMode('login')
@@ -59,6 +66,11 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
         for (const [k, v] of Object.entries(e.fieldErrors)) setError(k as keyof Values, { message: v })
       } else {
         const msg = e instanceof AppError ? e.message : t('auth.genericError')
+        // Show a "resend verification" helper when the server blocks login for unverified email
+        if (msg.toLowerCase().includes('verify your email')) {
+          setShowResendVerification(true)
+          setResendEmail(email)
+        }
         setFormError(msg)
         toast.error(msg, t('auth.errorToastTitle'))
       }
@@ -145,7 +157,28 @@ export function AuthForm({ mode: initialMode }: { mode: 'login' | 'register' | '
             </div>
           )}
 
-          {formError && <p role="alert" className="font-sans text-sm text-danger">{formError}</p>}
+          {formError && (
+            <div>
+              <p role="alert" className="font-sans text-sm text-danger">{formError}</p>
+              {showResendVerification && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await authApi.resendVerification(resendEmail)
+                      toast.success('E-mail de vérification renvoyé. Vérifiez votre boîte de réception.')
+                      setShowResendVerification(false)
+                    } catch {
+                      toast.error('Impossible de renvoyer l\'e-mail. Réessayez dans quelques instants.')
+                    }
+                  }}
+                  className="mt-1 font-sans text-xs font-semibold text-accent-ink hover:underline"
+                >
+                  Renvoyer l'e-mail de vérification
+                </button>
+              )}
+            </div>
+          )}
 
           <Button type="submit" size="lg" disabled={isSubmitting} className="w-full bg-blue text-paper hover:opacity-90">
             {mode === 'forgot'
