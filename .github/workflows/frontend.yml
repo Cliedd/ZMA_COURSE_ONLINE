@@ -20,7 +20,11 @@ jobs:
       # sous Ubuntu, donc les dépendances natives sont portables). .npmrc fixe
       # legacy-peer-deps=true ce qui est respecté par npm ci.
       - run: npm ci --no-audit --no-fund
-      - name: Types, lint et tests
-        run: npm run verify
+      - name: TypeScript
+        run: npm run typecheck
+      - name: ESLint
+        run: npm run lint
+      - name: Tests
+        run: npm run test:run
       - name: Build
         run: npm run build
