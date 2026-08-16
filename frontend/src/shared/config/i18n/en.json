@@ -584,5 +584,14 @@
     "noStudents": "No students enrolled in this course yet.",
     "noCourses": "You haven't created any course yet.",
     "loadError": "Unable to load enrollments. Please try again."
+  },
+  "notifications": {
+    "open": "Notifications ({{count}} unread)",
+    "panelLabel": "Notifications panel",
+    "title": "Notifications",
+    "list": "Notifications list",
+    "empty": "No notifications yet.",
+    "markRead": "Read",
+    "markAllRead": "Mark all as read"
   }
 }

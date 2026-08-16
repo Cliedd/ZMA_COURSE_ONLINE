@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { ChevronDown, User as UserIcon, BookOpen, Settings, LogOut, LayoutDashboard, Shield, Languages, Users } from 'lucide-react'
+import { NotificationBell } from '@/features/notification-bell'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu, MenuContent, MenuItem, MenuTrigger, toast } from '@/shared/ui'
@@ -202,6 +203,7 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           <LocaleSwitch />
           <ThemeToggle />
+          {authenticated && <NotificationBell />}
           {authenticated ? (
             <UserMenu />
           ) : (

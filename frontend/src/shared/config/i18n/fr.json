@@ -584,5 +584,14 @@
     "noStudents": "Aucun étudiant inscrit à ce cours pour le moment.",
     "noCourses": "Vous n'avez pas encore créé de cours.",
     "loadError": "Impossible de charger les inscriptions. Veuillez réessayer."
+  },
+  "notifications": {
+    "open": "Notifications ({{count}} non lues)",
+    "panelLabel": "Panneau de notifications",
+    "title": "Notifications",
+    "list": "Liste des notifications",
+    "empty": "Aucune notification pour le moment.",
+    "markRead": "Lu",
+    "markAllRead": "Tout marquer comme lu"
   }
 }
