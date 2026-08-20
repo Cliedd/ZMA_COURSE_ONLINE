@@ -77,11 +77,13 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'zma-auth',
-      // refreshToken volontairement exclu : le garder hors localStorage limite
-      // la casse d'un XSS à l'access token (courte durée de vie), pas à une
-      // prise de session durable. Conséquence acceptée : un rechargement de
-      // page après expiration de l'access token déconnecte l'utilisateur.
-      partialize: (s) => ({ token: s.token, email: s.email, role: s.role }),
+      // Le refreshToken est persisté pour que le renouvellement automatique du
+      // JWT (durée de vie 1 h) fonctionne après un rechargement de page. Sa
+      // durée de vie côté serveur est de 30 jours (Redis). Sans persistance,
+      // l'intercepteur HTTP ne peut pas renouveler le token expiré et l'étudiant
+      // est expulsé vers /login à chaque rechargement, ce qui rend les leçons
+      // inaccessibles après la première heure.
+      partialize: (s) => ({ token: s.token, refreshToken: s.refreshToken, email: s.email, role: s.role }),
     },
   ),
 )

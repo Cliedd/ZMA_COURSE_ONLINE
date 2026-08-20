@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Play, Check, Lock, VideoOff, Loader2, AlertCircle, RefreshCw, Megaphone, BookOpen } from 'lucide-react'
 import { Skeleton, ProgressBar } from '@/shared/ui'
-import { get } from '@/shared/api/http'
+import { get, AppError } from '@/shared/api/http'
 import { cn } from '@/shared/lib/cn'
 import { useCourseById, courseCurriculum, curriculumLessonCount, lessonTitle } from '@/entities/course'
 import { useMyEnrollments, useUpdateProgress } from '@/entities/enrollment'
@@ -39,8 +39,18 @@ export function VideoPlayer({ mediaId, title, courseId }: VideoPlayerProps) {
         setIsLoading(false)
         return
       }
-    } catch {
-      // presigned URL unavailable — no unauthenticated fallback in production
+    } catch (err) {
+      if (signal?.aborted) return
+
+      // 401/403 means the token is expired or the student lost access — surface
+      // the error rather than silently falling back to the local /file endpoint
+      // (which returns 404 in production anyway and hides the real cause).
+      if (err instanceof AppError && (err.status === 401 || err.status === 403)) {
+        setError(t('player.videoError'))
+        setIsLoading(false)
+        return
+      }
+      // For any other error (network glitch, etc.) fall through to the local-dev fallback below.
     }
 
     if (signal?.aborted) return
@@ -50,7 +60,7 @@ export function VideoPlayer({ mediaId, title, courseId }: VideoPlayerProps) {
     // if the video element fires onError we surface a user-facing message.
     setStreamUrl(`/api/v1/media/${id}/file`)
     setIsLoading(false)
-  }, [courseId])
+  }, [courseId, t])
 
   useEffect(() => {
     if (!mediaId) {
