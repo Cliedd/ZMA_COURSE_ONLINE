@@ -108,7 +108,9 @@ export function CourseDetailPage() {
               <p className="font-serif text-display leading-none text-ink">
                 {course.price > 0 ? formatPrice(course.price) : t('course.free')}
               </p>
-              {enrolled ? (
+              {isAuthenticated && isCheckLoading ? (
+                <Skeleton className="mt-5 h-[44px] w-full" />
+              ) : enrolled ? (
                 <Link
                   to={`/learning/${course.id}`}
                   aria-label={t('course.continueLearning')}
@@ -119,14 +121,8 @@ export function CourseDetailPage() {
                 </Link>
               ) : (
                 <Link
-                  to={isAuthenticated && isCheckLoading ? '#' : `/checkout/${course.id}`}
-                  aria-disabled={isAuthenticated && isCheckLoading}
-                  className={cn(
-                    'mt-5 flex min-h-touch items-center justify-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper transition-colors duration-brand ease-brand',
-                    isAuthenticated && isCheckLoading
-                      ? 'cursor-wait opacity-60'
-                      : 'hover:bg-ink/90',
-                  )}
+                  to={`/checkout/${course.id}`}
+                  className="mt-5 flex min-h-touch items-center justify-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper transition-colors duration-brand ease-brand hover:bg-ink/90"
                 >
                   <ShoppingCart className="h-4 w-4" aria-hidden />
                   {t('course.buy')}
