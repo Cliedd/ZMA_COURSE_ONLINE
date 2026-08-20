@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { MessageSquare } from 'lucide-react'
 import { Badge } from '@/shared/ui'
 import type { Course } from '@/entities/course'
 
@@ -23,6 +24,14 @@ export function TeacherCourseRow({ course }: { course: Course }) {
           className="text-xs text-muted-foreground hover:text-primary underline underline-offset-2"
         >
           Stats quiz
+        </Link>
+        <Link
+          to={`/chat/${course.id}`}
+          className="inline-flex min-h-touch items-center gap-1.5 font-sans text-sm font-semibold text-ink underline"
+          aria-label={t('teacherDashboard.chat')}
+        >
+          <MessageSquare className="h-4 w-4 text-accent" aria-hidden />
+          {t('teacherDashboard.chat')}
         </Link>
         <Link
           to={`/teacher/courses/${course.id}/edit`}

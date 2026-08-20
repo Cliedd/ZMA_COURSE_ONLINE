@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Megaphone } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Megaphone, MessageSquare } from 'lucide-react'
 import { Skeleton, toast } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import {
@@ -28,12 +29,14 @@ function toWriteRequest(base: Course, patch: Partial<CourseWriteRequest>): Cours
     skillsJson: base.skillsJson,
     debouches: base.debouches,
     curriculumJson: base.curriculumJson,
+    thumbnailUrl: base.thumbnailUrl ?? undefined,
     ...patch,
   }
 }
 
 /** Page d'édition d'un cours : infos, programme, publication et suppression. */
 export function CourseEditorPage() {
+  const { t } = useTranslation()
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
   const { data: course, isLoading, isError } = useCourseById(courseId)
@@ -128,6 +131,18 @@ export function CourseEditorPage() {
           >
             <Megaphone className="h-4 w-4 text-accent" aria-hidden />
             Gérer les annonces
+          </Link>
+        </section>
+
+        <section className="mt-8 border-t border-line pt-8">
+          <h2 className="font-serif text-h3 text-ink mb-3">{t('courseEditor.chat')}</h2>
+          <p className="font-sans text-sm text-ink-muted mb-4">{t('courseEditor.chatDescription')}</p>
+          <Link
+            to={`/chat/${courseId}`}
+            className="inline-flex min-h-touch items-center gap-2 rounded border border-line bg-surface px-5 font-sans text-sm font-semibold text-ink hover:bg-surface/80"
+          >
+            <MessageSquare className="h-4 w-4 text-accent" aria-hidden />
+            {t('courseEditor.openChat')}
           </Link>
         </section>
 
