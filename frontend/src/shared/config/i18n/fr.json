@@ -122,6 +122,8 @@
     "syllabus": "Programme",
     "reviews": "Avis",
     "buy": "Acheter ce cours",
+    "continueLearning": "Continuer l'apprentissage",
+    "alreadyEnrolled": "Vous êtes déjà inscrit à ce cours",
     "lifetime": "Accès à vie après achat",
     "by": "Par",
     "lessons_one": "{{count}} leçon",
@@ -465,9 +467,13 @@
     "empty": "Vous n'avez pas encore créé de cours.",
     "published": "Publié",
     "draft": "Brouillon",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "chat": "Messagerie"
   },
   "courseEditor": {
+    "chat": "Canal de messagerie",
+    "chatDescription": "Échangez directement avec vos étudiants inscrits.",
+    "openChat": "Ouvrir le canal",
     "media": {
       "attach": "Attacher une vidéo",
       "replace": "Remplacer la vidéo",

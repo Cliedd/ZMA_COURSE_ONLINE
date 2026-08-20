@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Star, Check, ShoppingCart } from 'lucide-react'
+import { Star, Check, ShoppingCart, BookOpen } from 'lucide-react'
 import { Skeleton, Picture } from '@/shared/ui'
 import { Breadcrumb } from '@/widgets/breadcrumb'
 import { formatPrice, formatDuration } from '@/shared/config/i18n'
 import { useCourse, courseSkills, courseCurriculum, curriculumLessonCount } from '@/entities/course'
+import { useEnrollmentCheck } from '@/entities/enrollment'
+import { useAuthStore } from '@/entities/session'
 import { slugify } from '@/shared/lib/slugify'
 import { courseImage } from '@/widgets/course-card/lib/courseImage'
 import { DEPARTMENTS, departmentLabel, levelLabel } from '@/shared/config/navigation'
@@ -22,6 +24,12 @@ export function CourseDetailPage() {
   const { t } = useTranslation()
   const { slug } = useParams()
   const { data: course, isLoading, isError } = useCourse(slug)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
+  const { data: enrollCheck, isLoading: isCheckLoading } = useEnrollmentCheck(
+    isAuthenticated ? course?.id : undefined,
+  )
+
+  const enrolled = enrollCheck?.enrolled === true
 
   if (isLoading) return <CourseDetailSkeleton />
   if (isError || !course) return <NotFoundState />
@@ -37,7 +45,11 @@ export function CourseDetailPage() {
       {/* En-tête sombre (scène) */}
       <section data-theme="dark" className="relative isolate overflow-hidden bg-scene text-scene-ink">
         <div className="absolute inset-0 -z-10">
-          <Picture image={courseImage(course)} alt="" priority sizes="100vw" className="h-full w-full object-cover" />
+          {course.thumbnailUrl ? (
+            <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <Picture image={courseImage(course)} alt="" priority sizes="100vw" className="h-full w-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-scene via-scene/65 to-scene/20" />
         </div>
         <div className="container max-w-3xl py-16">
@@ -96,14 +108,36 @@ export function CourseDetailPage() {
               <p className="font-serif text-display leading-none text-ink">
                 {course.price > 0 ? formatPrice(course.price) : t('course.free')}
               </p>
-              <Link
-                to={`/checkout/${course.id}`}
-                className="mt-5 flex min-h-touch items-center justify-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper transition-colors duration-brand ease-brand hover:bg-ink/90"
-              >
-                <ShoppingCart className="h-4 w-4" aria-hidden />
-                {t('course.buy')}
-              </Link>
-              <p className="mt-3 text-center font-sans text-sm text-ink-faint">{t('course.lifetime')}</p>
+              {enrolled ? (
+                <Link
+                  to={`/learning/${course.id}`}
+                  aria-label={t('course.continueLearning')}
+                  className="mt-5 flex min-h-touch items-center justify-center gap-2 rounded border-2 border-ink bg-surface px-5 font-sans text-sm font-semibold text-ink transition-colors duration-brand ease-brand hover:bg-ink/10"
+                >
+                  <BookOpen className="h-4 w-4" aria-hidden />
+                  {t('course.continueLearning')}
+                </Link>
+              ) : (
+                <Link
+                  to={isAuthenticated && isCheckLoading ? '#' : `/checkout/${course.id}`}
+                  aria-disabled={isAuthenticated && isCheckLoading}
+                  className={cn(
+                    'mt-5 flex min-h-touch items-center justify-center gap-2 rounded bg-ink px-5 font-sans text-sm font-semibold text-paper transition-colors duration-brand ease-brand',
+                    isAuthenticated && isCheckLoading
+                      ? 'cursor-wait opacity-60'
+                      : 'hover:bg-ink/90',
+                  )}
+                >
+                  <ShoppingCart className="h-4 w-4" aria-hidden />
+                  {t('course.buy')}
+                </Link>
+              )}
+              {!enrolled && (
+                <p className="mt-3 text-center font-sans text-sm text-ink-faint">{t('course.lifetime')}</p>
+              )}
+              {enrolled && (
+                <p className="mt-3 text-center font-sans text-sm text-ink-faint">{t('course.alreadyEnrolled')}</p>
+              )}
             </div>
 
             <ul className="divide-y divide-line font-sans text-sm">

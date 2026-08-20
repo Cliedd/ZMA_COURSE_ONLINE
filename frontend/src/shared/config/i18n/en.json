@@ -122,6 +122,8 @@
     "syllabus": "Syllabus",
     "reviews": "Reviews",
     "buy": "Buy this course",
+    "continueLearning": "Continue learning",
+    "alreadyEnrolled": "You are already enrolled in this course",
     "lifetime": "Lifetime access after purchase",
     "by": "By",
     "lessons_one": "{{count}} lesson",
@@ -465,9 +467,13 @@
     "empty": "You haven't created any course yet.",
     "published": "Published",
     "draft": "Draft",
-    "edit": "Edit"
+    "edit": "Edit",
+    "chat": "Messaging"
   },
   "courseEditor": {
+    "chat": "Messaging channel",
+    "chatDescription": "Exchange directly with your enrolled students.",
+    "openChat": "Open channel",
     "media": {
       "attach": "Attach video",
       "replace": "Replace video",
