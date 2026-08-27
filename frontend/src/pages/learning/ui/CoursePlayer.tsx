@@ -186,7 +186,7 @@ function AnnouncementBadge({ courseId }: { courseId: string | undefined }) {
 export function CoursePlayer() {
   const { t } = useTranslation()
   const { courseId } = useParams()
-  const { data: course, isLoading } = useCourseById(courseId)
+  const { data: course, isLoading, isError, refetch } = useCourseById(courseId)
   const { data: enrollments = [] } = useMyEnrollments()
   const updateProgress = useUpdateProgress()
   const [activeTab, setActiveTab] = useState<PlayerTab>('lesson')
@@ -197,7 +197,30 @@ export function CoursePlayer() {
   const [current, setCurrent] = useState(0)
 
   if (isLoading) return <div className="container py-10"><Skeleton className="h-96 w-full" /></div>
-  if (!course) return null
+  if (isError || !course) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
+        <AlertCircle className="h-10 w-10 text-danger" aria-hidden />
+        <p className="font-sans text-body text-scene-ink/80">{t('player.courseLoadError', 'Impossible de charger ce cours.')}</p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="inline-flex items-center gap-2 rounded bg-accent px-5 py-2 font-sans text-sm font-semibold text-scene"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden />
+            {t('player.retry', 'Réessayer')}
+          </button>
+          <a
+            href="/my-courses"
+            className="inline-flex items-center gap-2 rounded border border-line px-5 py-2 font-sans text-sm font-semibold text-scene-ink"
+          >
+            {t('player.backToCourses', 'Mes cours')}
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   const activeLesson = lessons[current]
   const total = course.lessonCount || curriculumLessonCount(sections) || lessons.length

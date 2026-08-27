@@ -452,7 +452,10 @@
     "videoError": "Impossible de lire cette vidéo.",
     "retry": "Réessayer",
     "videoPlayer": "Lecteur vidéo",
-    "unsupportedBrowser": "Votre navigateur ne prend pas en charge la lecture de vidéos."
+    "unsupportedBrowser": "Votre navigateur ne prend pas en charge la lecture de vidéos.",
+    "lesson": "Leçon",
+    "courseLoadError": "Impossible de charger ce cours.",
+    "backToCourses": "Mes cours"
   },
   "teacherDashboard": {
     "breadcrumb": "Mes cours",

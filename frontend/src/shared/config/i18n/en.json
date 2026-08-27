@@ -452,7 +452,10 @@
     "videoError": "This video could not be played.",
     "retry": "Retry",
     "videoPlayer": "Video player",
-    "unsupportedBrowser": "Your browser does not support video playback."
+    "unsupportedBrowser": "Your browser does not support video playback.",
+    "lesson": "Lesson",
+    "courseLoadError": "Could not load this course.",
+    "backToCourses": "My courses"
   },
   "teacherDashboard": {
     "breadcrumb": "My courses",

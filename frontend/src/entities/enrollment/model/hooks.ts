@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { enrollmentApi } from '../api/enrollmentApi'
+import { useAuthStore } from '@/entities/session'
 
 export const enrollmentKeys = {
   all: ['enrollments'] as const,
@@ -11,7 +12,8 @@ export const enrollmentKeys = {
 }
 
 export function useMyEnrollments() {
-  return useQuery({ queryKey: enrollmentKeys.mine(), queryFn: enrollmentApi.getMine, staleTime: 30_000 })
+  const isLoggedIn = useAuthStore((s) => s.isAuthenticated())
+  return useQuery({ queryKey: enrollmentKeys.mine(), queryFn: enrollmentApi.getMine, staleTime: 30_000, enabled: isLoggedIn })
 }
 
 export function useEnrollmentCheck(courseId: string | undefined) {

@@ -191,6 +191,10 @@ describe('Teacher Course Publish & Student Learning E2E Flow', () => {
   }, 20000)
 
   it('4. Lecteur de cours étudiant (CoursePlayer) : affichage du syllabus, streaming vidéo et mise à jour du progrès', async () => {
+    // useMyEnrollments requires isAuthenticated() — set a valid fake JWT.
+    const fakePayload = btoa(JSON.stringify({ sub: 'student@test.com', role: 'STUDENT', exp: Math.floor(Date.now() / 1000) + 3600 }))
+    useAuthStore.setState({ token: `header.${fakePayload}.sig`, refreshToken: null, email: 'student@test.com', role: 'STUDENT' })
+
     const publishedCourse = {
       id: 'course-101',
       slug: 'solfege-et-harmonie',
