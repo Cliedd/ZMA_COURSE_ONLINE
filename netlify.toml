@@ -52,3 +52,18 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Empêche le navigateur de mettre index.html en cache : après chaque déploiement
+# Netlify, la prochaine navigation charge immédiatement le nouveau index.html
+# (qui référence des assets avec de nouveaux hashes), sans attendre que le
+# service worker propage la mise à jour. Les assets JS/CSS sont déjà versionnés
+# par hash de contenu (immutable), seul index.html a besoin de ce traitement.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

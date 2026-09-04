@@ -199,24 +199,37 @@ export function CoursePlayer() {
   if (isLoading) return <div className="container py-10"><Skeleton className="h-96 w-full" /></div>
   if (isError || !course) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-        <AlertCircle className="h-10 w-10 text-danger" aria-hidden />
-        <p className="font-sans text-body text-scene-ink/80">{t('player.courseLoadError', 'Impossible de charger ce cours.')}</p>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => void refetch()}
-            className="inline-flex items-center gap-2 rounded bg-accent px-5 py-2 font-sans text-sm font-semibold text-scene"
-          >
-            <RefreshCw className="h-4 w-4" aria-hidden />
-            {t('player.retry', 'Réessayer')}
-          </button>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-5 px-6 py-24 text-center">
+        <span className="grid h-16 w-16 place-items-center rounded-full bg-danger/10">
+          <AlertCircle className="h-8 w-8 text-danger" aria-hidden />
+        </span>
+        <div>
+          <p className="font-serif text-h3 text-scene-ink">{t('player.courseLoadError', 'Cours introuvable')}</p>
+          <p className="mt-2 max-w-sm font-sans text-sm text-scene-ink/60">
+            {t('player.courseLoadErrorDetail', 'Ce cours n\'est plus disponible. Il a peut-être été déplacé ou supprimé. Consultez votre espace d\'apprentissage ou le catalogue.')}
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-3">
           <a
             href="/my-courses"
-            className="inline-flex items-center gap-2 rounded border border-line px-5 py-2 font-sans text-sm font-semibold text-scene-ink"
+            className="inline-flex min-h-touch items-center gap-2 rounded bg-accent px-5 font-sans text-sm font-semibold text-scene"
           >
             {t('player.backToCourses', 'Mes cours')}
           </a>
+          <a
+            href="/catalogue"
+            className="inline-flex min-h-touch items-center gap-2 rounded border border-scene-ink/30 px-5 font-sans text-sm font-semibold text-scene-ink"
+          >
+            {t('player.browseCatalogue', 'Catalogue')}
+          </a>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="inline-flex min-h-touch items-center gap-2 rounded px-4 font-sans text-sm text-scene-ink/50 hover:text-scene-ink"
+          >
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
+            {t('player.retry', 'Réessayer')}
+          </button>
         </div>
       </div>
     )

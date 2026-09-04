@@ -454,8 +454,10 @@
     "videoPlayer": "Video player",
     "unsupportedBrowser": "Your browser does not support video playback.",
     "lesson": "Lesson",
-    "courseLoadError": "Could not load this course.",
-    "backToCourses": "My courses"
+    "courseLoadError": "Course not found",
+    "courseLoadErrorDetail": "This course is no longer available. It may have been moved or removed. Check your learning space or browse the catalogue.",
+    "backToCourses": "My courses",
+    "browseCatalogue": "Catalogue"
   },
   "teacherDashboard": {
     "breadcrumb": "My courses",

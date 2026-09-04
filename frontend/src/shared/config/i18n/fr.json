@@ -454,8 +454,10 @@
     "videoPlayer": "Lecteur vidéo",
     "unsupportedBrowser": "Votre navigateur ne prend pas en charge la lecture de vidéos.",
     "lesson": "Leçon",
-    "courseLoadError": "Impossible de charger ce cours.",
-    "backToCourses": "Mes cours"
+    "courseLoadError": "Cours introuvable",
+    "courseLoadErrorDetail": "Ce cours n'est plus disponible. Il a peut-être été déplacé ou supprimé. Consultez votre espace d'apprentissage ou le catalogue.",
+    "backToCourses": "Mes cours",
+    "browseCatalogue": "Catalogue"
   },
   "teacherDashboard": {
     "breadcrumb": "Mes cours",
