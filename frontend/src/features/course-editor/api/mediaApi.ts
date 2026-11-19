@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import axios from 'axios'
 import { z } from 'zod'
-import { get, post, patch, AppError } from '@/shared/api/http'
+import { post, patch, AppError } from '@/shared/api/http'
 
 /** Miroir de zma-media : MediaService.PresignUrlWithId */
 const presignSchema = z.object({
@@ -209,7 +209,8 @@ export async function uploadLessonVideo(
 
 /**
  * Upload une image de couverture de cours via le flux presign de zma-media.
- * Retourne l'URL publique (download URL) de l'image uploadée.
+ * Retourne l'ID du média (résolu côté affichage via GET /media/{id}/public-image),
+ * PAS une URL présignée — celles-ci expirent (~1h) et cassaient la miniature.
  * Même mécanique que uploadLessonVideo, avec purpose='COURSE_THUMBNAIL'.
  */
 export async function uploadCourseThumbnail(
@@ -274,13 +275,6 @@ export async function uploadCourseThumbnail(
     }
   }
 
-  // Récupérer l'URL publique via GET /media/{id}/url
-  try {
-    const result = await get(`/media/${media.id}/url`, undefined, z.object({ url: z.string() }))
-    return result.url
-  } catch (err) {
-    const kind = err instanceof AppError ? classifyAppError(err) : 'network'
-    console.error('[uploadCourseThumbnail] getDownloadUrl failed', err)
-    throw new UploadError(kind, err instanceof Error ? err.message : 'get URL failed', err)
-  }
+  // Retourne l'ID du média (stable) plutôt qu'une URL présignée expirable.
+  return media.id
 }

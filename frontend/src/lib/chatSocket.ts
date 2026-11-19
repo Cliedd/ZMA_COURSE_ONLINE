@@ -38,7 +38,11 @@ class ChatSocket {
     const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     this.setStatus('connecting')
     this.client = new Client({
-      brokerURL: `${proto}//${window.location.host}/ws`,
+      // Production (Netlify) cannot proxy WebSocket upgrades, so connect straight
+      // to the community service via VITE_WS_URL. Local dev and the nginx/docker
+      // deployment keep the same-origin `/ws` (handled by the Vite proxy / nginx
+      // location in nginx.conf).
+      brokerURL: import.meta.env.VITE_WS_URL || `${proto}//${window.location.host}/ws`,
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 3000,
       onConnect: () => this.setStatus('connected'),

@@ -82,4 +82,13 @@ public class LocalStorageService implements StorageService {
         Files.copy(localFile, dest, StandardCopyOption.REPLACE_EXISTING);
         return s3Key;
     }
+
+    @Override
+    public byte[] readBytes(String s3Key) throws IOException {
+        String[] parts = s3Key.split("/", 3);
+        if (parts.length < 3 || !"local".equals(parts[0])) {
+            throw new IOException("Unrecognized local s3Key: " + s3Key);
+        }
+        return Files.readAllBytes(Paths.get(uploadDir, parts[1], parts[2]));
+    }
 }

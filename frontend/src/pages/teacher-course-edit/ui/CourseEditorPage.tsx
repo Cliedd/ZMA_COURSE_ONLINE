@@ -29,7 +29,7 @@ function toWriteRequest(base: Course, patch: Partial<CourseWriteRequest>): Cours
     skillsJson: base.skillsJson,
     debouches: base.debouches,
     curriculumJson: base.curriculumJson,
-    thumbnailUrl: base.thumbnailUrl ?? undefined,
+    thumbnailMediaId: base.thumbnailMediaId ?? undefined,
     ...patch,
   }
 }

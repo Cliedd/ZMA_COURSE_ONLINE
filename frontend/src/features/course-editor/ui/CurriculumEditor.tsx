@@ -57,8 +57,14 @@ function SectionRow({ section, courseId, onRename, onRemove, onAddLesson, onRemo
 
       <ul className="mt-3 flex flex-col gap-2">
         {section.lessons.map((lesson, index) => (
-          <li key={`${lesson.title}-${index}`} className="flex flex-col gap-2 border-t border-line pt-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="font-sans text-sm text-ink">{lesson.title}</span>
+          <li key={lesson.id ?? `${lesson.title}-${index}`} className="flex flex-col gap-2 border-t border-line pt-2 sm:flex-row sm:items-center sm:justify-between">
+            <Input
+              value={lesson.title}
+              onChange={(e) => onChangeLesson(index, { ...lesson, title: e.target.value })}
+              placeholder="Titre de la leçon"
+              aria-label="Titre de la leçon"
+              className="min-w-0 flex-1"
+            />
             <div className="flex items-center gap-2">
               <LessonMediaUpload lesson={lesson} onChange={(next) => onChangeLesson(index, next)} />
               {courseId && lesson.id && (

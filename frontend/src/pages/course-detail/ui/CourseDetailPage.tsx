@@ -45,8 +45,8 @@ export function CourseDetailPage() {
       {/* En-tête sombre (scène) */}
       <section data-theme="dark" className="relative isolate overflow-hidden bg-scene text-scene-ink">
         <div className="absolute inset-0 -z-10">
-          {course.thumbnailUrl ? (
-            <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+          {course.thumbnailMediaId ? (
+            <img src={`/api/v1/media/${course.thumbnailMediaId}/public-image`} alt="" className="h-full w-full object-cover" />
           ) : (
             <Picture image={courseImage(course)} alt="" priority sizes="100vw" className="h-full w-full object-cover" />
           )}

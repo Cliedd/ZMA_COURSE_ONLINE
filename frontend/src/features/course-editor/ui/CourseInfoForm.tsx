@@ -53,7 +53,7 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
   })
 
   // ── Photo de couverture ──────────────────────────────────────────────────
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(course.thumbnailUrl ?? null)
+  const [thumbnailMediaId, setThumbnailMediaId] = useState<string | null>(course.thumbnailMediaId ?? null)
   const [uploadingThumb, setUploadingThumb] = useState(false)
   const [thumbProgress, setThumbProgress] = useState(0)
   const thumbInputRef = useRef<HTMLInputElement>(null)
@@ -71,8 +71,8 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
     setUploadingThumb(true)
     setThumbProgress(0)
     try {
-      const url = await uploadCourseThumbnail(file, setThumbProgress)
-      setThumbnailUrl(url)
+      const mediaId = await uploadCourseThumbnail(file, setThumbProgress)
+      setThumbnailMediaId(mediaId)
       toast.success('Photo de couverture uploadée.')
     } catch (err) {
       const msg =
@@ -88,7 +88,7 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
     }
   }
 
-  const removeThumbnail = () => setThumbnailUrl(null)
+  const removeThumbnail = () => setThumbnailMediaId(null)
 
   const onSubmit = handleSubmit((values) => {
     const skillsArray = values.skills
@@ -109,7 +109,7 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
       ects: values.ects,
       skillsJson: skillsArray.length > 0 ? JSON.stringify(skillsArray) : '',
       debouches: debouchesArray.length > 0 ? debouchesArray.join(' | ') : '',
-      thumbnailUrl: thumbnailUrl ?? undefined,
+      thumbnailMediaId: thumbnailMediaId ?? undefined,
     })
   })
 
@@ -178,10 +178,10 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
           aria-label="Choisir une photo de couverture"
           onChange={(e) => void handleThumbnailFile(e.target.files?.[0])}
         />
-        {thumbnailUrl ? (
+        {thumbnailMediaId ? (
           <div className="relative w-full max-w-sm overflow-hidden rounded border border-line">
             <img
-              src={thumbnailUrl}
+              src={`/api/v1/media/${thumbnailMediaId}/public-image`}
               alt="Aperçu de la couverture du cours"
               className="aspect-[16/10] w-full object-cover"
             />
@@ -213,7 +213,7 @@ export function CourseInfoForm({ course, onSave }: { course: Course; onSave: (da
             className="self-start"
           >
             <ImageIcon className="h-3.5 w-3.5" aria-hidden />
-            {thumbnailUrl ? 'Changer la photo' : 'Choisir une image'}
+            {thumbnailMediaId ? 'Changer la photo' : 'Choisir une image'}
           </Button>
         )}
         <p className="font-sans text-xs text-ink-muted">

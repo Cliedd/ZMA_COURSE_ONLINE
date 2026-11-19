@@ -49,6 +49,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // Public course covers/avatars — streamed directly (see MediaController#servePublicImage).
+                // Only image/* content types are served; videos/documents stay authenticated.
+                .requestMatchers(HttpMethod.GET, "/api/v1/media/*/public-image").permitAll()
                 // Metadata, downloads, presign, upload-direct, confirm, attach all require
                 // authentication. Ownership/course-access is enforced in MediaService.
                 .anyRequest().authenticated()

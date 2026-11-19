@@ -21,5 +21,6 @@ public record CourseRequest(
         String skillsJson,
         String curriculumJson,
         String debouches,
-        String thumbnailUrl
+        String thumbnailUrl,
+        String thumbnailMediaId
 ) {}

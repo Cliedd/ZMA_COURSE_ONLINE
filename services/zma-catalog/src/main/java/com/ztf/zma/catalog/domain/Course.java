@@ -44,6 +44,12 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String thumbnailUrl;
 
+    /** Stable media id of the cover image, resolved to a public URL by
+     *  zma-media's GET /api/v1/media/{id}/public-image. Unlike {@link #thumbnailUrl}
+     *  (a presigned URL that expires), this never expires. */
+    @Column(columnDefinition = "TEXT")
+    private String thumbnailMediaId;
+
     /** Email of the owning teacher (null = official ZMA course) */
     private String teacherEmail;
 
@@ -135,6 +141,9 @@ public class Course {
 
     public String getThumbnailUrl() { return thumbnailUrl; }
     public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
+
+    public String getThumbnailMediaId() { return thumbnailMediaId; }
+    public void setThumbnailMediaId(String thumbnailMediaId) { this.thumbnailMediaId = thumbnailMediaId; }
 
     public String getSkillsJson() { return skillsJson; }
     public void setSkillsJson(String skillsJson) { this.skillsJson = skillsJson; }

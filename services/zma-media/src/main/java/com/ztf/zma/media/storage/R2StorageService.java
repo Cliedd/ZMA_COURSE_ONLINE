@@ -202,4 +202,16 @@ public class R2StorageService implements StorageService {
                 localFile);
         return s3Key;
     }
+
+    @Override
+    public byte[] readBytes(String s3Key) throws IOException {
+        try {
+            return s3Client.getObjectAsBytes(GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(s3Key)
+                    .build()).asByteArray();
+        } catch (Exception ex) {
+            throw new IOException("Failed to read object " + s3Key + ": " + ex.getMessage(), ex);
+        }
+    }
 }

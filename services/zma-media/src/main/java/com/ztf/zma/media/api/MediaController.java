@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,6 +35,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/media")
 public class MediaController {
+
+    private static final Logger log = LoggerFactory.getLogger(MediaController.class);
 
     private final MediaService mediaService;
     private final TranscodingService transcodingService;
@@ -151,6 +155,32 @@ public class MediaController {
                                                @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorizationHeader,
                                                @RequestParam(required = false) String courseId) {
         return Map.of("url", mediaService.getDownloadUrl(id, auth.getName(), getRole(auth), authorizationHeader, courseId));
+    }
+
+    /**
+     * Serve a publicly viewable image (course cover, avatar) by media id.
+     * Unlike {@link #getDownloadUrl} (presigned, short-lived, authenticated),
+     * this streams the bytes directly with a long cache header so course covers
+     * never expire on the public catalogue. Only image/* content types are
+     * exposed — videos and documents stay behind their authenticated download URL.
+     */
+    @Operation(summary = "Serve a public image (course cover/avatar) by media id")
+    @GetMapping("/{id}/public-image")
+    public ResponseEntity<byte[]> servePublicImage(@PathVariable String id) {
+        Media media = mediaService.getById(id);
+        if (media.getContentType() == null || !media.getContentType().toLowerCase().startsWith("image/")) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            byte[] bytes = storageService.readBytes(media.getS3Key());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, media.getContentType())
+                    .header(HttpHeaders.CACHE_CONTROL, "public, max-age=31536000, immutable")
+                    .body(bytes);
+        } catch (IOException ex) {
+            log.warn("servePublicImage failed for {}: {}", id, ex.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /** Soft-delete: removes from storage and marks deleted */

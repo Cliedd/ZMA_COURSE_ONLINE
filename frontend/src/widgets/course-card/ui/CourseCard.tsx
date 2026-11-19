@@ -32,9 +32,9 @@ export function CourseCard({ course }: { course: Course }) {
     <Link to={`/course/${course.slug}`} className="group block focus-visible:outline-none">
       <Card className="h-full transition-all duration-brand ease-brand group-hover:-translate-y-0.5 group-hover:border-accent-ink/40 group-hover:shadow-[var(--shadow-overlay)]">
         <CardMedia>
-          {course.thumbnailUrl ? (
+          {course.thumbnailMediaId ? (
             <img
-              src={course.thumbnailUrl}
+              src={`/api/v1/media/${course.thumbnailMediaId}/public-image`}
               alt=""
               className="aspect-[16/10] w-full object-cover transition-transform duration-brand ease-brand group-hover:scale-[1.02]"
             />

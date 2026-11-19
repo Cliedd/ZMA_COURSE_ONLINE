@@ -45,4 +45,11 @@ public interface StorageService {
      * back through the same storage abstraction used for original uploads.
      */
     String uploadFile(String mediaId, String fileName, String contentType, Path localFile) throws IOException;
+
+    /**
+     * Read an entire object into memory. Only for small payloads (course cover
+     * images, avatars) that are served inline — never for videos, which are
+     * streamed via presigned URLs instead.
+     */
+    byte[] readBytes(String s3Key) throws IOException;
 }

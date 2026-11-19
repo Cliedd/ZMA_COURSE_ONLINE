@@ -31,6 +31,7 @@ export interface CourseWriteRequest {
   curriculumJson?: string
   debouches?: string
   thumbnailUrl?: string
+  thumbnailMediaId?: string
 }
 
 const reviewPageSchema = z.object({

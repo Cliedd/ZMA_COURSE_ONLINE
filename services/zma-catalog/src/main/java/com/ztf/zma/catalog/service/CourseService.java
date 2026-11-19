@@ -373,5 +373,6 @@ public class CourseService {
         }
         if (req.debouches()        != null) c.setDebouches(req.debouches());
         if (req.thumbnailUrl()     != null) c.setThumbnailUrl(req.thumbnailUrl());
+        if (req.thumbnailMediaId() != null) c.setThumbnailMediaId(req.thumbnailMediaId());
     }
 }
